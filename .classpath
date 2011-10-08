@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gwt-visualization"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jerchio-http"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache Commons Net"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/json-lib"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gwt-comet"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/dygraph-gwt"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/moxie-highchart"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ezmorph"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-net-3.0.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/dygraphs-gwt-2011.04.18.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/ezmorph-1.0.6.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-comet-1.2.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jericho-html-3.2.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/org.moxieapps.gwt.highcharts-1.1.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-visualization.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/json-lib-2.4-jdk15.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-beanutils-1.8.3.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/httpclient-4.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>

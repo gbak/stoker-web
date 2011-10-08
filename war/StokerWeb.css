@@ -1,0 +1,215 @@
+/** Add css rules here for your application. */
+
+ 
+/** Example rules used by the template application (remove for your app) */
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+
+.sendButton {
+  display: block;
+  font-size: 16pt;
+}
+
+.InvalidLoginText {
+	color: red;
+}
+/** Most GWT widgets already have a style name defined */
+.gwt-DialogBox {
+  width: 400px;
+}
+
+.alerts-dialog-panell {
+  margin: 5px;
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+.fan-Label {
+	font-size: 1em;
+	text-align: center;
+	font-weight: bold;
+	color: black;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+}
+
+.fanStatus-panel {
+    /* border:1px solid #bbb; */ 	
+   padding: 2px 0px 0px 6px;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+}
+
+.gauge-panel {
+  /*  border:1px solid #bbb; */ 
+ /* width:  250px; */
+  height:  210px;
+}
+
+.label-GaugeName {
+ font-size: 2em;
+	text-align: center;
+	/*font-weight: bold; */
+	color: #333333;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+}
+
+.panel-GaugeVP {
+	/*border:5px ridge #bbb;
+	-webkit-border-radius:10px;
+    -moz-border-radius:15px; */
+    width: 200px; 
+    height: 386px; 
+    text-align: center;
+}
+.alarm-button {
+    width:   35px;
+    height:   37px;
+    outline: none;
+     border: none; 
+    /* border:2px ridge #bbb; */ 
+    margin: 3px; /* border size */
+    background: transparent url(bell3.png);
+    background-repeat:no-repeat;    
+  /*  -webkit-border-radius:10px;
+    -moz-border-radius:15px; */
+   
+}
+
+.panel-CookerType {
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+   font-size: 2em;
+}
+
+.panel-CookerType .label-Cooker {
+	font-size: 2em;
+	color: #333333;
+}
+
+.panel-CookerType .label-Status {
+	font-size: 2em;
+	color: #333333;
+}
+
+.NotConnectedText {
+	font-size: 2em;
+	color: red;
+	font-weight: normal;
+}
+
+.ConnectedText {
+	font-size: 2em;
+   color: green;	
+   font-weight: normal;
+}
+.weatherPanel {
+	border-left: #000000;
+	border-left-style:solid;
+}
+.weatherLabel {
+	font-size: 13px;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  
+}
+
+.weatherValue {
+	font-size: 13px;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	font-weight: bold;
+	padding-left:5px;
+}
+
+.html-SettingsText {
+    font-size: 11px;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	font-style: italic;
+	padding: 0px 0px 0px 0px;
+}
+
+.temp-TextBox {
+	width:  25px;
+	border: 0px;
+	font-size: 11px;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	font-style: italic;
+	background-color: white;
+}
+
+.temp-TextBox .temp-TextBox-hover {
+	border: 1px;
+	border-color: yellow;
+}
+
+.alarmType-TextBox {
+	width:  55px;
+	border: 0px;
+	font-size: 11px;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	font-style: italic;
+}
+
+.label-Logs {
+	font-size: 2em;
+	color: #333333;
+}
+
+.label-CookerName {
+	font-size: 2em;
+	font-weight: bold; 
+	border: 0px;
+	color: #FF9900;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	padding: 0px 0px 0px 8px;
+}
+.gwt-MenuBar-horizontal {
+  padding: 5px 10px;
+  vertical-align: bottom;
+  color: #000;
+  font-weight: bold;
+  background: white;
+  background-color: white;
+}
+
+
+
+.gwt-DisclosurePanel {
+}
+
+.gwt-DisclosurePanel-open {
+}
+
+.gwt-DisclosurePanel-closed {
+}
+
+.gwt-DisclosurePanel .header,
+.gwt-DisclosurePanel .header a,
+.gwt-DisclosurePanel .header td {
+  text-decoration: none;  /* Remove underline from header */
+  color: black; 
+  cursor: pointer;
+  cursor: hand;
+}
+
+.gwt-DisclosurePanel .content {
+  border-left: 3px solid #e7e7e7;
+  padding: 4px 0px 4px 8px;
+  margin-left: 6px;
+}
+
+.alarmSettings-flex td {
+ /* border: 1px solid #BBBBBB; */
+  padding: 0px;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}
+.dialog-buttons {
+}
+

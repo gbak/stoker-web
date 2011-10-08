@@ -1,0 +1,12 @@
+.git
+.gwt
+.settings
+*.class
+war/stokerweb
+war/WEB-INF/classes
+war/WEB-INF/deploy
+war/stokerweblogs/
+appengine-web.xml
+*.log
+gwt-unitCache/
+stokerweb.war

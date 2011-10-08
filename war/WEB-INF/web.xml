@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Listener for shutting down the comet processor when the ServletContext is destroyed -->
+  <listener>
+     <listener-class>net.zschech.gwt.comet.server.CometServletContextListener</listener-class>
+  </listener>
+  
+  <!-- Listener for invalidating CometSessions when HTTPSessions are invalidated -->
+  <listener>
+     <listener-class>net.zschech.gwt.comet.server.CometHttpSessionListener</listener-class>
+  </listener>
+  
+   <listener>
+     <listener-class>sweb.server.StokerCoreServiceImpl</listener-class>
+  </listener>
+  
+    <!-- Servlets -->
+    <servlet>
+       <servlet-name>stokeServlet</servlet-name>
+       <servlet-class>sweb.server.StokerCoreServiceImpl</servlet-class>
+    </servlet>
+   	<servlet>
+		<servlet-name>stokerComet</servlet-name>
+		<servlet-class>net.zschech.gwt.comet.server.CometServlet</servlet-class>
+	</servlet>
+  
+  
+  <servlet-mapping>
+    <servlet-name>stokeServlet</servlet-name>
+    <url-pattern>/stokerweb/stoke</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>stokerComet</servlet-name>
+    <url-pattern>/stokerweb/comet</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+     <servlet-name>stokeInitServlet</servlet-name>
+     <servlet-class>sweb.server.StokerInit</servlet-class>
+     <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>StokerWeb.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
