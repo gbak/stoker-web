@@ -54,8 +54,6 @@ import sweb.server.controller.weather.WeatherController;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
-import sweb.shared.model.ControllerEventLight;
-import sweb.shared.model.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
 import sweb.shared.model.LogItem;
@@ -64,6 +62,10 @@ import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerDeviceTypes;
+import sweb.shared.model.events.ControllerEventLight;
+import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
+import sweb.shared.model.events.LogEvent;
+import sweb.shared.model.events.LogEvent.LogEventType;
 import sweb.shared.model.logfile.LogDir;
 import sweb.shared.model.weather.WeatherData;
 
@@ -398,6 +400,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 LogItem li = new LogItem(strCookerName, strLogName, arSD);
                 DataOrchestrator.getInstance().startLog( li );
                 ret = 1;
+                LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
+                enqueueCometMessage( le );
 
             }
             catch (LogExistsException e)
@@ -417,6 +421,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         {
             DataOrchestrator.getInstance().stopLog(strLogName);
             ret = new Integer(1);
+            // Create LogEvent and pass it back via comet stream
+            LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
+            enqueueCometMessage( le );
         }
         catch (LogNotFoundException e)
         {

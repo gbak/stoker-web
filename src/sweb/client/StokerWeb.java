@@ -38,7 +38,6 @@ import sweb.client.dialog.StokerMenu;
 import sweb.server.controller.StokerConfiguration;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.CallBackRequestType.RequestType;
-import sweb.shared.model.ControllerEventLight;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
 import sweb.shared.model.LogItem;
@@ -47,7 +46,9 @@ import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.ControllerEventLight.EventTypeLight;
+import sweb.shared.model.events.ControllerEventLight;
+import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
+import sweb.shared.model.events.LogEvent;
 import sweb.shared.model.weather.WeatherData;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -111,7 +112,7 @@ public class StokerWeb implements EntryPoint
 
     @SerialTypes(
     { SDataPoint.class, SProbeDataPoint.class, SBlowerDataPoint.class, ControllerEventLight.class, WeatherData.class, CallBackRequestType.class,
-        HardwareDeviceStatus.class })
+        HardwareDeviceStatus.class, LogEvent.class })
 
     public static abstract class StokerCometSerializer extends CometSerializer {
     }
@@ -125,6 +126,7 @@ public class StokerWeb implements EntryPoint
      */
     void makeCallBackRequest( CallBackRequestType crt )
     {
+
         stokerService.cometRequest( crt, new AsyncCallback<Void>() {
 
             public void onFailure(Throwable caught)
@@ -436,8 +438,6 @@ public class StokerWeb implements EntryPoint
                                     {
                                         if ( wc != null)
                                            wc.update((WeatherData) message);
-
-                                        // TODO:  update Weather info
                                     }
                                     else if ( message instanceof HardwareDeviceStatus )  // GET_STATUS
                                     {
@@ -453,6 +453,32 @@ public class StokerWeb implements EntryPoint
                                             initNotConnectedPage( hds.getDate() );
                                         }
 
+                                    }
+                                    else if ( message instanceof LogEvent )
+                                    {
+                                       LogEvent le = (LogEvent) message;
+                                       
+                                       
+                                       for ( CookerComponent cc : alCookers )
+                                       {
+                                           if ( cc.getName().compareTo(le.getCookerName()) == 0)
+                                           {
+                                              switch ( le.getEventType() )
+                                              {
+                                                 case NONE:
+                                                    break;
+                                                 case NEW:
+                                                    cc.logAdded();
+                                                    break;
+                                                 case UPDATED:
+                                                    break;
+                                                 case DELETED:
+                                                    cc.removeLog(((LogEvent) message).getLogName());
+                                                    break;
+                                                 default:       
+                                              }
+                                          }
+                                       }
                                     }
 
                                     /*

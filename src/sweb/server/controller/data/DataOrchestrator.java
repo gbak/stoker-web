@@ -285,29 +285,38 @@ public class DataOrchestrator
 
     protected void fireStateChange( DataPointEvent dpe )
     {
-        for ( DataPointEventListener listener : m_dpListener )
-        {
-            // Store the desired listener type ALL, UPDATED, TIMED
-            // in the listener object,
-
-            listener.stateChange(dpe);
-        }
+       synchronized ( this )
+       {
+           for ( DataPointEventListener listener : m_dpListener )
+           {
+               // Store the desired listener type ALL, UPDATED, TIMED
+               // in the listener object,
+   
+               listener.stateChange(dpe);
+           }
+       }
     }
 
 
     public void addListener( DataPointEventListener dpe )
     {
-        m_dpListener.add( dpe );
+       synchronized ( this )
+       {
+           m_dpListener.add( dpe );
+       }
     }
 
     public void removeListener(DataPointEventListener dpe)
     {
-       for ( DataPointEventListener d : m_dpListener )
+       synchronized ( this )
        {
-           if ( d == dpe )
-           {
-               m_dpListener.remove(d);
-           }
+          for ( DataPointEventListener d : m_dpListener )
+          {
+              if ( d == dpe )
+              {
+                  m_dpListener.remove(d);
+              }
+          }
        }
     }
 

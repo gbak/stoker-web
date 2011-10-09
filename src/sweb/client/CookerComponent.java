@@ -23,6 +23,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import sweb.client.LoginStatus;
+import sweb.client.StokerCoreServiceAsync;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.client.dialog.LogFileChooser;
 import sweb.client.dialog.NewLogDialog;
@@ -356,10 +358,25 @@ public class CookerComponent extends Composite
                         createNewLog( sLogName, arSD );
                     }
                 }).show();
+                
             }
         };
     }
 
+    public void removeLog(String logName)
+    {
+       int size = logListBox.getItemCount();
+       for ( int i = 0; i < size; i++ )
+       {
+          if ( logListBox.getItemText(i).compareTo(logName) == 0)
+          {
+             logListBox.removeItem(i);
+             break;
+          }
+       }
+       addGraph();
+    }
+    
     private ClickHandler stopLogsButtonClickHandler()
     {
        ClickHandler cl = new ClickHandler() {
@@ -382,12 +399,13 @@ public class CookerComponent extends Composite
 
                 public void onSuccess(Integer result)
                 {
-                    String strLogName = logListBox.getItemText(iSelectedIndex);
-                    logListBox.removeItem(iSelectedIndex);
+                   
+                   // TODO: This is not correct.
+                  //  String strLogName = logListBox.getItemText(iSelectedIndex);
+                  //  logListBox.removeItem(iSelectedIndex);
 
-                    addGraph();
-                    //sGraphPanel.remove(sGraphPanel.getWidget());
-                    //sGraphPanel.add(graphStoker);
+                  //  addGraph();
+                   
                 }
             });
         }
@@ -420,6 +438,11 @@ public class CookerComponent extends Composite
         }
     }
 
+    public String getName()
+    {
+       return strCookerName;
+    }
+    
     public void init()
     {
         System.out.println("Height is: " + hpStokerElements.getOffsetHeight());
@@ -428,7 +451,7 @@ public class CookerComponent extends Composite
         m_Width = hpStokerElements.getOffsetWidth() - gaugePanelWidth - 5;
         m_Height = hpStokerElements.getOffsetHeight();
 
-        cookerNameLabel.setText("Large Egg");
+        //cookerNameLabel.setText("Large Egg");
 
         sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
         sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
@@ -474,24 +497,17 @@ public class CookerComponent extends Composite
             {
                 if ( result.intValue() == 1)
                 {
-                    // TODO: this is inefficient, we are fetching data we may already have
-
-                    //logListBox.addItem( strFinalLogName );
-                    getActiveLogListFromServer();
-                   /* int Width = hpStokerElements.getOffsetWidth() - gaugePanelWidth - 5;
-                    int Height = hpStokerElements.getOffsetHeight();
-                    StokerLineGraph graphStoker = new HighChartLineGraph(Width, Height, mapDeviceList);
-                    listGraphStoker.put( "Default", graphStoker );
-
-                    sGraphPanel.remove(sGraphPanel.getWidget());
-                    sGraphPanel.add(graphStoker);
-                    */
-
+                  //  getActiveLogListFromServer();
                 }
             }
         });
     }
 
+    public void logAdded()
+    {
+       getActiveLogListFromServer();
+    }
+    
     private void setConnectedImage()
     {
         if ( bConnected == true) {
