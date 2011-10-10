@@ -399,6 +399,8 @@ public class StokerFile
     public static ArrayList<SDevice> getConfigFromExistingFile( String s )
     {
         ArrayList<SDevice> arSD = new ArrayList<SDevice>();
+        HashMap<String,SDevice> hmSD = new HashMap<String,SDevice>();
+        
         try
         {
             BufferedReader in = new BufferedReader(new FileReader(s));
@@ -407,9 +409,17 @@ public class StokerFile
             {
                // LogFileFormatter.parseLogDataLine( str, hm, arDP );
                 SDevice sd = LogFileFormatter.parseLogConfigLine( str );
-                arSD.add( sd );
+                
+                // Log lines that are not config devices will return null
+                // the ID of 0 is the cooker Name line.
+                if ( sd != null && sd.getID().compareTo("0") != 0)
+                {
+                   hmSD.put( sd.getID(), sd);
+                }
+                
             }
             in.close();
+            arSD = new ArrayList<SDevice>( hmSD.values());
 
         }
         catch (FileNotFoundException e)

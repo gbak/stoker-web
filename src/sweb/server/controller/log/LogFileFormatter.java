@@ -315,7 +315,7 @@ public class LogFileFormatter
                 break;
 
             case BLOWER:
-                StokerFan sfBlower = new StokerFan( strBlowerID, strName );
+                StokerFan sfBlower = new StokerFan( strDeviceID, strName );
                 sd = sfBlower;
                 break;
 
