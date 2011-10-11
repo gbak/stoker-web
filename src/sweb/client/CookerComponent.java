@@ -145,8 +145,6 @@ public class CookerComponent extends Composite
         listBoxProfiles.setTitle("Profiles");
 
         hpStokerHeader.setWidth("100%");
-      //  hpStokerHeader.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
-      //  hpStokerHeader.setBorderWidth(1);
 
         cookerLabel.setStyleName("label-Cooker");
         cookerNameLabel.setStyleName("label-CookerName");
@@ -158,7 +156,6 @@ public class CookerComponent extends Composite
         ftCookerType.setWidget( 1,0, statusLabel );
        // ftCookerType.setWidget( 1,1, StatusImage );
         ftCookerType.setWidget( 1,1, StatusText );
-
 
         statusLabel.setStyleName("label-Status");
 
@@ -262,18 +259,10 @@ public class CookerComponent extends Composite
             {
                 final int iSelectedIndex = logListBox.getSelectedIndex();
                 String strLogName = logListBox.getItemText(iSelectedIndex);
-
                 addGraph();
-             //   sGraphPanel.remove(sGraphPanel.getWidget());
-              //  sGraphPanel.add(graphStoker);
-
-                // problem here.  Adding graphStoker back
-            }
-
+             }
         };
-
         return ch;
-
     }
 
     private ClickHandler manageLogsClickHandler()
@@ -452,6 +441,7 @@ public class CookerComponent extends Composite
         m_Height = hpStokerElements.getOffsetHeight();
 
         //cookerNameLabel.setText("Large Egg");
+        cookerNameLabel.setText(strCookerName);
 
         sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
         sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");

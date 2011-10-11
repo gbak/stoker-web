@@ -24,12 +24,10 @@ public class User
    String name;
    String password;
    boolean loggedin = false;
-   String email;
 
-   public void setNickname(String s) { name = s; }
+   public void setLoginID(String s) { name = s; }
    public boolean isLoggedIn() { return loggedin; }
    public void setLoggedIn( boolean b ) { loggedin = b; }
-   public void seteMail( String s )  { email = s; }
 
 
 }

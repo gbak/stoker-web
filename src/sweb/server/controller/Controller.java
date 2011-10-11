@@ -112,8 +112,8 @@ public class Controller
             if ( strCookerName == null )  strCookerName = "";
 
             boolean bTryAgain = true;
-            while ( bTryAgain )
-            {
+        //    while ( bTryAgain )
+        //    {
                 if ( ! DataOrchestrator.getInstance().isLogRunning("Default"))
                 {
                     try
@@ -127,7 +127,7 @@ public class Controller
                     }
                 }
 
-            }  // end while try again
+         //   }  // end while try again
 
         } // end for String
         if (StokerConfiguration.getInstance().getAllBlowerIDs().size() == 0 )

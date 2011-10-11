@@ -281,9 +281,11 @@ public class StokerFile
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(StokerWebProperties.getInstance().getProperty("stokerweb_settings_dir"));
+        sb.append(StokerWebProperties.getInstance().getProperty(StokerConstants.PATH_STOKERWEB_DIR));
         sb.append(File.separator);
-        sb.append(StokerConstants.COOK_LOG_PATH);
+        sb.append(StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_LOGS_DIR));  // Error here, null
+        sb.append(File.separator);
+        sb.append(StokerConstants.PATH_COOK_LOG);
         sb.append(File.separator);
         sb.append(strDirName);
         sb.append(File.separator);

@@ -18,8 +18,14 @@
 
 package sweb.server;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Map;
 import java.util.Properties;
 
 import sweb.server.controller.data.DataOrchestrator;
@@ -29,19 +35,46 @@ public class StokerWebProperties extends Properties
 
     private static final long serialVersionUID = 1402956556397035116L;
     private volatile static StokerWebProperties swp = null;
+    private static String stokerWebDir = null;
 
     private StokerWebProperties()
     {
         super();
+        
+        Map<String,String> mapEnv = System.getenv();
+        stokerWebDir = mapEnv.get(StokerConstants.ENV_STOKERWEB_DIR);
+        if ( stokerWebDir == null )
+        {
+           System.err.println("Unable to find STOKERWEB_DIR environment variable, using '.'");
+           // TODO: error condition
+           stokerWebDir = ".";
+        }
+        System.out.println("Using StokerWebDir = ["+ stokerWebDir + "]");
         try
         {
-            load( new FileInputStream("stokerWeb.properties"));
-            //System.out.println("Stoker IP Address: " + stokerWebProps.getProperty("stoker_ip"));
+            // add path to classpath for the properties load
+            addPath( stokerWebDir );
+            
+            //load( new FileInputStream(StokerConstants.FILE_STOKERWEB_PROPERTIES));
+            InputStream inputStream = this.getClass().getClassLoader()
+                  .getResourceAsStream(StokerConstants.FILE_STOKERWEB_PROPERTIES);
+            load( inputStream );
+            
         }
         catch (IOException ioe)
         {
             System.out.println("Error loading stokerWeb.properties");
+            ioe.printStackTrace();
+            System.exit(1);
         }
+      catch (Exception e)
+      {
+         // TODO Auto-generated catch block
+         System.out.println("Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath");
+         e.printStackTrace();
+         System.exit(1);
+      }
+        
     }
 
     private StokerWebProperties( Properties p)
@@ -53,11 +86,12 @@ public class StokerWebProperties extends Properties
     {
         if ( swp == null)
         {
-            synchronized ( DataOrchestrator.class)
+            synchronized ( StokerWebProperties.class )
             {
                 if ( swp == null )
                 {
                     swp = new StokerWebProperties();
+                    swp.setProperty(StokerConstants.PATH_STOKERWEB_DIR, stokerWebDir );
                 }
             }
         }
@@ -86,4 +120,14 @@ public class StokerWebProperties extends Properties
         }
         return retval;
     }
+    
+    public static void addPath(String s) throws Exception {
+       File f = new File(s);
+       URL u = f.toURI().toURL();
+       URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+       Class<URLClassLoader> urlClass = URLClassLoader.class;
+       Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+       method.setAccessible(true);
+       method.invoke(urlClassLoader, new Object[]{u});
+     }
 }

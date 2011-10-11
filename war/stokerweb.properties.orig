@@ -1,0 +1,20 @@
+# Stoker settings, you should only have to set the IP address
+stoker_ip=192.168.15.220
+stoker_port=23
+stoker_login=root
+stoker_pass=tini
+
+stokerweb_logs_dir=stokerweblogs
+
+# Temps are written to the log file every x milliseconds (60,000) = 60 seconds.
+stokerweb_log_file_period=60000
+
+# Associate the Serial ID of each pit probe to a Cooker Name
+230000002a55c305=Large Egg
+
+# Your local zip code to pull weather information.
+weather_zipcode=30024
+
+# These should not change, it is important that there are no spaces after the trailing '='
+weather_woeid_url=http://where.yahooapis.com/geocode?country=USA&flags=J&postal=
+weather_get_by_woeid_url=http://weather.yahooapis.com/forecastjson?w=

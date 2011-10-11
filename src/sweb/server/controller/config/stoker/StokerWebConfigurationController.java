@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.config.ConfigurationController;
@@ -193,9 +194,8 @@ public class StokerWebConfigurationController extends ConfigurationController
        {
           try
           {
-
-             //Source s = new Source( new URL("http://192.168.5.5/stok.html"));
-              Source s = new Source( new URL("http://192.168.15.220/index.html"));
+             String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+             Source s = new Source( new URL("http://" + strStokerIP + "/index.html"));
              Queue<String> qDefaults = new LinkedList<String>();
 
              // Find all the javascript and look for the 'sel' variable.
@@ -209,7 +209,6 @@ public class StokerWebConfigurationController extends ConfigurationController
                 Attributes at = el.getAttributes();
                 if ( at != null)
                 {
-                    //System.out.println("Attribute: " + at.toString());
                     String strScriptContent = el.getContent().toString();
                     int selIndex = strScriptContent.indexOf("var sel = ");
                     if ( selIndex >= 0)
@@ -223,11 +222,9 @@ public class StokerWebConfigurationController extends ConfigurationController
                         {
                             qDefaults.add(st.nextToken().replace("\"","").toLowerCase());
                         }
-
                     }
                 }
              }
-
 
              FormFields ff = s.getFormFields();
 
@@ -260,9 +257,7 @@ public class StokerWebConfigurationController extends ConfigurationController
           }
           catch( Exception e)
           {
-
              e.printStackTrace();
-
           }
 
           if ( bSuccess == false )
@@ -464,15 +459,19 @@ public class StokerWebConfigurationController extends ConfigurationController
       return sb.toString();
    }
 
-   public static void postUpdate( ArrayList<SDevice> arsd)
+   
+   /** Update Stoker with updated configuration settings
+    * @param stokerDeviceList List of SDevice's that are to be updated
+    */
+   public static void postUpdate( ArrayList<SDevice> stokerDeviceList)
    {
        try
        {
            StringBuilder postData = new StringBuilder();
-           int size = arsd.size();
-           for ( int i = 0; i < arsd.size(); i++ )
+           int size = stokerDeviceList.size();
+           for ( int i = 0; i < stokerDeviceList.size(); i++ )
            {
-               SDevice sd = arsd.get( i );
+               SDevice sd = stokerDeviceList.get( i );
                postData.append( getPostData( sd ));
                if ( i < size - 1)
                    postData.append("&");
@@ -481,7 +480,8 @@ public class StokerWebConfigurationController extends ConfigurationController
            System.out.println("Posting: " + postData.toString());
 
            // Send data
-           URL url = new URL("http://192.168.15.220/stoker.Post_Handler");
+           String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+           URL url = new URL("http://" + strStokerIP + "/stoker.Post_Handler");
            URLConnection conn = url.openConnection();
            conn.setDoOutput(true);
            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());

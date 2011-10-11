@@ -21,14 +21,19 @@ package sweb.server.security;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Properties;
 
+import sweb.server.StokerConstants;
+import sweb.server.StokerWebProperties;
 import sweb.server.controller.data.DataOrchestrator;
 
 public class LoginProperties extends Properties
 {
 
-    private static final String LOGIN_PROPERTIES = "login.properties";
+    
     private static final long serialVersionUID = -6912224771507005561L;
     private volatile static LoginProperties lp = null;
 
@@ -37,7 +42,13 @@ public class LoginProperties extends Properties
         super();
         try
         {
-            load( new FileInputStream(LOGIN_PROPERTIES));
+           // Loading the StokerWebProperties is required since it will add the
+           // stokerweb_dir to the classpath.
+           StokerWebProperties.getInstance();
+            
+           InputStream inputStream = this.getClass().getClassLoader()
+                 .getResourceAsStream(StokerConstants.FILE_LOGIN_PROPERTIES);
+           load( inputStream );
 
         }
         catch (IOException ioe)
@@ -71,12 +82,18 @@ public class LoginProperties extends Properties
         return BCrypt.hashpw( strPass, BCrypt.gensalt());
     }
 
-    public void setLoginIDAndPass(String strLoginID, String strPass)
+    public void addLoginIDAndPass(String strLoginID, String strPass)
     {
         setProperty(strLoginID, createHashPass(strPass));
 
         try {
-            store(new FileOutputStream(LOGIN_PROPERTIES), null);
+           URL url = this.getClass().getClassLoader().getResource(StokerConstants.FILE_LOGIN_PROPERTIES);
+           String strFile = url.getFile();
+           
+           OutputStream output = new FileOutputStream( strFile );
+            //store(new FileOutputStream(StokerConstants.FILE_LOGIN_PROPERTIES), null);
+           store( output, null );
+            
         }
         catch (IOException e) {
 
@@ -95,6 +112,6 @@ public class LoginProperties extends Properties
 
     public static void main( String[] args)
     {
-        LoginProperties.getInstance().setLoginIDAndPass("garybak@gmail.com", "stokerweb");
+        LoginProperties.getInstance().addLoginIDAndPass("user", "pass");
     }
 }

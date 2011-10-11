@@ -21,14 +21,27 @@ package sweb.server;
 public class StokerConstants
 {
 
-    public static final String COOK_LOG_PATH = "cookLogs";
-
+    // Environment Variables
+    public static final String ENV_STOKERWEB_DIR = "STOKERWEB_DIR";
+    
     // Properties
-    public static final String PROPS_IP_ADDRESS = "stoker_ip";
-    public static final String PROPS_LOGIN = "stoker_login";
-    public static final String PROPS_PASSWORD = "stoker_pass";
-    public static final String PROPS_SETTINGS_DIR = "stokerweb_settings_dir";
-
+    public static final String PROPS_STOKER_IP_ADDRESS = "stoker_ip";
+    public static final String PROPS_STOKER_PORT       = "stoker_port";
+    public static final String PROPS_STOKER_LOGIN =      "stoker_login";
+    public static final String PROPS_STOKER_PASSWORD =   "stoker_pass";
+    
+    public static final String PROPS_LOGS_DIR =    "stokerweb_logs_dir";
     public static final String PROPS_LOG_FILE_PERIOD = "stokerweb_log_file_period";
+    
+    public static final String PROPS_WEATHER_ZIPCODE =          "weather_zipcode";
+    public static final String PROPS_WEATHER_WOEID_URL =        "weather_woeid_url";
+    public static final String PROPS_WEATHER_GET_BY_WOEID_URL = "weather_get_by_woeid_url";
 
+    // Files
+    public static final String FILE_STOKERWEB_PROPERTIES = "stokerWeb.properties";
+    public static final String FILE_LOGIN_PROPERTIES     = "login.properties";
+    
+    // Directories
+    public static final String PATH_COOK_LOG = "cookLogs";
+    public static final String PATH_STOKERWEB_DIR = "stokerweb_dir";
 }

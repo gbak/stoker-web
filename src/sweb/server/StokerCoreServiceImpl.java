@@ -80,11 +80,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 {
 
     private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
-   // private ConcurrentMap<String,Session>
+    //private ConcurrentMap<String,HttpSession> loginSessions = new ConcurrentHashMap<String,HttpSession>();
 
     private static int i =0;
-   // private static HashMap<String,SDevice> ht = new HashMap<String,SDevice>();
-
+   
     private boolean haveDataConnection = false;
 
     private Timer readTimeDataTimer = null;
@@ -105,10 +104,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        HttpSession httpSession = getThreadLocalRequest().getSession();
        CometSession cometSession = CometServlet.getCometSession( httpSession );
 
-
-       /* THis was from the chat example and may not apply to stoker web.
-        * users using browser refrest were not getting anymore data.
-       */
        if ( webSessions.putIfAbsent(httpSession.getId(), cometSession) != null )
        {
           //httpSession.invalidate();
@@ -154,54 +149,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
            };
            DataOrchestrator.getInstance().addListener( m_DPEL );
        }
-
-       /*
-      // webSessions.put(httpSession.getId(), cometSession );
-       if ( readTimeDataTimer != null )
-           readTimeDataTimer.cancel();
-
-       readTimeDataTimer = new Timer();
-       TimerTask readTimerDataTT = new TimerTask()
-       {
-
-           ClientDataTracker sud = new ClientDataTracker();
-
-          @Override
-          public void run()
-          {
-                 ArrayList<SDataPoint> aSData = sud.getUpdatedDPs();
-               //  System.out.println("Checking for new data");
-                 for ( SDataPoint dp : aSData )
-                 {
-                     enqueueCometMessage(dp);
-                 }
-
-                try
-                {
-                   Thread.sleep(1000);
-                }
-                catch (InterruptedException e)
-                {
-                   // TODO Auto-generated catch block
-                   e.printStackTrace();
-                }
-          }
-       };
-       readTimeDataTimer.scheduleAtFixedRate(readTimerDataTT, 0, 1);
-
-
-       DataOrchestrator.getInstance().addListener(new BlowerEventListener() {
-
-        public void stateChange(BlowerEvent be)
-        {
-            enqueueCometMessage(be.getBlowerDataPoint());
-        }
-
-       });
-       */
     }
-
-
 
     public ArrayList<SDataPoint> getNewGraphDataPoints(String input) throws IllegalArgumentException
     {
@@ -254,18 +202,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                         break;
                     default:
 
-
                 }
                if ( ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
                {
 
                }
-
-
             }
 
-           };
-
+        };
 
         Controller.getInstance().addDataEventListener(m_dcel);
 
@@ -317,6 +261,15 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 .replaceAll(">", "&gt;");
     }
 
+    private boolean loginGuard()
+    {  
+       User u = getUserAlreadyFromSession();
+       if ( u == null )
+          return false;
+       
+       return u.isLoggedIn();   
+    }
+    
     public String login(String name, String password) throws IllegalArgumentException
     {
        User user = new User();
@@ -331,6 +284,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        return null;
    }
 
+    
     private String storeUserInSession(User user)
     {
        HttpServletRequest httpServletRequest = this.getThreadLocalRequest();
@@ -352,7 +306,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     }
 
-    public User loginFromSessionServer()
+    private User loginFromSessionServer()
     {
        User user = getUserAlreadyFromSession();
        return user;
@@ -392,6 +346,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     public Integer startLog(String strCookerName, String strLogName, ArrayList<SDevice> arSD ) throws IllegalArgumentException
     {
+       if ( ! loginGuard() )
+          return -1;
+       
         Integer ret = new Integer(0);
         if ( ! DataOrchestrator.getInstance().isLogRunning(strLogName))
         {
@@ -416,6 +373,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public Integer stopLog(String strCookerName, String strLogName)
             throws IllegalArgumentException
     {
+       if ( ! loginGuard() )
+          return -1;
+       
         Integer ret = new Integer(0);
         try
         {
@@ -444,6 +404,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public Integer updateConfiguration(ArrayList<SDevice> asd)
             throws IllegalArgumentException
     {
+       if ( ! loginGuard() )
+          return -1;
+       
         StokerConfiguration.getInstance().update( asd );
         Controller.getInstance().loadConfiguration();
         return new Integer(1);
@@ -457,6 +420,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public Integer attachToExistingLog(String cookerName, String selectedLog, String fileName)
             throws IllegalArgumentException
     {
+       if ( ! loginGuard() )
+          return -1;
+       
         return DataOrchestrator.getInstance().attachToExistingLog(cookerName, selectedLog, fileName);
 
     }
@@ -503,7 +469,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             s = Status.DISCONNECTED;
 
         cometSession.enqueue( new HardwareDeviceStatus( s, null ) );
-
     }
 
     private void forceLatestDataPush()
@@ -518,12 +483,5 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
         WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
         cometSession.enqueue( wd );
-
-
-
     }
-
-
 }
-
-

@@ -40,6 +40,8 @@ import org.apache.commons.net.telnet.TelnetInputListener;
 import org.apache.commons.net.telnet.TelnetNotificationHandler;
 
 import sun.misc.Lock;
+import sweb.server.StokerConstants;
+import sweb.server.StokerWebProperties;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.DataControllerEvent;
@@ -119,7 +121,7 @@ public class StokerTelnetController extends DataController
 
     public boolean isReady()
     {
-        // Stoker need to be in the Started state (started by this controller ) in
+        // Stoker needs to be in the Started state (started by this controller ) in
         // order to get temps out.  So, now we just check to see if we are getting
         // temps back.
 
@@ -145,7 +147,12 @@ public class StokerTelnetController extends DataController
         System.out.println("Creating Telnet connection.");
 
         m_Telnet = new TelnetClient();
-        m_Telnet.connect("192.168.15.220", 23);  // TODO:  use properties to get IP
+       // m_Telnet.connect("192.168.15.220", 23);  // TODO:  use properties to get IP
+        String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+        String strStokerPort = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_PORT);
+        int iStokerPort =  new Integer( strStokerPort ).intValue();
+        m_Telnet.connect( strStokerIP, iStokerPort ); 
+                          
 
         m_TelnetState = TelnetState.CONNECTED;
 
