@@ -31,7 +31,7 @@ public class NotificationController
       NotificationClassLoader cl = new NotificationClassLoader();
       try
       {
-         Class<NotificationBase> notifyClass = cl.loadClass("sweb.server.notify.NotifyByEmail");
+         Class<NotificationBase> notifyClass = cl.loadClass("sweb.server.notify.delivery.NotifyByEmail");
          NotificationBase notify = notifyClass.newInstance();
 
          notify.sendNotification();

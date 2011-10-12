@@ -18,36 +18,74 @@
 
 package sweb.client.dialog;
 
+import java.util.ArrayList;
+
+import sweb.client.dialog.handlers.AlertsDialogHandler;
+import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.ConnectionChangeAlert;
+import sweb.shared.model.alerts.StokerAlarmAlert;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class AlertsSettingsDialog extends DialogBox
 {
 
-    public AlertsSettingsDialog()
+    FlexTable flexTable = null;
+    AlertsDialogHandler alertsDialogHandler = null;
+    ArrayList<AlertBase> alertBaseList = new ArrayList<AlertBase>();
+   
+    public AlertsSettingsDialog(AlertsDialogHandler alertsDialogHandler )
     {
         super();
 
+        this.alertsDialogHandler = alertsDialogHandler;
+        
+        //this.setWidth("100%");
         setText("Alert Settings");
-
+        
+        setGlassEnabled(true);
         setAnimationEnabled(true);
         final Button closeButton = new Button("Close");
-        // We can set the id of a widget by accessing its Element
+        final Button addTempButton = new Button("Add Temp Alert");
+        final Button addTimeButton = new Button("Add Time Alert");
+        
+        
         closeButton.getElement().setId("closeButton");
-        final Label textToServerLabel = new Label();
-        final HTML serverResponseLabel = new HTML();
-        VerticalPanel dialogVPanel = new VerticalPanel();
-        dialogVPanel.addStyleName("alerts-dialog-panel");
-        dialogVPanel.add(new HTML("<b>Alarm settings will go here</b>"));
-        dialogVPanel.add(textToServerLabel);
 
-        dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
+        
+        VerticalPanel dialogVPanel = new VerticalPanel();
+        //dialogVPanel.addStyleName("alerts-dialog-panel");
+       
+        flexTable = new FlexTable();
+        FlexCellFormatter cellFormatter = flexTable.getFlexCellFormatter();
+       // fT.addStyleName("cw-FlexTable");
+       // flexTable.setWidth("32em");
+        flexTable.setCellSpacing(5);
+        flexTable.setCellPadding(3);
+       
+        addTempButton.addClickHandler(addTempButtonClickHandler());
+        addTimeButton.addClickHandler( addTimeButtonClickHandler());
+        
+        AlertBase stokerAlarm = new StokerAlarmAlert();
+        addButtons(addTempButton, addTimeButton );
+        addRow( stokerAlarm );
+        
+        AlertBase connectionAlert = new ConnectionChangeAlert();
+        addRow( connectionAlert );
+        
+        
+        dialogVPanel.add(flexTable);
+        
+        dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_LEFT);
         dialogVPanel.add(closeButton);
        // dialogVPanel.add(verticalPanel);
         setWidget(dialogVPanel);
@@ -64,6 +102,65 @@ public class AlertsSettingsDialog extends DialogBox
 
     }
 
+
+   private ClickHandler addTempButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+               // addRow( new HTML("Temp Alert"), null);
+               // TODO: implement this
+            }
+        };
+    } 
+
+    private ClickHandler addTimeButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+               // addRow( new HTML("Time Alert"), null);
+               // TODO: create class and implement
+            }
+        };
+    }
+    
+    private void addButtons(Widget label1, Widget label2)
+    {
+       int numRows = flexTable.getRowCount();
+       
+       flexTable.setWidget( numRows, 0, label1 );
+       flexTable.setWidget( numRows, 1, label2 );
+    }
+    private void addRow( AlertBase alertBase )
+    {
+       int numRows = flexTable.getRowCount();
+       alertBaseList.add( alertBase );
+       CheckBox cb = new CheckBox();
+
+       if ( numRows > 0 )
+       {
+          int prev = numRows -1;
+          Widget wl = flexTable.getWidget(prev, 0);
+          Widget wr = flexTable.getWidget(prev, 1);
+          
+          flexTable.setWidget( prev, 0, cb );
+          flexTable.setWidget( prev, 1, new HTML(alertBase.getName()) );
+          
+          flexTable.setWidget( numRows, 0, wl );
+          flexTable.setWidget( numRows, 1, wr );
+          
+       }
+       else
+       {
+          flexTable.setWidget( numRows, 0, cb );
+          flexTable.setWidget( numRows, 1,  new HTML(alertBase.getName()) );
+       }
+       //flexTable.getFlexCellFormatter().setRowSpan(0, 1, numRows + 1);
+    }
+    
     public void show(Button b)
     {
         final Button b2 = b;

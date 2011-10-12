@@ -25,10 +25,12 @@ import java.util.HashMap;
 
 import sweb.client.LoginStatus;
 import sweb.client.StokerCoreServiceAsync;
+import sweb.client.dialog.AlertsSettingsDialog;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.client.dialog.LogFileChooser;
 import sweb.client.dialog.NewLogDialog;
 
+import sweb.client.dialog.handlers.AlertsDialogHandler;
 import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.gauge.GaugeComponent;
@@ -42,6 +44,7 @@ import sweb.shared.model.SDevice;
 import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
+import sweb.shared.model.alerts.AlertBase;
 import sweb.shared.model.logfile.LogDir;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -114,6 +117,7 @@ public class CookerComponent extends Composite
     private Button stopLogsButton = new Button("End");
     private Button noteLogsButton = new Button("Note");
     private Button applyProfileButton = new Button("Apply Profile");
+    private Button alertsButton = new Button("Alerts");
 
     private Image StatusImage = new Image(strConnectedImageURL);
     private HTML  StatusText = new HTML(strConnectedText);
@@ -216,6 +220,8 @@ public class CookerComponent extends Composite
         hpLogs.setCellHorizontalAlignment( dpLogs , HasHorizontalAlignment.ALIGN_RIGHT);
         hpLogs.setCellVerticalAlignment( dpLogs , HasVerticalAlignment.ALIGN_BOTTOM );
 
+        alertsButton.addClickHandler( alertsButtonClickHandler());
+        hpStokerHeader.add( alertsButton );
         hpStokerHeader.add( hpLogs );
         hpStokerHeader.setCellHorizontalAlignment( hpLogs , HasHorizontalAlignment.ALIGN_RIGHT);
         hpStokerHeader.setCellVerticalAlignment( hpLogs , HasVerticalAlignment.ALIGN_BOTTOM );
@@ -251,6 +257,27 @@ public class CookerComponent extends Composite
 
     }
 
+    private ClickHandler alertsButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+
+                new AlertsSettingsDialog(new AlertsDialogHandler() {
+
+                  public void onReturn(ArrayList<AlertBase> alertBaseList)
+                  {
+                     // TODO Auto-generated method stub
+                     
+                  }
+
+                }).center();
+                
+            }
+        };
+    }
+    
     private ChangeHandler listBoxChangeHandler()
     {
         ChangeHandler ch = new ChangeHandler()
