@@ -22,11 +22,13 @@ public class AddUser
       }
       catch (IOException e)
       {
-         // TODO Auto-generated catch block
          e.printStackTrace();
       }
-      String password = PasswordField.readPassword("Enter password: ");
-      String password2 = PasswordField.readPassword("Retype password: ");
+      
+      System.out.print("Enter password: ");
+      String password = new String(System.console().readPassword());
+      System.out.print("Retype password: ");
+      String password2 = new String(System.console().readPassword());
       if ( password.compareTo(password2) == 0)
          LoginProperties.getInstance().addLoginIDAndPass(username, password);
       else

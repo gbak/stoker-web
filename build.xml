@@ -60,23 +60,23 @@
     <zip destfile="stokerweb.war" basedir="war"/>
   </target>
 
-<!--
+
   <target name="addUser" depends="javac" description="Create addUser jar file">
     <jar destfile="addUser.jar">
                 <manifest>
                     <attribute name="Main-Class" value="sweb.server.security.admin.AddUser"/>
                 </manifest>
-                <fileset dir="." 
-		          includes="war/WEB-INF/classes/sweb/server/security/**/*.class"
+                <fileset dir="war/WEB-INF/classes/" 
+		          includes="sweb/server/security/**/*.class,
+		                    sweb/server/StokerWebProperties.class,
+		                    sweb/server/InvalidStokerWebPropertyException.class"
 		          excludes=""/>
-		<fileset dir="."
-		    includesfile="war/WEB-INF/classes/sweb/server/StokerWebProperties.class" />
+		<!--fileset dir="war/WEB-INF/classes/"
+		    includesfile="war/WEB-INF/classes/sweb/server/StokerWebProperties.class" /-->
 		    
 	       
         </jar>
   </target>
--->  
-
 
 
   <target name="clean" description="Cleans this project">

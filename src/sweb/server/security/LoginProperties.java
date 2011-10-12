@@ -66,7 +66,7 @@ public class LoginProperties extends Properties
     {
         if ( lp == null)
         {
-            synchronized ( DataOrchestrator.class)
+            synchronized ( LoginProperties.class)
             {
                 if ( lp == null )
                 {
