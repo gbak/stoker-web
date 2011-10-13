@@ -21,16 +21,19 @@ package sweb.server.controller.log;
 import java.io.File;
 
 
+import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
 import sweb.shared.model.logfile.LogDir;
 
 public class ListLogFiles
 {
-    private static final String baseDir = normalizePath(StokerWebProperties.getInstance().getProperty("stokerweb_cook_logs"));
+   
+    private static final String baseDir = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKERWEB_DIR) + 
+                                          File.separator + 
+                   normalizePath(StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_LOGS_DIR));
 
     public static LogDir getAllLogFiles()
     {
-
         return getFiles(baseDir);
     }
 

@@ -32,16 +32,17 @@ public class StokerConstants
     
     public static final String PROPS_LOGS_DIR =    "stokerweb_logs_dir";
     public static final String PROPS_LOG_FILE_PERIOD = "stokerweb_log_file_period";
+    public static final String PROPS_STOKERWEB_DIR   = "stokerweb_dir";
     
     public static final String PROPS_WEATHER_ZIPCODE =          "weather_zipcode";
     public static final String PROPS_WEATHER_WOEID_URL =        "weather_woeid_url";
     public static final String PROPS_WEATHER_GET_BY_WOEID_URL = "weather_get_by_woeid_url";
 
     // Files
-    public static final String FILE_STOKERWEB_PROPERTIES = "stokerWeb.properties";
+    public static final String FILE_STOKERWEB_PROPERTIES = "stokerweb.properties";
     public static final String FILE_LOGIN_PROPERTIES     = "login.properties";
     
     // Directories
     public static final String PATH_COOK_LOG = "cookLogs";
-    public static final String PATH_STOKERWEB_DIR = "stokerweb_dir";
+    
 }

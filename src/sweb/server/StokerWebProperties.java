@@ -54,7 +54,7 @@ public class StokerWebProperties extends Properties
         {
             // add path to classpath for the properties load
             addPath( stokerWebDir );
-            
+     
             //load( new FileInputStream(StokerConstants.FILE_STOKERWEB_PROPERTIES));
             InputStream inputStream = this.getClass().getClassLoader()
                   .getResourceAsStream(StokerConstants.FILE_STOKERWEB_PROPERTIES);
@@ -91,7 +91,7 @@ public class StokerWebProperties extends Properties
                 if ( swp == null )
                 {
                     swp = new StokerWebProperties();
-                    swp.setProperty(StokerConstants.PATH_STOKERWEB_DIR, stokerWebDir );
+                    swp.setProperty(StokerConstants.PROPS_STOKERWEB_DIR, stokerWebDir );
                 }
             }
         }
@@ -121,7 +121,8 @@ public class StokerWebProperties extends Properties
         return retval;
     }
     
-    public static void addPath(String s) throws Exception {
+    public static void addPath(String s) throws Exception 
+    {
        File f = new File(s);
        URL u = f.toURI().toURL();
        URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
@@ -130,4 +131,5 @@ public class StokerWebProperties extends Properties
        method.setAccessible(true);
        method.invoke(urlClassLoader, new Object[]{u});
      }
+
 }
