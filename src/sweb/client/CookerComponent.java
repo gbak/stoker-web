@@ -264,7 +264,7 @@ public class CookerComponent extends Composite
             public void onClick(ClickEvent event)
             {
 
-                new AlertsSettingsDialog(new AlertsDialogHandler() {
+                new AlertsSettingsDialog(stokerService, new AlertsDialogHandler() {
 
                   public void onReturn(ArrayList<AlertBase> alertBaseList)
                   {

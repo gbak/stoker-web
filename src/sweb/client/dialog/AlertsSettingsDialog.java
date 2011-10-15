@@ -20,10 +20,13 @@ package sweb.client.dialog;
 
 import java.util.ArrayList;
 
+import sweb.client.StokerCoreServiceAsync;
 import sweb.client.dialog.handlers.AlertsDialogHandler;
 import sweb.shared.model.alerts.AlertBase;
 import sweb.shared.model.alerts.ConnectionChangeAlert;
 import sweb.shared.model.alerts.StokerAlarmAlert;
+import sweb.shared.model.alerts.TempAlarmAlert;
+import sweb.shared.model.alerts.TimeAlert;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -40,13 +43,15 @@ public class AlertsSettingsDialog extends DialogBox
 {
 
     FlexTable flexTable = null;
+    StokerCoreServiceAsync gsa = null;
     AlertsDialogHandler alertsDialogHandler = null;
     ArrayList<AlertBase> alertBaseList = new ArrayList<AlertBase>();
    
-    public AlertsSettingsDialog(AlertsDialogHandler alertsDialogHandler )
+    public AlertsSettingsDialog(StokerCoreServiceAsync g, AlertsDialogHandler alertsDialogHandler )
     {
         super();
 
+        gsa = g;
         this.alertsDialogHandler = alertsDialogHandler;
         
         //this.setWidth("100%");
@@ -109,7 +114,8 @@ public class AlertsSettingsDialog extends DialogBox
 
             public void onClick(ClickEvent event)
             {
-               // addRow( new HTML("Temp Alert"), null);
+               AlertBase tempAlarmAlert = new TempAlarmAlert();
+               addRow(tempAlarmAlert);
                // TODO: implement this
             }
         };
@@ -121,8 +127,8 @@ public class AlertsSettingsDialog extends DialogBox
 
             public void onClick(ClickEvent event)
             {
-               // addRow( new HTML("Time Alert"), null);
-               // TODO: create class and implement
+               AlertBase timeAlert = new TimeAlert();
+               addRow( timeAlert );
             }
         };
     }
@@ -161,6 +167,7 @@ public class AlertsSettingsDialog extends DialogBox
        //flexTable.getFlexCellFormatter().setRowSpan(0, 1, numRows + 1);
     }
     
+    
     public void show(Button b)
     {
         final Button b2 = b;
@@ -181,4 +188,5 @@ public class AlertsSettingsDialog extends DialogBox
 
 
     }
+    
 }
