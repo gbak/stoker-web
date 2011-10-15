@@ -101,6 +101,7 @@ public class AlertsSettingsDialog extends DialogBox
         {
            public void onClick(ClickEvent event)
            {
+              //gsa.
               db.hide();
            }
         });
