@@ -16,21 +16,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.shared.model.alerts;
+package sweb.server.controller.alerts.delivery;
 
-import java.io.Serializable;
+import sweb.server.controller.alerts.AlertsBase;
 
-public class TempAlarmAlert extends AlertBase implements Serializable
+public class NotifyByEmail extends AlertsBase
 {
 
-   private static final long serialVersionUID = 934933626861181813L;
-   private static final String m_TempAlertName = "Temp Alarm"; 
-   
-   public TempAlarmAlert()  { super( m_TempAlertName );  }
-   
-   public TempAlarmAlert( boolean b )
+   public void init()
    {
-      super( m_TempAlertName, b );
+      // TODO Auto-generated method stub
+
+   }
+
+   public void sendNotification()
+   {
+      // TODO Auto-generated method stub
+      System.out.println("Sent Notification");
+   }
+
+   public void optionalNotification()
+   {
+      //super.optionalNotification();
+      System.out.println("override Optional");
    }
 
 }

@@ -19,6 +19,7 @@
 package sweb.server.controller;
 
 import sweb.server.StokerWebProperties;
+import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.config.stoker.StokerWebConfigurationController;
 import sweb.server.controller.data.DataController;
@@ -46,7 +47,7 @@ public class Controller
     private DataController m_DataController = null;
     private ConfigurationController m_ConfigurationController = null;
     private WeatherController m_WeatherController = null;
-   // private NotificationController m_NotificationController = null;
+    private AlertsController m_AlertsController = null;
 
  //   private ControllerEventListener m_ControllerListener = null;
 
