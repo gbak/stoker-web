@@ -19,5 +19,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/json-lib-2.4-jdk15.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.moxieapps.gwt.highcharts-1.1.0.jar"/>
+	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/mailapi.jar"/>
+	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/smtp.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

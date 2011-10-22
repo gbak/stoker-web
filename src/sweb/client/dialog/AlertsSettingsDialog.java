@@ -30,6 +30,7 @@ import sweb.shared.model.alerts.TimeAlert;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -101,7 +102,28 @@ public class AlertsSettingsDialog extends DialogBox
         {
            public void onClick(ClickEvent event)
            {
-              //gsa.
+              for ( int i = 0; i < flexTable.getRowCount() - 1; i++ )
+              {
+                 CheckBox cb = (CheckBox) flexTable.getWidget(i, 0);
+                 
+                 if ( cb.getValue() == true )
+                    alertBaseList.get(i).setEnabled(true);
+                 else
+                    alertBaseList.get(i).setEnabled(false);
+                 
+              }
+              
+              gsa.setAlertConfiguration(alertBaseList, new AsyncCallback<Void>() {
+                  public void onFailure(Throwable caught)
+                  {
+                      System.out.println("Failure saving Alert Configuration");  // TODO: log
+                  }
+                  public void onSuccess(Void result)
+                  {
+                     // TODO Auto-generated method stub
+                     
+                  }
+            });
               db.hide();
            }
         });
@@ -147,6 +169,15 @@ public class AlertsSettingsDialog extends DialogBox
        alertBaseList.add( alertBase );
        CheckBox cb = new CheckBox();
 
+       /*cb.addClickHandler( new ClickHandler()  {
+
+         public void onClick(ClickEvent event)
+         {
+            
+            
+         }
+          
+       });*/
        if ( numRows > 0 )
        {
           int prev = numRows -1;

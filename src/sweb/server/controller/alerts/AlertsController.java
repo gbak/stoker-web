@@ -24,6 +24,9 @@ import sweb.server.controller.alerts.conditions.ConnectionOrConfigChangeAlert;
 import sweb.server.controller.alerts.conditions.StokerAlarm;
 import sweb.server.controller.alerts.conditions.TempAlert;
 import sweb.server.controller.alerts.conditions.TimedAlert;
+import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.ConnectionChangeAlert;
+import sweb.shared.model.alerts.StokerAlarmAlert;
 
 public class AlertsController
 {
@@ -33,11 +36,38 @@ public class AlertsController
    ArrayList<TimedAlert> timedAlert = new ArrayList<TimedAlert>();
    
 
-   AlertsController()
+   public AlertsController()
    {
 
    }
 
+   public void setConfiguration(ArrayList<AlertBase> alertBaseList)
+   {
+      System.out.println("AlertsController::setConfiguration");
+      for ( AlertBase ab : alertBaseList )
+      {
+         if ( ab instanceof StokerAlarmAlert )
+         {
+            stokerAlarm.setAlertConfiguration(ab);
+         }
+         else if ( ab instanceof ConnectionChangeAlert )
+         {
+            
+         }
+      }
+   }
+   
+   public ArrayList<AlertBase> getConfiguration()
+   {
+      ArrayList<AlertBase> alertBaseList = new ArrayList<AlertBase>();
+      
+      alertBaseList.add(stokerAlarm.getAlertConfiguration());
+      alertBaseList.add(connConfigChangeAlarm.getAlertConfiguration());
+      
+      return alertBaseList;
+      
+   }
+   
    public void init()
    {
       AlertsClassLoader cl = new AlertsClassLoader();

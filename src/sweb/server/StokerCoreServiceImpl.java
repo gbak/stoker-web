@@ -62,6 +62,7 @@ import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerDeviceTypes;
+import sweb.shared.model.alerts.AlertBase;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
@@ -244,6 +245,19 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
         Controller.getInstance().addWeatherChangeEventListener(m_wcel);
     }
+    
+    public void setAlertConfiguration( ArrayList<AlertBase> alertBaseList )
+    {
+       Controller.getInstance().setAlertConfiguration(alertBaseList);
+       
+    }
+    
+    public ArrayList<AlertBase> getAlertConfiguration()
+    {
+       ArrayList<AlertBase> ab = Controller.getInstance().getAlertConfiguration();
+       return ab;
+    }
+    
     /**
      * Escape an html string. Escaping data received from the client helps to
      * prevent cross-site script vulnerabilities.

@@ -12,6 +12,17 @@ stokerweb_log_file_period=60000
 # Associate the Serial ID of each pit probe to a Cooker Name
 230000002a55c305=Large Egg
 
+# Mail settings
+mail.smtp.user=StokerWeb
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=465
+mail.smtp.starttls.enable=true
+mail.smtp.debug=true
+mail.smtp.auth=true
+mail.smtp.socketFactory.port=465
+mail.smtp.socketFactory.class=javax.net.ssl.SSLSocketFactory
+mail.smtp.socketFactory.fallback=false
+
 # Your local zip code to pull weather information.
 weather_zipcode=30024
 

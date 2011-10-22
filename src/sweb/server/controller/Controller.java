@@ -18,6 +18,8 @@
 
 package sweb.server.controller;
 
+import java.util.ArrayList;
+
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
@@ -36,6 +38,7 @@ import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 //import sweb.server.controller.notify.NotificationController;
 import sweb.server.controller.weather.WeatherController;
+import sweb.shared.model.alerts.AlertBase;
 
 /**
  * @author gary.bak
@@ -72,10 +75,13 @@ public class Controller
         m_DataController= new StokerTelnetController();
         m_ConfigurationController = new StokerWebConfigurationController();
         m_WeatherController = new WeatherController();
+        
     }
 
     public void init()
     {
+       m_AlertsController = new AlertsController();
+       
        m_DataController.setDataStore(DataOrchestrator.getInstance());
 
        // TODO: implement start() and call it instead of now()
@@ -194,5 +200,16 @@ public class Controller
    public DataController getDataController()
    {
        return m_DataController;
+   }
+   
+   public ArrayList<AlertBase> getAlertConfiguration()
+   {
+      return m_AlertsController.getConfiguration();
+      
+   }
+   
+   public void setAlertConfiguration( ArrayList<AlertBase> alertBaseList )
+   {
+      m_AlertsController.setConfiguration(alertBaseList);
    }
 }

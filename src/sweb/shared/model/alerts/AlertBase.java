@@ -39,7 +39,7 @@ public abstract class AlertBase implements Serializable
       return m_AlertName;
    }
    
-   public void setEnabled( String s)
+   public void setName( String s)
    {
       m_AlertName = s;
    }

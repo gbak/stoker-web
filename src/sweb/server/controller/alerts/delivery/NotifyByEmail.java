@@ -18,9 +18,14 @@
 
 package sweb.server.controller.alerts.delivery;
 
-import sweb.server.controller.alerts.AlertsBase;
+import java.util.ArrayList;
 
-public class NotifyByEmail extends AlertsBase
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
+import sweb.server.StokerWebProperties;
+
+public class NotifyByEmail implements AlertDelivery
 {
 
    public void init()
@@ -29,16 +34,50 @@ public class NotifyByEmail extends AlertsBase
 
    }
 
-   public void sendNotification()
+   public void sendAlert(ArrayList<String> message)
    {
       // TODO Auto-generated method stub
-      System.out.println("Sent Notification");
+      try
+      {
+         String[] sa = new String[] { };
+         String strSubject = "message from stoker";
+         String strMessage = "unknown message";
+         
+         if ( message.size() == 1 )
+         {
+            strSubject = message.get(0);
+            strMessage = message.get(0);
+         }
+         else if ( message.size() > 1 )
+         {
+            strSubject = message.get(0);
+            StringBuilder sb = new StringBuilder();
+            for ( int i = 0; i < message.size(); i++)
+            {
+               sb.append(message.get(i) + "\n");
+            }
+            strMessage = sb.toString();
+         }
+         
+         String strSendTo = StokerWebProperties.getInstance().getProperty("mail.sendTo");
+         new Email().send(strSendTo, strSubject, strMessage,  sa);
+      }
+      catch (AddressException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      catch (MessagingException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+      catch ( Exception e )
+      {
+         e.printStackTrace();
+      }
+      
    }
 
-   public void optionalNotification()
-   {
-      //super.optionalNotification();
-      System.out.println("override Optional");
-   }
 
 }

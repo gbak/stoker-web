@@ -25,6 +25,7 @@ import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
+import sweb.shared.model.alerts.AlertBase;
 import sweb.shared.model.logfile.LogDir;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -58,4 +59,6 @@ public interface StokerCoreService extends RemoteService
     Integer attachToExistingLog( String cookerName, String selectedLog, String fileName ) throws IllegalArgumentException;
 
     void cometRequest(CallBackRequestType cometRequestType) throws IllegalArgumentException;
+    
+    void setAlertConfiguration( ArrayList<AlertBase> alertBaseList ) throws IllegalArgumentException;
 }
