@@ -107,13 +107,13 @@ public class StokerAlarm extends Alert
             ArrayList<String> alertList = new ArrayList<String>();
             if ( t== TempAlertType.HIGH )
             {
-               alertList.add("High Temperature Alarm" );
+               alertList.add("High Temperature Alarm on " + sp.getName() );
                alertList.add("  Current Temperature: " + data );
                alertList.add("  High Alarm Setting:  " + sp.getUpperTempAlarm());
             }
             else if ( t == TempAlertType.LOW )
             {
-               alertList.add("Low Temperature Alarm" );
+               alertList.add("Low Temperature Alarm on " + sp.getName() );
                alertList.add("  Current Temperature: " + data );
                alertList.add("  Low Alarm Setting:  " + sp.getLowerTempAlarm());
             }

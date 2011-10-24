@@ -59,6 +59,7 @@ public class NotifyByEmail implements AlertDelivery
             strMessage = sb.toString();
          }
          
+         // TODO: add to constants
          String strSendTo = StokerWebProperties.getInstance().getProperty("mail.sendTo");
          new Email().send(strSendTo, strSubject, strMessage,  sa);
       }

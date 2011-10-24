@@ -26,12 +26,8 @@ public class Email {
             String messageText, 
             String []attachments) 
             throws MessagingException, AddressException {
-        /*
-           It is a good practice to put this in a java.util.Properties 
-           file and encrypt password. Scroll down 
-           to comments below to see 
-           how to use java.util.Properties in JSF context. 
-        */
+       
+       // TODO: add to constants
         String senderEmail = StokerWebProperties.getInstance().getProperty("mail.smtp.user");
         String senderMailPassword = StokerWebProperties.getInstance().getProperty("mail.password");
         String gmail = StokerWebProperties.getInstance().getProperty("mail.smtp.host");
