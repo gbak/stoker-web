@@ -435,8 +435,9 @@ public class StokerTelnetController extends DataController
                             try
                             {
                                 // Not sure if I want this here.
-                                addDataPoint( sb.toString() );
                                System.out.print("t");
+                                addDataPoint( sb.toString() );
+                               System.out.print("p");
 
                                m_StokerResponseState = StokerResponseState.TEMPS;
                                m_LastMessageTime = Calendar.getInstance().getTime();

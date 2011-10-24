@@ -13,7 +13,9 @@ stokerweb_log_file_period=60000
 230000002a55c305=Large Egg
 
 # Mail settings
-mail.smtp.user=StokerWeb
+mail.sendTo=xxx@gmail.com
+mail.password=
+mail.smtp.user=email.account
 mail.smtp.host=smtp.gmail.com
 mail.smtp.port=465
 mail.smtp.starttls.enable=true

@@ -75,6 +75,7 @@ public class WeatherController
           //resultString = httpRequest("http://where.yahooapis.com/geocode?country=USA&flags=J&postal=30024");
           resultString = httpRequest(strGetWoeidUrl + strGetZipCode);
 
+          System.out.println("Result String: [" + resultString +"]");
            JSONObject json = (JSONObject) JSONSerializer.toJSON( resultString );
            JSONObject resultSet = json.getJSONObject("ResultSet");
            JSONArray jsa =  (JSONArray)resultSet.getJSONArray( "Results" );
@@ -101,6 +102,11 @@ public class WeatherController
        catch (IllegalStateException ise )
        {
 
+       }
+       catch ( net.sf.json.JSONException jse )
+       {
+          System.out.println("Error getting weather.");
+          jse.printStackTrace();
        }
 
 

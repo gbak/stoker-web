@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
@@ -34,10 +36,13 @@ public class StokerAlarm extends Alert
    public StokerAlarm() { super(); init(); }
    public  StokerAlarm( boolean b ) { super(b); init(); }
    
+   private ExecutorService executor = null;
+   
    
    private void init()
    {
       setConfig();
+      executor = Executors.newFixedThreadPool(2);
       handleControllerEvents();
    }
    
@@ -53,42 +58,8 @@ public class StokerAlarm extends Alert
 
          public void stateChange(DataPointEvent de)
          {
-            // saa is null then it has not been configured yet, skip
-            if ( saa == null || saa.getEnabled() == false )
-               return;
-            
-            ArrayList<SProbeDataPoint> aldp = de.getSProbeDataPoints();
-            TempAlertType tat = TempAlertType.NONE;
-            
-            for ( SProbeDataPoint spdp : aldp )
-            {
-               SDevice sd = m_hmConfig.get(spdp.getDeviceID());
-               if ( sd == null || ! sd.isProbe() )
-                  continue;
-               
-               StokerProbe sp = (StokerProbe) sd;
-               
-               // TODO: log debug
-              // System.out.println("StokerAlarm: DataPoint::StateChange() StokerProbe Name: " + sp.getName());
-               if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
-               {
-                  continue;
-               }
-               
-               // Alarm is enabled for device
-               float data = spdp.getData();
-               if ( data > sp.getUpperTempAlarm()  )
-               {
-                  soundTempAlert( TempAlertType.HIGH, sp, data );
-               }
-               else if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.ALARM_FIRE && data < sp.getLowerTempAlarm()  )
-               {
-                  soundTempAlert( TempAlertType.LOW, sp, data );
-               }
-               
-               
-            }
-            
+            Runnable worker = new CheckDataEventRunnable( de );
+            executor.execute( worker );
          }
       };
       
@@ -115,7 +86,6 @@ public class StokerAlarm extends Alert
           };
 
        Controller.getInstance().addConfigEventListener(m_ccel);
-
    }
    
    private void soundTempAlert( TempAlertType t, StokerProbe sp, float data )
@@ -170,4 +140,55 @@ public class StokerAlarm extends Alert
       return (AlertBase) saa;
    }
      
+   class CheckDataEventRunnable implements Runnable
+   {
+      private final DataPointEvent de;
+      
+      CheckDataEventRunnable( DataPointEvent d )
+      {
+         this.de = d;
+      }
+      
+      public void run()
+      {
+         // saa is null then it has not been configured yet, skip
+         if ( saa == null || saa.getEnabled() == false )
+            return;
+         
+         ArrayList<SProbeDataPoint> aldp = de.getSProbeDataPoints();
+         TempAlertType tat = TempAlertType.NONE;
+         
+         for ( SProbeDataPoint spdp : aldp )
+         {
+            SDevice sd = m_hmConfig.get(spdp.getDeviceID());
+            if ( sd == null || ! sd.isProbe() )
+               continue;
+            
+            StokerProbe sp = (StokerProbe) sd;
+            
+            // TODO: log debug
+           // System.out.println("StokerAlarm: DataPoint::StateChange() StokerProbe Name: " + sp.getName());
+            if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
+            {
+               continue;
+            }
+            
+            // Alarm is enabled for device
+            float data = spdp.getData();
+            if ( data > sp.getUpperTempAlarm()  )
+            {
+               soundTempAlert( TempAlertType.HIGH, sp, data );
+            }
+            else if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.ALARM_FIRE && data < sp.getLowerTempAlarm()  )
+            {
+               soundTempAlert( TempAlertType.LOW, sp, data );
+            }
+            
+            
+         }
+         
+         
+      }
+         
+   }
 }
