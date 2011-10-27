@@ -104,8 +104,7 @@ public class GaugeComponent extends Composite
    StokerProbe stokerProbe = null;
    boolean deviceConfigChanged = false;
 
-  // int iTempAlarmLow = 200;
-   //int iTempAlarmHigh = 300;
+   // TODO: move these to stokerweb.properties
    int iMinGaugeTemp = 0;
    int iMaxGaugeTemp = 800;
    int iGaugeStepping = 100;
@@ -113,7 +112,6 @@ public class GaugeComponent extends Composite
    String strColorYellow = "#FF9900";
    String strColorRed = "#DC3912";
 
-  // int iCurrentTemp = 0;
 
    public GaugeComponent(StokerProbe sd1)
    {

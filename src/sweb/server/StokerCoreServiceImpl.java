@@ -410,8 +410,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public Integer validateSession(String sessionID)
             throws IllegalArgumentException
     {
-        // TODO: add this code!
-        return new Integer(1);
+        if ( loginGuard() )
+           return new Integer(1);
+        
+       return new Integer(0);
     }
 
 
