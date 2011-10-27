@@ -78,6 +78,20 @@
         </jar>
   </target>
 
+  <target name="release" depends="war,addUser" description="Build package for release">
+     <!--rename src="stokerweb.war" dest="stokerweb-${version}.war" replace="true" /-->
+     <copy file="war/stokerweb.properties.orig" tofile="./stokerweb.properties" overwrite="true" />
+     <zip destfile="stokerweb-${version}.zip">
+     
+                <fileset dir="." 
+		          includes="stokerweb.properties,
+		                    stokerweb.war,
+		                    addUser.jar"
+		          excludes=""/>
+		
+     </zip>
+  </target>
+
 
   <target name="clean" description="Cleans this project">
     <delete dir="war/WEB-INF/classes" failonerror="false" />

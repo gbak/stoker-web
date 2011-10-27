@@ -46,7 +46,7 @@ public class LoginDialog extends DialogBox implements ClickHandler
     private static final String invalidLogin = "The username or password you entered is incorrect.";
    FlexTable loginPanel = new FlexTable();
    protected Long lReconnectCounter;
-   protected ButtonBase time;
+  // protected ButtonBase time;
    StokerCoreServiceAsync gsa = null;
    TextBox userTextBox = new TextBox();
    PasswordTextBox passTextBox = new PasswordTextBox();
@@ -98,7 +98,7 @@ public void onClick(ClickEvent event)
             userTextBox.getText(), passTextBox.getText(), new AsyncCallback<String>() {
                     public void onFailure(Throwable caught)
                     {
-                        time.setText("FAILURE");
+                        System.out.println("FAILURE");
                     }
 
                     public void onSuccess(String result)

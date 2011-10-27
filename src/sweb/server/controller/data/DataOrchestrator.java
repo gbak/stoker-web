@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import sweb.server.controller.Controller;
@@ -64,7 +65,7 @@ public class DataOrchestrator
 
     HashMap<String,StokerFile> fileLogList = new HashMap<String,StokerFile>();
     ArrayList<BlowerEventListener> m_arListener = new ArrayList<BlowerEventListener>();
-    Set<DataPointEventListener> m_dpListener = new HashSet<DataPointEventListener>();
+    private Set<DataPointEventListener> m_dpListener = Collections.newSetFromMap(new ConcurrentHashMap<DataPointEventListener,Boolean>());
 
     Timer updateTimer = new Timer();
 
@@ -271,30 +272,46 @@ public class DataOrchestrator
 
     protected void fireStateChange( BlowerEvent be )
     {
-        for ( BlowerEventListener listener : m_arListener )
-        {
-            listener.stateChange(be);
-        }
+       Object[] copy;
+       synchronized ( this )
+       {
+           copy = m_arListener.toArray();
+       }
+       
+           //for ( BlowerEventListener listener : m_arListener )
+           for ( int i = 0; i < copy.length; ++i )
+           {
+               ((BlowerEventListener)copy[i]).stateChange(be);
+           }
+       
     }
 
 
     public void addListener( BlowerEventListener bel )
     {
-        m_arListener.add( bel );
+       synchronized ( this )
+       {
+           m_arListener.add( bel );
+       }
     }
 
     protected void fireStateChange( DataPointEvent dpe )
     {
+       Object[] copy;
        synchronized ( this )
        {
-           for ( DataPointEventListener listener : m_dpListener )
+          copy = m_dpListener.toArray();  
+       }
+           //for ( DataPointEventListener listener : m_dpListener )
+           for ( int i = 0; i < copy.length; ++i )
            {
                // Store the desired listener type ALL, UPDATED, TIMED
                // in the listener object,
    
-               listener.stateChange(dpe);
+               //listener.stateChange(dpe);
+              ((DataPointEventListener)copy[i]).stateChange(dpe);
            }
-       }
+       
     }
 
 

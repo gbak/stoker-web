@@ -18,12 +18,15 @@
 
 package sweb.server.security;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Properties;
 
 import sweb.server.StokerConstants;
@@ -36,6 +39,7 @@ public class LoginProperties extends Properties
     
     private static final long serialVersionUID = -6912224771507005561L;
     private volatile static LoginProperties lp = null;
+    private static Date lastReadDate = null;
 
     private LoginProperties()
     {
@@ -45,7 +49,8 @@ public class LoginProperties extends Properties
            // Loading the StokerWebProperties is required since it will add the
            // stokerweb_dir to the classpath.
            StokerWebProperties.getInstance();
-            
+           lastReadDate = new Date( new File(StokerConstants.FILE_LOGIN_PROPERTIES).lastModified() );
+           
            InputStream inputStream = this.getClass().getClassLoader()
                  .getResourceAsStream(StokerConstants.FILE_LOGIN_PROPERTIES);
            load( inputStream );
@@ -64,6 +69,12 @@ public class LoginProperties extends Properties
 
     public static LoginProperties getInstance()
     {
+       Date d = Calendar.getInstance().getTime();
+       if ( lastReadDate != null && d.getTime() > lastReadDate.getTime())
+       {
+          lp = null;
+       }
+       
         if ( lp == null)
         {
             synchronized ( LoginProperties.class)
