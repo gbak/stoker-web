@@ -62,8 +62,6 @@ public class NewLogDialog extends DialogBox implements ClickHandler
         flexTable.setWidget(0, 0, lblLogName);
 
         flexTable.setWidget(0, 1, textBox);
-        textBox.setWidth("300px");
-        textBox.setHeight("300px");
 
         int iRowNum = 1;
         for ( int x = 0; x < arSDevice.size(); x++ )
@@ -76,7 +74,7 @@ public class NewLogDialog extends DialogBox implements ClickHandler
         //Button btnCancel = new Button("Cancel");
         flexTable.setWidget(iRowNum, 1, cancelButton);
 
-        Button btnCreateAndStart = new Button("Add Note", this );
+        Button btnCreateAndStart = new Button("Create and Start", this );
         flexTable.setWidget( iRowNum, 2, btnCreateAndStart);
 
         flexTable.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);

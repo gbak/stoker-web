@@ -366,6 +366,41 @@ public class StokerFile
         return true;
     }
 
+    public void addNote( String note )
+    {
+        synchronized (this)
+        {
+            Writer output = null;
+            try
+            {
+                output = new BufferedWriter(new FileWriter(m_outfile,
+                        true));
+
+                output.write(LogFileFormatter.logNoteDate(Calendar.getInstance().getTime()));
+                output.write(LogFileFormatter.logPointSeperator() + LogFileFormatter.logNote(note) );
+                
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            finally
+            {
+                try
+                {
+                    output.close();
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+    }
+     
     public boolean attachToExistingLog( String fileName )
     {
         synchronized( this )

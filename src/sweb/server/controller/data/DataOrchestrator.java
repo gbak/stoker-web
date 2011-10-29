@@ -270,6 +270,15 @@ public class DataOrchestrator
 
     }
 
+    public void addNoteToLog( String note, ArrayList<String> logList )
+    {
+        for ( String logName: logList )
+        {
+            StokerFile sf = fileLogList.get( logName );
+            sf.addNote( note );
+        }
+    }
+    
     protected void fireStateChange( BlowerEvent be )
     {
        Object[] copy;

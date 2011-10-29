@@ -19,9 +19,7 @@ h1 {
 	color: red;
 }
 /** Most GWT widgets already have a style name defined */
-.gwt-DialogBox {
-  width: 400px;
-}
+
 
 .alerts-dialog-panell {
   margin: 5px;

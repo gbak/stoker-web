@@ -500,4 +500,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
         cometSession.enqueue( wd );
     }
+
+    public Integer addNoteToLog(String note, ArrayList<String> logList)
+            throws IllegalArgumentException
+    {
+        if ( ! loginGuard() )
+            return -1;
+        
+        DataOrchestrator.getInstance().addNoteToLog(note, logList);
+        return 0;
+    }
 }

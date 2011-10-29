@@ -64,5 +64,5 @@ public interface StokerCoreServiceAsync
     void cometRequest( CallBackRequestType cometRT, AsyncCallback<Void> callback) throws IllegalArgumentException;
 
     void setAlertConfiguration( ArrayList<AlertBase> alertBaseList, AsyncCallback<Void> callback ) throws IllegalArgumentException;
-    
+    void addNoteToLog( String note, ArrayList<String> logList, AsyncCallback<Integer> callback ) throws IllegalArgumentException;
 }

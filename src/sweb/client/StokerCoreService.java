@@ -61,4 +61,5 @@ public interface StokerCoreService extends RemoteService
     void cometRequest(CallBackRequestType cometRequestType) throws IllegalArgumentException;
     
     void setAlertConfiguration( ArrayList<AlertBase> alertBaseList ) throws IllegalArgumentException;
+    Integer addNoteToLog( String note, ArrayList<String> logList ) throws IllegalArgumentException;
 }

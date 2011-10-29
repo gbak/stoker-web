@@ -23,8 +23,9 @@ public class NewNoteDialog extends DialogBox implements ClickHandler
    ArrayList<String> arlogNames = new ArrayList<String>();
    ArrayList<CheckBox> arCheckBoxList = new ArrayList<CheckBox>();
 
-   public NewNoteDialog(ArrayList<String> arLogNames, NewNoteDialogHandler dh)
+   public NewNoteDialog(ArrayList<String> arLogNames, String selectedLog, NewNoteDialogHandler dh)
    {
+       super();
        this.arlogNames = arLogNames;
        dialogHandler = dh;
        setGlassEnabled(true);
@@ -38,19 +39,21 @@ public class NewNoteDialog extends DialogBox implements ClickHandler
 
        FlexTable flexTable = new FlexTable();
        setWidget(flexTable);
-       flexTable.setSize("323px", "198px");
+     //  flexTable.setSize("323px", "198px");
 
        Label lblLogName = new Label("Note:");
        flexTable.setWidget(0, 0, lblLogName);
 
        flexTable.setWidget(0, 1, textArea);
-       textArea.setWidth("192px");
-       textArea.setHeight("200px");
+       textArea.setWidth("270px");
+       textArea.setHeight("100px");
 
        int iRowNum = 1;
        for ( int x = 0; x < arlogNames.size(); x++ )
        {
            CheckBox cb1 = new CheckBox(arlogNames.get(x));
+           if ( arlogNames.get(x).compareTo(selectedLog) == 0)
+               cb1.setValue( true );
            flexTable.setWidget(iRowNum, 1, cb1);
            arCheckBoxList.add( cb1 );
            iRowNum++;
@@ -58,7 +61,7 @@ public class NewNoteDialog extends DialogBox implements ClickHandler
        //Button btnCancel = new Button("Cancel");
        flexTable.setWidget(iRowNum, 1, cancelButton);
 
-       Button btnCreateAndStart = new Button("Create and Start", this );
+       Button btnCreateAndStart = new Button("Add Note", this );
        flexTable.setWidget( iRowNum, 2, btnCreateAndStart);
 
        flexTable.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_RIGHT);
@@ -87,7 +90,7 @@ public class NewNoteDialog extends DialogBox implements ClickHandler
               }
           }
        }
-       dialogHandler.onReturn(textArea.getText().replace("\n", "_|"), logList );
+       dialogHandler.onReturn(textArea.getText(), logList );
        this.hide();
 
    }

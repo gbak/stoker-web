@@ -389,11 +389,7 @@ public class CookerComponent extends Composite
 
             public void onClick(ClickEvent event)
             {
-               //SoundController soundController = new SoundController();
-              // Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG_MP3,
-              //     "gagaPhone2.mp3");
-             //  sound.play();
-               
+              
                ArrayList<String> logList = new ArrayList<String>();
                
                for ( int i = 0; i < logListBox.getItemCount(); i++ )
@@ -401,14 +397,34 @@ public class CookerComponent extends Composite
                   logList.add( logListBox.getItemText(i));   
                }
                
-                new NewNoteDialog( logList, new NewNoteDialogHandler() {
+                new NewNoteDialog( logList, logListBox.getItemText(logListBox.getSelectedIndex()), new NewNoteDialogHandler() {
 
                     public void onReturn(String note,
                             ArrayList<String> notedLogs)
                     {
-                        
+                       //TODO: Log
+                        System.out.println("Note from Dialog: " + note );
+                        stokerService.addNoteToLog(note, notedLogs, new AsyncCallback<Integer>() {
+
+                            public void onFailure(Throwable caught)
+                            {
+                                // TODO Auto-generated method stub
+
+                            }
+
+                            public void onSuccess(Integer result)
+                            {
+                               
+                               // TODO: This is not correct.
+                              //  String strLogName = logListBox.getItemText(iSelectedIndex);
+                              //  logListBox.removeItem(iSelectedIndex);
+
+                              //  addGraph();
+                               
+                            }
+                        });
                     }
-                }).show();
+                }).center();
                 
             }
         };

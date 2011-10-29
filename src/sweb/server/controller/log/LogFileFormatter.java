@@ -51,6 +51,9 @@ public class LogFileFormatter
 
     private static final String strBlowerPrefix = "b:";
     private static final String strBlowerFormat = strBlowerPrefix + strDateFormat;
+    
+    private static final String strNotePrefix = "n:";
+    private static final String strNoteFormat = strNotePrefix + strDateFormat;
 
     private static final String strDataPointFormat = "%2s:%03.1f";
     private static final String strDataBlowerFormat = "%2s:%1d";
@@ -146,6 +149,18 @@ public class LogFileFormatter
         return sb.toString();
     }
 
+    public static String logNoteDate( Date d)
+    {
+        Formatter format = new Formatter( Locale.US );
+        return format.format( strNoteFormat, d).toString();  
+    }
+    
+    public static String logNote( String note )
+    {
+        String s = note.replace("\n","_|");
+        return s;
+    }
+    
     public static String logPointSeperator()
     {
         return strDataPointSeperator;
