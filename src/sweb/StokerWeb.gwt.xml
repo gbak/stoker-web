@@ -9,6 +9,8 @@
      
   <inherits name='com.google.gwt.visualization.Visualization'/>
   <inherits name="net.zschech.gwt.comet.Comet" />
+  <inherits name='com.allen_sauer.gwt.voices.gwt-voices'/>
+  
   
   <inherits name='com.google.gwt.user.theme.clean.Clean'/> 
   <!-- <inherits name='com.google.gwt.user.theme.standard.Standard'/> --> 

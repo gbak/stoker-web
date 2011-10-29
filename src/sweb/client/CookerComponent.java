@@ -29,10 +29,12 @@ import sweb.client.dialog.AlertsSettingsDialog;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.client.dialog.LogFileChooser;
 import sweb.client.dialog.NewLogDialog;
+import sweb.client.dialog.NewNoteDialog;
 
 import sweb.client.dialog.handlers.AlertsDialogHandler;
 import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.LogFileChooserHandler;
+import sweb.client.dialog.handlers.NewNoteDialogHandler;
 import sweb.client.gauge.GaugeComponent;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
@@ -47,6 +49,8 @@ import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.alerts.AlertBase;
 import sweb.shared.model.logfile.LogDir;
 
+import com.allen_sauer.gwt.voices.client.Sound;
+import com.allen_sauer.gwt.voices.client.SoundController;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -249,7 +253,7 @@ public class CookerComponent extends Composite
         logListBox.addChangeHandler(listBoxChangeHandler());
         stopLogsButton.addClickHandler(stopLogsButtonClickHandler());
         newLogButton.addClickHandler(newLogButtonClickHandler());
-
+        noteLogsButton.addClickHandler(newNoteButtonClickHandler());
         manageLogsButton.addClickHandler(manageLogsClickHandler());
 
         initWidget(decPanel);
@@ -379,6 +383,36 @@ public class CookerComponent extends Composite
         };
     }
 
+    private ClickHandler newNoteButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+               //SoundController soundController = new SoundController();
+              // Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_MPEG_MP3,
+              //     "gagaPhone2.mp3");
+             //  sound.play();
+               
+               ArrayList<String> logList = new ArrayList<String>();
+               
+               for ( int i = 0; i < logListBox.getItemCount(); i++ )
+               {
+                  logList.add( logListBox.getItemText(i));   
+               }
+               
+                new NewNoteDialog( logList, new NewNoteDialogHandler() {
+
+                    public void onReturn(String note,
+                            ArrayList<String> notedLogs)
+                    {
+                        
+                    }
+                }).show();
+                
+            }
+        };
+    }
     public void removeLog(String logName)
     {
        int size = logListBox.getItemCount();
