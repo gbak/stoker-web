@@ -18,6 +18,9 @@
 
 package sweb.server.controller.log;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ import sweb.shared.model.StokerFan;
 import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
+import sweb.shared.model.logfile.LogNote;
 
 public class LogFileFormatter
 {
@@ -157,7 +161,18 @@ public class LogFileFormatter
     
     public static String logNote( String note )
     {
-        String s = note.replace("\n","_|");
+        String s = "";
+        try
+        {
+            s = URLEncoder.encode(note, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // TODO Auto-generated catch block
+            System.out.println("Unable to encode note string");
+            s = "Unable to encode note string";
+        }
+                
         return s;
     }
     
@@ -272,6 +287,44 @@ public class LogFileFormatter
      * @return SDevice for parsed line
      */
 
+    public static LogNote parseNoteLine( String logLine )
+    {
+        if ( ! logLine.startsWith("n:" ))
+        {
+            return null;
+        }
+        
+        StringTokenizer st = new StringTokenizer(logLine, "|");
+        String strDate = st.nextToken().substring(2);
+        SimpleDateFormat sdf = new SimpleDateFormat(strSimpleDateFormat);
+        Date d = null;
+        try
+        {
+            d = sdf.parse(strDate);
+        }
+        catch (ParseException e)
+        {
+            // TODO: log
+            System.out.println("Unable to parse date from line: [" + logLine + "]" );
+        }
+
+        
+        String s = null;
+        
+        try
+        {
+            s = URLDecoder.decode(st.nextToken(),"UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // TODO Auto-generated catch block
+            System.out.println("Unable to decode note string");
+            s = "Unable to decode note string";
+        }
+        
+        return new LogNote( d, s);
+    }
+    
     public static SDevice parseLogConfigLine( String logLine )
     {
         /*

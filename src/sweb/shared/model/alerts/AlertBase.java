@@ -2,7 +2,7 @@ package sweb.shared.model.alerts;
 
 import java.io.Serializable;
 
-public abstract class AlertBase implements Serializable
+public class AlertBase implements Serializable
 {
    private static final long serialVersionUID = 3533993719511613483L;
 
