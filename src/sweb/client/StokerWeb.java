@@ -46,7 +46,7 @@ import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
@@ -113,7 +113,7 @@ public class StokerWeb implements EntryPoint
 
     @SerialTypes(
     { SDataPoint.class, SProbeDataPoint.class, SBlowerDataPoint.class, ControllerEventLight.class, WeatherData.class, CallBackRequestType.class,
-        HardwareDeviceStatus.class, LogEvent.class, AlertBase.class })
+        HardwareDeviceStatus.class, LogEvent.class, Alert.class })
 
     public static abstract class StokerCometSerializer extends CometSerializer {
     }

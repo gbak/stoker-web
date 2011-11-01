@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import sweb.client.StokerCoreServiceAsync;
 import sweb.client.dialog.handlers.AlertsDialogHandler;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.alerts.ConnectionChangeAlert;
 import sweb.shared.model.alerts.StokerAlarmAlert;
 import sweb.shared.model.alerts.TempAlarmAlert;
@@ -34,8 +34,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -46,9 +48,9 @@ public class AlertsSettingsDialog extends DialogBox
     FlexTable flexTable = null;
     StokerCoreServiceAsync gsa = null;
     AlertsDialogHandler alertsDialogHandler = null;
-    ArrayList<AlertBase> alertBaseList = new ArrayList<AlertBase>();
+    ArrayList<Alert> alertBaseList = new ArrayList<Alert>();
    
-    public AlertsSettingsDialog(StokerCoreServiceAsync g, AlertsDialogHandler alertsDialogHandler )
+    public AlertsSettingsDialog(StokerCoreServiceAsync g, ArrayList<Alert> alertConfig, AlertsDialogHandler alertsDialogHandler )
     {
         super();
 
@@ -81,11 +83,18 @@ public class AlertsSettingsDialog extends DialogBox
         addTempButton.addClickHandler(addTempButtonClickHandler());
         addTimeButton.addClickHandler( addTimeButtonClickHandler());
         
-        AlertBase stokerAlarm = new StokerAlarmAlert();
-        addButtons(addTempButton, addTimeButton );
-        addRow( stokerAlarm );
+        for ( Alert a : alertConfig )
+        {
+           //Alert stokerAlarm = new StokerAlarmAlert();
+            if ( a instanceof StokerAlarmAlert )
+            {
+               addButtons(addTempButton, addTimeButton );
+               addRow( a );
+            }
+        }
         
-        AlertBase connectionAlert = new ConnectionChangeAlert();
+        // TODO: make a for loop for this one, and the ones below.
+        Alert connectionAlert = new ConnectionChangeAlert();
         addRow( connectionAlert );
         
         
@@ -137,7 +146,7 @@ public class AlertsSettingsDialog extends DialogBox
 
             public void onClick(ClickEvent event)
             {
-               AlertBase tempAlarmAlert = new TempAlarmAlert();
+               Alert tempAlarmAlert = new TempAlarmAlert();
                addRow(tempAlarmAlert);
                // TODO: implement this
             }
@@ -150,7 +159,7 @@ public class AlertsSettingsDialog extends DialogBox
 
             public void onClick(ClickEvent event)
             {
-               AlertBase timeAlert = new TimeAlert();
+               Alert timeAlert = new TimeAlert();
                addRow( timeAlert );
             }
         };
@@ -163,11 +172,12 @@ public class AlertsSettingsDialog extends DialogBox
        flexTable.setWidget( numRows, 0, label1 );
        flexTable.setWidget( numRows, 1, label2 );
     }
-    private void addRow( AlertBase alertBase )
+    private void addRow( Alert alertBase )
     {
        int numRows = flexTable.getRowCount();
        alertBaseList.add( alertBase );
        CheckBox cb = new CheckBox();
+       cb.setValue(alertBase.getEnabled());
 
        /*cb.addClickHandler( new ClickHandler()  {
 
@@ -178,6 +188,12 @@ public class AlertsSettingsDialog extends DialogBox
          }
           
        });*/
+       
+       Grid g =  deliveryDetails(alertBase);
+       
+       DisclosurePanel alertSettings = new DisclosurePanel();
+       alertSettings.setTitle(alertBase.getName());
+       alertSettings.setContent(g);
        if ( numRows > 0 )
        {
           int prev = numRows -1;
@@ -185,7 +201,8 @@ public class AlertsSettingsDialog extends DialogBox
           Widget wr = flexTable.getWidget(prev, 1);
           
           flexTable.setWidget( prev, 0, cb );
-          flexTable.setWidget( prev, 1, new HTML(alertBase.getName()) );
+          //flexTable.setWidget( prev, 1, new HTML(alertBase.getName()) );
+          flexTable.setWidget( prev, 1, alertSettings );
           
           flexTable.setWidget( numRows, 0, wl );
           flexTable.setWidget( numRows, 1, wr );
@@ -194,11 +211,30 @@ public class AlertsSettingsDialog extends DialogBox
        else
        {
           flexTable.setWidget( numRows, 0, cb );
-          flexTable.setWidget( numRows, 1,  new HTML(alertBase.getName()) );
+          //flexTable.setWidget( numRows, 1,  new HTML(alertBase.getName()) );
+          flexTable.setWidget( numRows, 1,  alertSettings );
        }
        //flexTable.getFlexCellFormatter().setRowSpan(0, 1, numRows + 1);
     }
     
+    private Grid deliveryDetails(Alert alert)
+    {
+        int listSize = alert.getAvailableDeliveryMethods().size();
+        Grid g = new Grid(listSize, 1);
+        
+        int x = 0;
+        for ( String delivery : alert.getAvailableDeliveryMethods())
+        {
+            CheckBox cb = new CheckBox(delivery);
+            if ( alert.getConfiguredDeliveryMethods().contains(delivery))
+            {
+                cb.setValue(true);
+            }
+            g.setWidget(x++, 0, cb);
+        }
+        
+        return g;
+    }
     
     public void show(Button b)
     {

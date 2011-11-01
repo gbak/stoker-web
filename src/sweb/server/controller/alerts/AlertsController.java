@@ -19,12 +19,14 @@
 package sweb.server.controller.alerts;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import sweb.server.controller.alerts.conditions.ConnectionOrConfigChangeAlert;
 import sweb.server.controller.alerts.conditions.StokerAlarm;
 import sweb.server.controller.alerts.conditions.TempAlert;
 import sweb.server.controller.alerts.conditions.TimedAlert;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.alerts.ConnectionChangeAlert;
 import sweb.shared.model.alerts.StokerAlarmAlert;
 
@@ -35,16 +37,18 @@ public class AlertsController
    ArrayList<TempAlert> tempAlert = new ArrayList<TempAlert>();
    ArrayList<TimedAlert> timedAlert = new ArrayList<TimedAlert>();
    
+   Set<String> availableDeliveryList = new HashSet<String>();
 
    public AlertsController()
    {
-
+       availableDeliveryList.add( "Email" );
+       availableDeliveryList.add( "Browser Alert" );
    }
 
-   public void setConfiguration(ArrayList<AlertBase> alertBaseList)
+   public void setConfiguration(ArrayList<Alert> alertBaseList)
    {
       System.out.println("AlertsController::setConfiguration");
-      for ( AlertBase ab : alertBaseList )
+      for ( Alert ab : alertBaseList )
       {
          if ( ab instanceof StokerAlarmAlert )
          {
@@ -56,10 +60,11 @@ public class AlertsController
          }
       }
    }
+
    
-   public ArrayList<AlertBase> getConfiguration()
+   public ArrayList<Alert> getConfiguration()
    {
-      ArrayList<AlertBase> alertBaseList = new ArrayList<AlertBase>();
+      ArrayList<Alert> alertBaseList = new ArrayList<Alert>();
       
       alertBaseList.add(stokerAlarm.getAlertConfiguration());
       alertBaseList.add(connConfigChangeAlarm.getAlertConfiguration());
@@ -70,6 +75,8 @@ public class AlertsController
    
    public void init()
    {
+      
+       
       AlertsClassLoader cl = new AlertsClassLoader();
       try
       {
@@ -99,6 +106,12 @@ public class AlertsController
 
    }
 
+   public Set<String> getAvailableDeliveryMethods()
+   {
+       return availableDeliveryList;
+       
+   }
+   
    public static void main(String[] args)
    {
       AlertsController nm = new AlertsController();

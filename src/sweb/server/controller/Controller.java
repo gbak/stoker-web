@@ -19,6 +19,7 @@
 package sweb.server.controller;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.AlertsController;
@@ -38,7 +39,7 @@ import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 //import sweb.server.controller.notify.NotificationController;
 import sweb.server.controller.weather.WeatherController;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 
 /**
  * @author gary.bak
@@ -202,14 +203,19 @@ public class Controller
        return m_DataController;
    }
    
-   public ArrayList<AlertBase> getAlertConfiguration()
+   public ArrayList<Alert> getAlertConfiguration()
    {
       return m_AlertsController.getConfiguration();
       
    }
    
-   public void setAlertConfiguration( ArrayList<AlertBase> alertBaseList )
+   public void setAlertConfiguration( ArrayList<Alert> alertBaseList )
    {
       m_AlertsController.setConfiguration(alertBaseList);
+   }
+   
+   public Set<String> getAvailableDeliveryMethods()
+   {
+       return m_AlertsController.getAvailableDeliveryMethods();
    }
 }

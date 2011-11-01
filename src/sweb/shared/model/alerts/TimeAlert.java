@@ -20,7 +20,7 @@ package sweb.shared.model.alerts;
 
 import java.io.Serializable;
 
-public class TimeAlert extends AlertBase implements Serializable
+public class TimeAlert extends Alert implements Serializable
 {
 
    private static final long serialVersionUID = 1L;

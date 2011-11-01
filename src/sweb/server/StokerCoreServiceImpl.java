@@ -62,7 +62,7 @@ import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerDeviceTypes;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
@@ -77,7 +77,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 @SuppressWarnings("serial")
 public class StokerCoreServiceImpl extends RemoteServiceServlet implements
-        StokerCoreService, HttpSessionListener
+        StokerCoreService, HttpSessionListener 
 {
 
     private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
@@ -246,15 +246,15 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         Controller.getInstance().addWeatherChangeEventListener(m_wcel);
     }
     
-    public void setAlertConfiguration( ArrayList<AlertBase> alertBaseList )
+    public void setAlertConfiguration( ArrayList<Alert> alertBaseList )
     {
        Controller.getInstance().setAlertConfiguration(alertBaseList);
        
     }
     
-    public ArrayList<AlertBase> getAlertConfiguration()
+    public ArrayList<Alert> getAlertConfiguration()
     {
-       ArrayList<AlertBase> ab = Controller.getInstance().getAlertConfiguration();
+       ArrayList<Alert> ab = Controller.getInstance().getAlertConfiguration();
        return ab;
     }
     
@@ -510,4 +510,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         DataOrchestrator.getInstance().addNoteToLog(note, logList);
         return 0;
     }
+
+    
 }

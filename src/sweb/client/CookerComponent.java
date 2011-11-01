@@ -46,7 +46,7 @@ import sweb.shared.model.SDevice;
 import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.logfile.LogDir;
 
 import com.allen_sauer.gwt.voices.client.Sound;
@@ -268,7 +268,33 @@ public class CookerComponent extends Composite
             public void onClick(ClickEvent event)
             {
 
-                new AlertsSettingsDialog(stokerService, new AlertsDialogHandler() {
+                stokerService.getAlertConfiguration(new AsyncCallback<ArrayList<Alert>>() {
+
+                    public void onFailure(Throwable caught)
+                    {
+                        // TODO Auto-generated method stub
+                        
+                    }
+
+                    public void onSuccess(ArrayList<Alert> result)
+                    {
+                        new AlertsSettingsDialog(stokerService, result, new AlertsDialogHandler() {
+
+                            public void onReturn(ArrayList<Alert> alertBaseList)
+                            {
+                               // TODO Pass Alert changes back to server
+                               
+                            }
+
+                          }).center();
+                    }
+                    
+                
+                });
+                // Get Alert settings from server
+                // Call dialog
+                
+/*                new AlertsSettingsDialog(stokerService, new AlertsDialogHandler() {
 
                   public void onReturn(ArrayList<AlertBase> alertBaseList)
                   {
@@ -277,7 +303,7 @@ public class CookerComponent extends Composite
                   }
 
                 }).center();
-                
+*/                
             }
         };
     }

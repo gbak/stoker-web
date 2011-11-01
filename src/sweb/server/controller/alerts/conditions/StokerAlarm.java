@@ -21,11 +21,11 @@ import sweb.server.controller.events.DataPointEventListener;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.alerts.StokerAlarmAlert;
 
 
-public class StokerAlarm extends Alert
+public class StokerAlarm extends AlertCondition
 {
 
    public static enum TempAlertType { NONE, LOW, HIGH };
@@ -44,6 +44,8 @@ public class StokerAlarm extends Alert
       setConfig();
       executor = Executors.newFixedThreadPool(2);
       handleControllerEvents();
+      saa = new StokerAlarmAlert(false);
+     // saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
    }
    
    private void setConfig()
@@ -128,16 +130,19 @@ public class StokerAlarm extends Alert
       
    }
    @Override
-   public void setAlertConfiguration(AlertBase ab)
+   public void setAlertConfiguration(Alert ab)
    {
       if ( ab instanceof StokerAlarmAlert )
          saa = (StokerAlarmAlert) ab;
       // TODO: should probably throw in invalid class exception here.
    }
    @Override
-   public AlertBase getAlertConfiguration()
+   public Alert getAlertConfiguration()
    {
-      return (AlertBase) saa;
+       // TODO: this is kind of a hack, this does not really belong here but I had
+       // problems putting it in the constructors or init methods because of circular dependencies.
+       saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
+      return (Alert) saa;
    }
      
    class CheckDataEventRunnable implements Runnable
@@ -191,4 +196,5 @@ public class StokerAlarm extends Alert
       }
          
    }
+
 }

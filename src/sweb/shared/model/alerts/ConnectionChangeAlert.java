@@ -18,7 +18,7 @@
 
 package sweb.shared.model.alerts;
 
-public class ConnectionChangeAlert extends AlertBase
+public class ConnectionChangeAlert extends Alert
 {
    private static final long serialVersionUID = 7846663410227329176L;
 

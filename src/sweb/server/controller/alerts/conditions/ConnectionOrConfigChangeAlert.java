@@ -1,9 +1,9 @@
 package sweb.server.controller.alerts.conditions;
 
-import sweb.shared.model.alerts.AlertBase;
+import sweb.shared.model.alerts.Alert;
 import sweb.shared.model.alerts.ConnectionChangeAlert;
 
-public class ConnectionOrConfigChangeAlert extends Alert
+public class ConnectionOrConfigChangeAlert extends AlertCondition
 {
 
    ConnectionChangeAlert cca = null;
@@ -11,7 +11,7 @@ public class ConnectionOrConfigChangeAlert extends Alert
    public ConnectionOrConfigChangeAlert() { super(); }
    public ConnectionOrConfigChangeAlert( boolean b ) { super(b); }
    @Override
-   public void setAlertConfiguration(AlertBase ab)
+   public void setAlertConfiguration(Alert ab)
    {
       if ( ab instanceof ConnectionChangeAlert )
          cca = (ConnectionChangeAlert) ab;
@@ -19,10 +19,10 @@ public class ConnectionOrConfigChangeAlert extends Alert
       
    }
    @Override
-   public AlertBase getAlertConfiguration()
+   public Alert getAlertConfiguration() 
    {
       
-      return (AlertBase) cca;
+      return (Alert) cca;
    }
    
    
