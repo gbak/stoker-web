@@ -47,6 +47,7 @@ import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.alerts.Alert;
+import sweb.shared.model.alerts.SoundAlarm;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
@@ -75,6 +76,10 @@ import com.google.gwt.visualization.client.visualizations.Gauge;
 import sweb.client.dialog.LoginDialog;
 import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.weather.WeatherComponent;
+
+import com.allen_sauer.gwt.voices.client.Sound;
+import com.allen_sauer.gwt.voices.client.Sound.LoadState;
+import com.allen_sauer.gwt.voices.client.SoundController; 
 
 public class StokerWeb implements EntryPoint
 {
@@ -105,6 +110,7 @@ public class StokerWeb implements EntryPoint
     VerticalPanel vpCookers = new VerticalPanel(); // For Multiple cookers
     Button loginButton = new Button();
     Button updateButton = new Button();
+    Button testButton = new Button();  // Test various functions.
 
     boolean requiresUpdate = true;  // TODO: hardcoding this to so the button stays enabled.
 
@@ -113,7 +119,7 @@ public class StokerWeb implements EntryPoint
 
     @SerialTypes(
     { SDataPoint.class, SProbeDataPoint.class, SBlowerDataPoint.class, ControllerEventLight.class, WeatherData.class, CallBackRequestType.class,
-        HardwareDeviceStatus.class, LogEvent.class, Alert.class })
+        HardwareDeviceStatus.class, LogEvent.class, Alert.class, SoundAlarm.class })
 
     public static abstract class StokerCometSerializer extends CometSerializer {
     }
@@ -212,6 +218,23 @@ public class StokerWeb implements EntryPoint
                 userLoggedIn( false );
             }
 
+            testButton = new Button( "Test", new ClickHandler() {
+
+                public void onClick(ClickEvent event)
+                {
+                    SoundController soundController = new SoundController();
+                    Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_WAV_PCM,
+                        "Alarm1.wav");
+                    LoadState s = sound.getLoadState();
+                    
+                    sound.play();
+
+                    
+                }
+
+            });
+
+            
             updateButton = new Button( getUpdateButtonText(), new ClickHandler() {
 
                 public void onClick(ClickEvent event)
@@ -299,6 +322,10 @@ public class StokerWeb implements EntryPoint
                 }
 
             });
+            
+            testButton.setEnabled(true);
+            hp.add( testButton);
+            
             updateButton.setEnabled(false);
             updateButton.setStyleName("Button-login");
             hp.add( updateButton );
@@ -454,6 +481,14 @@ public class StokerWeb implements EntryPoint
                                             initNotConnectedPage( hds.getDate() );
                                         }
 
+                                    }
+                                    else if ( message instanceof SoundAlarm )
+                                    {
+                                        // TODO: Open Alarm Dialog.  
+                                        //       Have quite button and suppress for either:
+                                        //       x minutes
+                                        //       until Alarm condition is gone
+                                        //       forever ( remove alarm )
                                     }
                                     else if ( message instanceof LogEvent )
                                     {

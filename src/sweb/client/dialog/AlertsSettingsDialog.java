@@ -39,6 +39,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -77,6 +79,7 @@ public class AlertsSettingsDialog extends DialogBox
         FlexCellFormatter cellFormatter = flexTable.getFlexCellFormatter();
        // fT.addStyleName("cw-FlexTable");
        // flexTable.setWidth("32em");
+        
         flexTable.setCellSpacing(5);
         flexTable.setCellPadding(3);
        
@@ -119,6 +122,17 @@ public class AlertsSettingsDialog extends DialogBox
                     alertBaseList.get(i).setEnabled(true);
                  else
                     alertBaseList.get(i).setEnabled(false);
+                 
+                 DisclosurePanel dp = (DisclosurePanel) flexTable.getWidget(i, 1);
+                 Grid g = (Grid)dp.getContent();
+                 for ( int j = 0; j < g.getRowCount(); j++ )
+                 {
+                     CheckBox cb2 = (CheckBox) g.getWidget( j, 0);
+                     if ( cb2.getValue() == true )
+                     {
+                         alertBaseList.get(i).getConfiguredDeliveryMethods().add( cb2.getText() );
+                     }
+                 }
                  
               }
               
@@ -175,6 +189,8 @@ public class AlertsSettingsDialog extends DialogBox
     private void addRow( Alert alertBase )
     {
        int numRows = flexTable.getRowCount();
+       
+       
        alertBaseList.add( alertBase );
        CheckBox cb = new CheckBox();
        cb.setValue(alertBase.getEnabled());
@@ -191,14 +207,20 @@ public class AlertsSettingsDialog extends DialogBox
        
        Grid g =  deliveryDetails(alertBase);
        
-       DisclosurePanel alertSettings = new DisclosurePanel();
-       alertSettings.setTitle(alertBase.getName());
+       DisclosurePanel alertSettings = new DisclosurePanel(alertBase.getName());
+      // alertSettings.setTitle(alertBase.getName());\
        alertSettings.setContent(g);
+       
        if ( numRows > 0 )
        {
           int prev = numRows -1;
           Widget wl = flexTable.getWidget(prev, 0);
           Widget wr = flexTable.getWidget(prev, 1);
+          
+          // The align top is needed to prevent the checkbox from moving when the
+          // disclosure panel is opened.
+          FlexCellFormatter cellFormatter = flexTable.getFlexCellFormatter();
+          cellFormatter.setVerticalAlignment(prev, 0,HasVerticalAlignment.ALIGN_TOP);
           
           flexTable.setWidget( prev, 0, cb );
           //flexTable.setWidget( prev, 1, new HTML(alertBase.getName()) );
@@ -213,6 +235,11 @@ public class AlertsSettingsDialog extends DialogBox
           flexTable.setWidget( numRows, 0, cb );
           //flexTable.setWidget( numRows, 1,  new HTML(alertBase.getName()) );
           flexTable.setWidget( numRows, 1,  alertSettings );
+       }
+       if ( g.getRowCount() == 0 )
+       {
+           cb.setEnabled(false);
+           
        }
        //flexTable.getFlexCellFormatter().setRowSpan(0, 1, numRows + 1);
     }

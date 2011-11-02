@@ -21,6 +21,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/org.moxieapps.gwt.highcharts-1.1.0.jar"/>
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/smtp.jar"/>
-	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/gwt-voices-2.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/gwt-voices-2.0.0.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
