@@ -19,8 +19,6 @@
 package sweb.client.gauge;
 
 
-import java.util.Iterator;
-
 import sweb.client.LoginStatus;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.shared.FieldVerifier;
@@ -30,22 +28,17 @@ import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerFan;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.StokerProbe.AlarmType;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -56,14 +49,11 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.MouseListenerAdapter;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
-
 import com.google.gwt.visualization.client.visualizations.Gauge;
 import com.google.gwt.visualization.client.visualizations.Gauge.Options;
 
@@ -140,20 +130,17 @@ public class GaugeComponent extends Composite
        Label lName = new Label( sd1.getName());
        lName.setStylePrimaryName("label-GaugeName");
        vp.add(lName);
-       //vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-      // vp.setCellHorizontalAlignment(lName, VerticalPanel.ALIGN_CENTER);
        vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
        vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
-       vp.setStyleName("panel-GaugeVP");
-    //   vp.setHeight("290px");
+       vp.addStyleName("sweb-panelGauge");
 
        initDataTable();
        initOptions();
 
      //  vp.setCellHorizontalAlignment(g, VerticalPanel.ALIGN_CENTER);
        vp.add(g);
-      // vp.setBorderWidth(3);  // for layout debugging
+      
 
        if (sd1.getFanDevice() != null )
        {
@@ -179,10 +166,11 @@ public class GaugeComponent extends Composite
 
        // vp.add(dp);
        vp.add( ft );
-       vp.setCellHeight(ft, "130px");  // TODO:  this should probably go in css.
+       ft.addStyleName("sweb-flexGauge");
+       
        vp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);
        decPan.setWidget( vp );
-      // decPan.setHeight("290px");
+
 
        changeVisibility(LoginStatus.getInstance().getLoginStatus());
        initWidget( decPan );
@@ -201,11 +189,10 @@ public class GaugeComponent extends Composite
    }
 
    /**
- * Convenience method to set the components in the settings panel to be non editable
- */
-public void disableSettings()
+    * Convenience method to set the components in the settings panel to be non edit able
+     */
+   public void disableSettings()
    {
-          //dp.setVisible(false);
        changeVisibility( false );
    }
 
@@ -223,7 +210,6 @@ public void disableSettings()
 
    public void loginEvent()
    {
-       //dp.setVisible(LoginStatus.getInstance().getLoginStatus());
        changeVisibility(LoginStatus.getInstance().getLoginStatus());
    }
 
@@ -257,24 +243,13 @@ public void disableSettings()
        FlexTable ft = new FlexTable();
 
        ft.setCellSpacing(6);
-      // ft.setWidth("300px");
-      ft.setStyleName("alarmSettings-flex");
+      ft.setStyleName("sweb-flexAlarmSettings");
        FlexCellFormatter cellFormatter = ft.getFlexCellFormatter();
        ft.getFlexCellFormatter().setColSpan(0, 0, 2);
        ft.getFlexCellFormatter().setColSpan(3, 1, 1);
        ft.getFlexCellFormatter().setColSpan(2, 1, 1);
        ft.getFlexCellFormatter().setColSpan(0, 1, 1);
        ft.getFlexCellFormatter().setColSpan(1, 1, 2);
-
-
-       // Add a title to the form
-      // ft.setHTML(0, 0, "Settings");
-      // cellFormatter.setColSpan(0, 0, 2);
-    //   cellFormatter.setHorizontalAlignment(
-    //       0, 0, HasHorizontalAlignment.ALIGN_LEFT);
-
-       // Add some standard form options
-
 
        htmlTargetTemperature = new HTML("Target Temperature", true);
        htmlTargetTemperature.setStyleName("html-SettingsText");
@@ -285,14 +260,13 @@ public void disableSettings()
      //  targtTempTextBox.addMouseOutHandler(settingsTextBoxMouseOutHandler());
 
 
-       //ft.setHTML(1, 0, "Alarm Type:");
+
        htmlAlarmType = new HTML("Alarm Type");
        htmlAlarmType.setStyleName("html-SettingsText");
        ft.setWidget(1,0, htmlAlarmType );
        alarmTypeListBox.setStyleName("alarmType-TextBox");
        ft.setWidget(1,1, alarmTypeListBox);
 
-       //ft.setHTML(2, 0, "Low Alarm Temp:");
        htmlLowAlarm = new HTML("Low Alarm Temp:");
        htmlLowAlarm.setStyleName("html-SettingsText");
        ft.setWidget(2,0, htmlLowAlarm );
@@ -300,7 +274,6 @@ public void disableSettings()
        ft.setWidget(2,1, alarmLowTextBox);
        alarmLowTextBox.setStyleName("temp-TextBox");
 
-       //ft.setHTML(3, 0, "High Alarm Temp:");
        htmlHighAlarm = new HTML("High Alarm Temp");
        htmlHighAlarm.setStyleName("html-SettingsText");
        ft.setWidget( 3,0, htmlHighAlarm );

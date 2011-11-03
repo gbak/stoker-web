@@ -15,6 +15,90 @@ h1 {
   font-size: 16pt;
 }
 
+/* Buttons */
+
+.sweb-MenuButton {
+   margin: 0 0 5px 0;
+   font-size:15px;
+   font-weight:bold;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+   color:#FF9900;
+   background-color:#FFFFFF;
+   border-style:solid;  
+     border-radius: 3px;
+ -moz-border-radius: 3px;
+   }
+   
+ 
+}
+.sweb-MenuButton:active {
+  color:#FF9900;
+  border: 1px inset #ccc;
+ 
+}
+.sweb-MenuButton:hover {
+  border-color: #939393;
+}
+.sweb-MenuButton[disabled] {
+  cursor: default;
+  color: #DDDDDD;
+}
+.sweb-MenuButton[disabled]:hover {
+  /* border: 1px outset #ccc; */
+  border-color: #EEEEEE;
+}
+
+/* Log Buttons */
+
+.sweb-LogButton {
+   font-size:12px;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+   color:#000000;
+   border-color: #DDDDDD;
+   background-color:#FFFFFF;
+   border-style:solid;  
+     border-radius: 3px;
+ -moz-border-radius: 3px;
+   }
+   
+ 
+}
+.sweb-LogButton:active {
+  color:#000000;
+  border: 1px inset #ccc;
+ 
+}
+.sweb-LogButton:hover {
+  border-color: #939393;
+}
+.sweb-LogButton[disabled] {
+  cursor: default;
+  color: #DDDDDD;
+}
+.sweb-LogButton[disabled]:hover {
+  /* border: 1px outset #ccc; */
+  border-color: #EEEEEE;
+}
+
+
+.sweb-LogsDecorator {
+   margin: 0 0 5px 0;
+}
+
+.sweb-flexGauge {
+   height: 138px;
+}
+
+.sweb-panelGauge {
+    width: 200px; 
+    height: 386px; 
+    text-align: center; 
+}
+
+
+
+
+
 .InvalidLoginText {
 	color: red;
 }
@@ -55,28 +139,6 @@ h1 {
 	/*font-weight: bold; */
 	color: #333333;
     font-family: 'Trebuchet MS', Helvetica, sans-serif;
-}
-
-.panel-GaugeVP {
-	/*border:5px ridge #bbb;
-	-webkit-border-radius:10px;
-    -moz-border-radius:15px; */
-    width: 200px; 
-    height: 386px; 
-    text-align: center;
-}
-.alarm-button {
-    width:   35px;
-    height:   37px;
-    outline: none;
-     border: none; 
-    /* border:2px ridge #bbb; */ 
-    margin: 3px; /* border size */
-    background: transparent url(bell3.png);
-    background-repeat:no-repeat;    
-  /*  -webkit-border-radius:10px;
-    -moz-border-radius:15px; */
-   
 }
 
 .panel-CookerType {

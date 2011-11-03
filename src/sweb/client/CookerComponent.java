@@ -183,10 +183,11 @@ public class CookerComponent extends Composite
         hpStokerHeader.setCellHorizontalAlignment( hpProfiles , HasHorizontalAlignment.ALIGN_LEFT);
         hpStokerHeader.setCellVerticalAlignment( hpProfiles , HasVerticalAlignment.ALIGN_BOTTOM );
 
-        newLogButton.setStyleName("buttons-log");
-        manageLogsButton.setStyleName("buttons-log");
-        stopLogsButton.setStyleName("buttons-log");
-        noteLogsButton.setStyleName("buttons-log");
+        /* old style - 'buttons-log' */
+        newLogButton.setStyleName("sweb-LogButton");
+        manageLogsButton.setStyleName("sweb-LogButton");
+        stopLogsButton.setStyleName("sweb-LogButton");
+        noteLogsButton.setStyleName("sweb-LogButton");
 
         // Logs
         FlexTable ftLogs = new FlexTable();
@@ -201,6 +202,7 @@ public class CookerComponent extends Composite
         logListBox.setSize("200px", "25px");
         cellFormatter.setColSpan(1, 0, 4);
         DecoratorPanel dpLogs = new DecoratorPanel();
+        dpLogs.addStyleName("sweb-LogsDecorator");
         dpLogs.add( ftLogs );
 
      // Hide based on login Status
@@ -212,7 +214,7 @@ public class CookerComponent extends Composite
         //noteLogsButton.setEnabled(false);
         HorizontalPanel hpLogs = new HorizontalPanel();
 
-        hpLogs.add( logsLabel );
+      //  hpLogs.add( logsLabel );
         hpLogs.setSize("100%", "100%");
         hpLogs.setCellHorizontalAlignment( logsLabel , HasHorizontalAlignment.ALIGN_RIGHT);
         hpLogs.setCellVerticalAlignment( logsLabel , HasVerticalAlignment.ALIGN_TOP );
@@ -224,6 +226,7 @@ public class CookerComponent extends Composite
         hpLogs.setCellHorizontalAlignment( dpLogs , HasHorizontalAlignment.ALIGN_RIGHT);
         hpLogs.setCellVerticalAlignment( dpLogs , HasVerticalAlignment.ALIGN_BOTTOM );
 
+        alertsButton.setStyleName("sweb-LogButton");
         alertsButton.addClickHandler( alertsButtonClickHandler());
         hpStokerHeader.add( alertsButton );
         hpStokerHeader.add( hpLogs );
@@ -247,6 +250,7 @@ public class CookerComponent extends Composite
      //   decPanel.setHeight("100%");
         decPanel.add(outerPanel);
 
+        decPanel.addStyleName("sweb-LogsDecorator");
        // decPanel.add( cookerLabel);
 
         // Handlers

@@ -57,6 +57,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -67,6 +68,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.VisualizationUtils;
@@ -183,8 +185,6 @@ public class StokerWeb implements EntryPoint
         if ( currentPage != LoadedPage.CONNECTED_PAGE )
         {
             RootPanel.get().clear();
-
-            StokerMenu sm = new StokerMenu();
 
             dp.setWidth("100%");
             dp.setHeight("100%");
@@ -323,22 +323,22 @@ public class StokerWeb implements EntryPoint
 
             });
             
-            testButton.setEnabled(true);
-            hp.add( testButton);
-            
+           // testButton.setEnabled(true);
+           // hp.add( testButton);
+             
+          //  hp.setBorderWidth(1);
             updateButton.setEnabled(false);
-            updateButton.setStyleName("Button-login");
+            updateButton.setStyleName("sweb-MenuButton");
             hp.add( updateButton );
-
-            loginButton.setStyleName("Button-login");
+            hp.setCellHorizontalAlignment(updateButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            hp.setCellVerticalAlignment(updateButton, HasVerticalAlignment.ALIGN_BOTTOM);
+            
+            loginButton.setStyleName("sweb-MenuButton");
             hp.add( loginButton );
 
             hp.setCellHorizontalAlignment(loginButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            hp.setCellVerticalAlignment(loginButton, HasVerticalAlignment.ALIGN_MIDDLE);
-           // hp.add( sm );
-            sm.setWidth("100%");
-
-
+            hp.setCellVerticalAlignment(loginButton, HasVerticalAlignment.ALIGN_BOTTOM);
+           
             dp.add( hp, DockPanel.NORTH );
 
             dp.add( vpCookers, DockPanel.CENTER );
