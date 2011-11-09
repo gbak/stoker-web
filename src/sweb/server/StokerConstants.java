@@ -45,4 +45,10 @@ public class StokerConstants
     // Directories
     public static final String PATH_COOK_LOG = "cookLogs";
     
+    // Stoker Strings
+    public static final String STOKER_PROMPT_LOGIN    =  "login:";
+    public static final String STOKER_PROMPT_PASSWORD =  "password:";
+    public static final String STOKER_CONDITION_START =  "stoker: start";
+    public static final String STOKER_CONDITION_STOP  =  "stkcmd: stop";
+    
 }

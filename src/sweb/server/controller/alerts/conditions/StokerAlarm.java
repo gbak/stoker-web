@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -122,8 +123,22 @@ public class StokerAlarm extends AlertCondition
             
             // Get delivery channel and send!
             //System.out.println("Alarm condition: " + sb.toString());
-            AlertDelivery ad = new NotifyByEmail();
-            ad.sendAlert(alertList);
+            Set<String> alertDelivery = saa.getConfiguredDeliveryMethods();
+            
+            for ( String delivery : alertDelivery )
+            {
+                if ( delivery.compareTo("Browser Alert") == 0)
+                {
+                    AlertDelivery ad = new NotifyBySound();
+                    ad.sendAlert(alertList);
+                }
+                else if ( delivery.compareTo("Email") == 0 )
+                {
+                    AlertDelivery ad = new NotifyByEmail();
+                    ad.sendAlert(alertList);
+                }
+            }
+            
          }
 
        // TODO: finish

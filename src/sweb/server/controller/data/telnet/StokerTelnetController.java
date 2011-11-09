@@ -147,7 +147,6 @@ public class StokerTelnetController extends DataController
         System.out.println("Creating Telnet connection.");
 
         m_Telnet = new TelnetClient();
-       // m_Telnet.connect("192.168.15.220", 23);  // TODO:  use properties to get IP
         String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
         String strStokerPort = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_PORT);
         int iStokerPort =  new Integer( strStokerPort ).intValue();
@@ -234,7 +233,7 @@ public class StokerTelnetController extends DataController
             sleep(2000);
         }
 
-        System.out.println("Out of waitForCOmpletion loop, x: " + x );
+        System.out.println("Out of waitForCompletion loop, x: " + x );
         if (x > 15)
         {
             System.out.println("Command did not return in 30 seconds, reconnecting...");
@@ -375,7 +374,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if (intRead == ' ' && lastRead == ':'
-                            && sb.toString().contains("login: "))
+                            && sb.toString().contains(StokerConstants.STOKER_PROMPT_LOGIN))  // login:
                     {
                         System.out.println("found login string");
                         sendLoginSequence();
@@ -383,7 +382,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if (intRead == ' ' && lastRead == ':'
-                            && sb.toString().contains("password: "))
+                            && sb.toString().contains(StokerConstants.STOKER_PROMPT_PASSWORD))  // password
                     {
                         System.out.println("found password string");
                         sendPasswordSequence();
@@ -391,7 +390,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if (intRead == ' ' && lastRead == '>' && doubleLastRead == 47
-                            && sb.toString().contains("tini126134 />"))
+                            && sb.toString().contains("tini") && sb.toString().contains(" />"))
                     {
                         System.out.println("found tini prompt");
                         m_LoginState = LoginState.YES;
@@ -399,7 +398,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if ( intRead == 't' && lastRead == 'r'
-                            && sb.toString().contains("stoker: start"))
+                            && sb.toString().contains(StokerConstants.STOKER_CONDITION_START))  // stoker: start
                     {
                         System.out.println("Stoker Start response detected");
                         m_StokerState = StokerCmdState.STARTED;
@@ -407,7 +406,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if ( intRead == 'p' && lastRead == 'o'
-                            && sb.toString().contains("stkcmd: stop"))
+                            && sb.toString().contains(StokerConstants.STOKER_CONDITION_STOP))  // stkcmd: stop
                     {
                         System.out.println("Stoker stopped response detected");
                         m_StokerState = StokerCmdState.STOPPED;
