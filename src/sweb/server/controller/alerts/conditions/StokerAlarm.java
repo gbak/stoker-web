@@ -12,6 +12,7 @@ import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.alerts.delivery.AlertDelivery;
 import sweb.server.controller.alerts.delivery.NotifyByEmail;
+import sweb.server.controller.alerts.delivery.NotifyBySound;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
