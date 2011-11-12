@@ -1,28 +1,28 @@
 package sweb.server.controller.alerts.conditions;
 
-import sweb.shared.model.alerts.Alert;
-import sweb.shared.model.alerts.ConnectionChangeAlert;
+import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.alerts.ConnectionChangeAlertModel;
 
 public class ConnectionOrConfigChangeAlert extends AlertCondition
 {
 
-   ConnectionChangeAlert cca = null;
+   ConnectionChangeAlertModel cca = null;
    
    public ConnectionOrConfigChangeAlert() { super(); }
    public ConnectionOrConfigChangeAlert( boolean b ) { super(b); }
    @Override
-   public void setAlertConfiguration(Alert ab)
+   public void setAlertConfiguration(AlertModel ab)
    {
-      if ( ab instanceof ConnectionChangeAlert )
-         cca = (ConnectionChangeAlert) ab;
+      if ( ab instanceof ConnectionChangeAlertModel )
+         cca = (ConnectionChangeAlertModel) ab;
       // TODO: error on else condition
       
    }
    @Override
-   public Alert getAlertConfiguration() 
+   public AlertModel getAlertConfiguration() 
    {
       
-      return (Alert) cca;
+      return (AlertModel) cca;
    }
    
    

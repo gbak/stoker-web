@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import sweb.client.dialog.AlertDialog;
 import sweb.client.dialog.GeneralMessageDialog;
 
 import net.zschech.gwt.comet.client.CometClient;
@@ -46,8 +47,8 @@ import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.alerts.Alert;
-import sweb.shared.model.alerts.SoundAlarm;
+import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.alerts.BrowserAlarmModel;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
@@ -76,12 +77,12 @@ import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
 import com.google.gwt.visualization.client.visualizations.Gauge;
 
 import sweb.client.dialog.LoginDialog;
+import sweb.client.dialog.handlers.AlertDialogHandler;
+import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
 import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.weather.WeatherComponent;
 
-import com.allen_sauer.gwt.voices.client.Sound;
-import com.allen_sauer.gwt.voices.client.Sound.LoadState;
-import com.allen_sauer.gwt.voices.client.SoundController; 
+
 
 public class StokerWeb implements EntryPoint
 {
@@ -121,7 +122,7 @@ public class StokerWeb implements EntryPoint
 
     @SerialTypes(
     { SDataPoint.class, SProbeDataPoint.class, SBlowerDataPoint.class, ControllerEventLight.class, WeatherData.class, CallBackRequestType.class,
-        HardwareDeviceStatus.class, LogEvent.class, Alert.class, SoundAlarm.class })
+        HardwareDeviceStatus.class, LogEvent.class, AlertModel.class, BrowserAlarmModel.class })
 
     public static abstract class StokerCometSerializer extends CometSerializer {
     }
@@ -222,13 +223,13 @@ public class StokerWeb implements EntryPoint
 
                 public void onClick(ClickEvent event)
                 {
-                    SoundController soundController = new SoundController();
+/*                    SoundController soundController = new SoundController();
                     Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_WAV_PCM,
                         "Alarm1.wav");
                     LoadState s = sound.getLoadState();
                     
                     sound.play();
-
+*/
                     
                 }
 
@@ -482,13 +483,24 @@ public class StokerWeb implements EntryPoint
                                         }
 
                                     }
-                                    else if ( message instanceof SoundAlarm )
+                                    else if ( message instanceof BrowserAlarmModel )
                                     {
                                         // TODO: Open Alarm Dialog.  
                                         //       Have quite button and suppress for either:
                                         //       x minutes
                                         //       until Alarm condition is gone
                                         //       forever ( remove alarm )
+                                        BrowserAlarmModel bam = (BrowserAlarmModel) message;
+                                        new AlertDialog(stokerService, bam, new AlertDialogHandler() {
+
+                                            @Override
+                                            public void onReturn( BrowserAlarmModel bam)
+                                            {
+                                                
+                                                
+                                            }
+
+                                          }).center();
                                     }
                                     else if ( message instanceof LogEvent )
                                     {

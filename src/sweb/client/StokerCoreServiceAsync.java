@@ -25,7 +25,7 @@ import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
-import sweb.shared.model.alerts.Alert;
+import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.logfile.LogDir;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -63,7 +63,7 @@ public interface StokerCoreServiceAsync
 
     void cometRequest( CallBackRequestType cometRT, AsyncCallback<Void> callback) throws IllegalArgumentException;
 
-    void getAlertConfiguration( AsyncCallback<ArrayList<Alert>> callback) throws IllegalArgumentException;
-    void setAlertConfiguration( ArrayList<Alert> alertBaseList, AsyncCallback<Void> callback ) throws IllegalArgumentException;
+    void getAlertConfiguration( AsyncCallback<ArrayList<AlertModel>> callback) throws IllegalArgumentException;
+    void setAlertConfiguration( ArrayList<AlertModel> alertBaseList, AsyncCallback<Void> callback ) throws IllegalArgumentException;
     void addNoteToLog( String note, ArrayList<String> logList, AsyncCallback<Integer> callback ) throws IllegalArgumentException;
 }

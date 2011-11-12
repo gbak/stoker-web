@@ -20,20 +20,18 @@ package sweb.server.controller.alerts.delivery;
 
 import java.util.ArrayList;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
+import sweb.shared.model.alerts.BrowserAlarmModel;
 
-import sweb.server.StokerWebProperties;
-
-public class NotifyByEmail implements Notify
+public class NotifyByBrowser implements Notify
 {
-    @Override
+
+   @Override
    public void init()
    {
       // TODO Auto-generated method stub
 
    }
-    
+
    @Override
    public void sendAlert(ArrayList<String> message)
    {
@@ -60,19 +58,11 @@ public class NotifyByEmail implements Notify
             strMessage = sb.toString();
          }
          
-         // TODO: add to constants
-         String strSendTo = StokerWebProperties.getInstance().getProperty("mail.sendTo");
-         new EmailDelivery().send(strSendTo, strSubject, strMessage,  sa);
-      }
-      catch (AddressException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      catch (MessagingException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         BrowserAlarmModel alarm = new BrowserAlarmModel();
+         alarm.setMessage(strMessage);
+         
+         BrowserDelivery.send(alarm);
+         
       }
       catch ( Exception e )
       {

@@ -39,7 +39,7 @@ import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 //import sweb.server.controller.notify.NotificationController;
 import sweb.server.controller.weather.WeatherController;
-import sweb.shared.model.alerts.Alert;
+import sweb.shared.model.alerts.AlertModel;
 
 /**
  * @author gary.bak
@@ -203,13 +203,13 @@ public class Controller
        return m_DataController;
    }
    
-   public ArrayList<Alert> getAlertConfiguration()
+   public ArrayList<AlertModel> getAlertConfiguration()
    {
       return m_AlertsController.getConfiguration();
       
    }
    
-   public void setAlertConfiguration( ArrayList<Alert> alertBaseList )
+   public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
    {
       m_AlertsController.setConfiguration(alertBaseList);
    }

@@ -1,6 +1,6 @@
 package sweb.server.controller.alerts.conditions;
 
-import sweb.shared.model.alerts.Alert;
+import sweb.shared.model.alerts.AlertModel;
 
 
 public abstract class AlertCondition
@@ -18,8 +18,8 @@ public abstract class AlertCondition
    public void setIdentifier( String id ) { m_Identifier = id; }
    public String getIdentifier( ) { return(m_Identifier); }
    
-   public abstract void setAlertConfiguration( Alert ab );
-   public abstract Alert getAlertConfiguration();
+   public abstract void setAlertConfiguration( AlertModel ab );
+   public abstract AlertModel getAlertConfiguration();
    
    
 }

@@ -26,9 +26,10 @@ import sweb.server.controller.alerts.conditions.ConnectionOrConfigChangeAlert;
 import sweb.server.controller.alerts.conditions.StokerAlarm;
 import sweb.server.controller.alerts.conditions.TempAlert;
 import sweb.server.controller.alerts.conditions.TimedAlert;
-import sweb.shared.model.alerts.Alert;
-import sweb.shared.model.alerts.ConnectionChangeAlert;
-import sweb.shared.model.alerts.StokerAlarmAlert;
+import sweb.server.controller.alerts.delivery.Messenger;
+import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.alerts.ConnectionChangeAlertModel;
+import sweb.shared.model.alerts.StokerAlarmAlertModel;
 
 public class AlertsController
 {
@@ -36,25 +37,24 @@ public class AlertsController
    ConnectionOrConfigChangeAlert connConfigChangeAlarm = new ConnectionOrConfigChangeAlert(false);
    ArrayList<TempAlert> tempAlert = new ArrayList<TempAlert>();
    ArrayList<TimedAlert> timedAlert = new ArrayList<TimedAlert>();
-   
-   Set<String> availableDeliveryList = new HashSet<String>();
 
    public AlertsController()
    {
-       availableDeliveryList.add( "Email" );
-       availableDeliveryList.add( "Browser Alert" );
    }
 
-   public void setConfiguration(ArrayList<Alert> alertBaseList)
+   /*
+    * Set configuration options sent by Client.  All configuration comes in as the base AlertModel class.
+    */
+   public void setConfiguration(ArrayList<AlertModel> alertBaseList)
    {
       System.out.println("AlertsController::setConfiguration");
-      for ( Alert ab : alertBaseList )
+      for ( AlertModel ab : alertBaseList )
       {
-         if ( ab instanceof StokerAlarmAlert )
+         if ( ab instanceof StokerAlarmAlertModel )
          {
             stokerAlarm.setAlertConfiguration(ab);
          }
-         else if ( ab instanceof ConnectionChangeAlert )
+         else if ( ab instanceof ConnectionChangeAlertModel )
          {
             
          }
@@ -62,9 +62,9 @@ public class AlertsController
    }
 
    
-   public ArrayList<Alert> getConfiguration()
+   public ArrayList<AlertModel> getConfiguration()
    {
-      ArrayList<Alert> alertBaseList = new ArrayList<Alert>();
+      ArrayList<AlertModel> alertBaseList = new ArrayList<AlertModel>();
       
       alertBaseList.add(stokerAlarm.getAlertConfiguration());
       alertBaseList.add(connConfigChangeAlarm.getAlertConfiguration());
@@ -72,7 +72,7 @@ public class AlertsController
       return alertBaseList;
       
    }
-   
+   /*
    public void init()
    {
       
@@ -105,10 +105,10 @@ public class AlertsController
 
 
    }
-
+*/
    public Set<String> getAvailableDeliveryMethods()
    {
-       return availableDeliveryList;
+       return Messenger.getDeliveryChannels();
        
    }
    
@@ -116,6 +116,6 @@ public class AlertsController
    {
       AlertsController nm = new AlertsController();
 
-      nm.init();
+     // nm.init();
    }
 }

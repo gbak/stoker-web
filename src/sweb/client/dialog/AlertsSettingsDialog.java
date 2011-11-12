@@ -21,12 +21,12 @@ package sweb.client.dialog;
 import java.util.ArrayList;
 
 import sweb.client.StokerCoreServiceAsync;
-import sweb.client.dialog.handlers.AlertsDialogHandler;
-import sweb.shared.model.alerts.Alert;
-import sweb.shared.model.alerts.ConnectionChangeAlert;
-import sweb.shared.model.alerts.StokerAlarmAlert;
-import sweb.shared.model.alerts.TempAlarmAlert;
-import sweb.shared.model.alerts.TimeAlert;
+import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
+import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.alerts.ConnectionChangeAlertModel;
+import sweb.shared.model.alerts.StokerAlarmAlertModel;
+import sweb.shared.model.alerts.TempAlarmAlertModel;
+import sweb.shared.model.alerts.TimeAlertModel;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,8 +38,6 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -49,15 +47,15 @@ public class AlertsSettingsDialog extends DialogBox
 
     FlexTable flexTable = null;
     StokerCoreServiceAsync gsa = null;
-    AlertsDialogHandler alertsDialogHandler = null;
-    ArrayList<Alert> alertBaseList = new ArrayList<Alert>();
+    AlertsSettingsDialogHandler alertsSettingsDialogHandler = null;
+    ArrayList<AlertModel> alertBaseList = new ArrayList<AlertModel>();
    
-    public AlertsSettingsDialog(StokerCoreServiceAsync g, ArrayList<Alert> alertConfig, AlertsDialogHandler alertsDialogHandler )
+    public AlertsSettingsDialog(StokerCoreServiceAsync g, ArrayList<AlertModel> alertConfig, AlertsSettingsDialogHandler alertsDialogHandler )
     {
         super();
 
         gsa = g;
-        this.alertsDialogHandler = alertsDialogHandler;
+        this.alertsSettingsDialogHandler = alertsDialogHandler;
         
         //this.setWidth("100%");
         setText("Alert Settings");
@@ -86,10 +84,10 @@ public class AlertsSettingsDialog extends DialogBox
         addTempButton.addClickHandler(addTempButtonClickHandler());
         addTimeButton.addClickHandler( addTimeButtonClickHandler());
         
-        for ( Alert a : alertConfig )
+        for ( AlertModel a : alertConfig )
         {
            //Alert stokerAlarm = new StokerAlarmAlert();
-            if ( a instanceof StokerAlarmAlert )
+            if ( a instanceof StokerAlarmAlertModel )
             {
                addButtons(addTempButton, addTimeButton );
                addRow( a );
@@ -97,7 +95,7 @@ public class AlertsSettingsDialog extends DialogBox
         }
         
         // TODO: make a for loop for this one, and the ones below.
-        Alert connectionAlert = new ConnectionChangeAlert();
+        AlertModel connectionAlert = new ConnectionChangeAlertModel();
         addRow( connectionAlert );
         
         
@@ -160,7 +158,7 @@ public class AlertsSettingsDialog extends DialogBox
 
             public void onClick(ClickEvent event)
             {
-               Alert tempAlarmAlert = new TempAlarmAlert();
+               AlertModel tempAlarmAlert = new TempAlarmAlertModel();
                addRow(tempAlarmAlert);
                // TODO: implement this
             }
@@ -173,7 +171,7 @@ public class AlertsSettingsDialog extends DialogBox
 
             public void onClick(ClickEvent event)
             {
-               Alert timeAlert = new TimeAlert();
+               AlertModel timeAlert = new TimeAlertModel();
                addRow( timeAlert );
             }
         };
@@ -186,7 +184,7 @@ public class AlertsSettingsDialog extends DialogBox
        flexTable.setWidget( numRows, 0, label1 );
        flexTable.setWidget( numRows, 1, label2 );
     }
-    private void addRow( Alert alertBase )
+    private void addRow( AlertModel alertBase )
     {
        int numRows = flexTable.getRowCount();
        
@@ -244,7 +242,7 @@ public class AlertsSettingsDialog extends DialogBox
        //flexTable.getFlexCellFormatter().setRowSpan(0, 1, numRows + 1);
     }
     
-    private Grid deliveryDetails(Alert alert)
+    private Grid deliveryDetails(AlertModel alert)
     {
         int listSize = alert.getAvailableDeliveryMethods().size();
         Grid g = new Grid(listSize, 1);

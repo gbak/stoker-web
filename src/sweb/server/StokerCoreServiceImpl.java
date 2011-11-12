@@ -18,22 +18,17 @@
 
 package sweb.server;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import net.zschech.gwt.comet.server.CometServlet;
-import net.zschech.gwt.comet.server.CometSession;
 import sweb.client.StokerCoreService;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
@@ -50,7 +45,6 @@ import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
-import sweb.server.controller.weather.WeatherController;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
@@ -61,8 +55,7 @@ import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
-import sweb.shared.model.StokerDeviceTypes;
-import sweb.shared.model.alerts.Alert;
+import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
@@ -80,8 +73,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         StokerCoreService, HttpSessionListener 
 {
 
-    private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
-    //private ConcurrentMap<String,HttpSession> loginSessions = new ConcurrentHashMap<String,HttpSession>();
+    //private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
+    
 
     private static int i =0;
    
@@ -103,16 +96,18 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public void setupCallBack()
     {
        HttpSession httpSession = getThreadLocalRequest().getSession();
-       CometSession cometSession = CometServlet.getCometSession( httpSession );
+    //   CometSession cometSession = CometServlet.getCometSession( httpSession );
 
-       if ( webSessions.putIfAbsent(httpSession.getId(), cometSession) != null )
+       ClientMessagePusher.getInstance().addSession( httpSession );
+       
+      /* if ( webSessions.putIfAbsent(httpSession.getId(), cometSession) != null )
        {
           //httpSession.invalidate();
           System.out.println("User already on");
           webSessions.remove(httpSession.getId());
           webSessions.put(httpSession.getId(), cometSession);
        }
-
+*/
        handleControllerEvents();
 
        if ( m_DPEL == null)
@@ -127,7 +122,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    {
                        for ( SProbeDataPoint sdp : aldp)
                        {
-                          enqueueCometMessage(sdp);
+                           ClientMessagePusher.getInstance().push(sdp);
                        }
                    }
 
@@ -136,13 +131,13 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    {
                        SBlowerDataPoint newBDP = new SBlowerDataPoint(bdp);
                        newBDP.setBlowerState(!bdp.isFanOn());
-                       enqueueCometMessage(newBDP);
+                       ClientMessagePusher.getInstance().push(newBDP);
 
                        Calendar cal = Calendar.getInstance();
                        cal.setTime(bdp.getCollectedDate());
                        cal.add(Calendar.MILLISECOND, 10);
                        bdp.setCollectedDate(cal.getTime());
-                       enqueueCometMessage(bdp);
+                       ClientMessagePusher.getInstance().push(bdp);
                    }
 
                 }
@@ -157,7 +152,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         return DataOrchestrator.getInstance().getLastDPs();
 
     }
-
+/*
     private void enqueueCometMessage( Serializable message)
     {
         for ( Map.Entry<String, CometSession> entry: webSessions.entrySet())
@@ -174,7 +169,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             }
 
         }
-    }
+    }*/
 
     private void removeControllerEvents()
     {
@@ -194,12 +189,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 switch( ce.getEventType())
                 {
                     case CONNECTION_ESTABLISHED:
-                        enqueueCometMessage( new ControllerEventLight(EventTypeLight.CONNECTION_ESTABLISHED));
+                        ClientMessagePusher.getInstance().push( new ControllerEventLight(EventTypeLight.CONNECTION_ESTABLISHED));
                        break;
                     case NONE:
                         break;
                     case LOST_CONNECTION:
-                        enqueueCometMessage( new ControllerEventLight(EventTypeLight.LOST_CONNECTION));
+                        ClientMessagePusher.getInstance().push( new ControllerEventLight(EventTypeLight.LOST_CONNECTION));
                         break;
                     default:
 
@@ -223,7 +218,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                     case NONE:
                         break;
                     case CONFIG_UPDATE:
-                        enqueueCometMessage( new ControllerEventLight(EventTypeLight.CONFIG_UPDATE));
+                        ClientMessagePusher.getInstance().push( new ControllerEventLight(EventTypeLight.CONFIG_UPDATE));
                         break;
                     default:
                 }
@@ -238,7 +233,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
             public void weatherUpdated(WeatherChangeEvent wce)
             {
-                enqueueCometMessage( wce.getWeatherData() );
+                ClientMessagePusher.getInstance().push( wce.getWeatherData() );
             }
 
         };
@@ -246,15 +241,15 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         Controller.getInstance().addWeatherChangeEventListener(m_wcel);
     }
     
-    public void setAlertConfiguration( ArrayList<Alert> alertBaseList )
+    public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
     {
        Controller.getInstance().setAlertConfiguration(alertBaseList);
        
     }
     
-    public ArrayList<Alert> getAlertConfiguration()
+    public ArrayList<AlertModel> getAlertConfiguration()
     {
-       ArrayList<Alert> ab = Controller.getInstance().getAlertConfiguration();
+       ArrayList<AlertModel> ab = Controller.getInstance().getAlertConfiguration();
        return ab;
     }
     
@@ -372,7 +367,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 DataOrchestrator.getInstance().startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
-                enqueueCometMessage( le );
+                ClientMessagePusher.getInstance().push( le );
 
             }
             catch (LogExistsException e)
@@ -397,7 +392,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             ret = new Integer(1);
             // Create LogEvent and pass it back via comet stream
             LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
-            enqueueCometMessage( le );
+            ClientMessagePusher.getInstance().push( le );
         }
         catch (LogNotFoundException e)
         {
@@ -474,9 +469,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private void getStatus()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
-        CometSession cometSession = CometServlet.getCometSession( httpSession );
+/*        CometSession cometSession = CometServlet.getCometSession( httpSession );
         if ( cometSession == null )
-            return;
+            return;*/
 
         Status s = null;
         if ( Controller.getInstance().isDataControllerReady() )
@@ -484,9 +479,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         else
             s = Status.DISCONNECTED;
 
-        cometSession.enqueue( new HardwareDeviceStatus( s, null ) );
+        ClientMessagePusher.getInstance().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
     }
-
+/*
     private void forceLatestDataPush()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
@@ -499,6 +494,18 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
         WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
         cometSession.enqueue( wd );
+    }
+    */
+    
+    private void forceLatestDataPush()
+    {
+        HttpSession httpSession = getThreadLocalRequest().getSession();
+        
+        for ( SDataPoint sdp : DataOrchestrator.getInstance().getLastDPs())
+           ClientMessagePusher.getInstance().sessionPush( httpSession, sdp);
+
+        WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
+                ClientMessagePusher.getInstance().sessionPush( httpSession, wd );
     }
 
     public Integer addNoteToLog(String note, ArrayList<String> logList)

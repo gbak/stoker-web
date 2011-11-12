@@ -10,9 +10,10 @@ import java.util.concurrent.Executors;
 
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
-import sweb.server.controller.alerts.delivery.AlertDelivery;
+import sweb.server.controller.alerts.delivery.Messenger;
+import sweb.server.controller.alerts.delivery.Notify;
 import sweb.server.controller.alerts.delivery.NotifyByEmail;
-import sweb.server.controller.alerts.delivery.NotifyBySound;
+import sweb.server.controller.alerts.delivery.NotifyByBrowser;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
@@ -23,8 +24,8 @@ import sweb.server.controller.events.DataPointEventListener;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.alerts.Alert;
-import sweb.shared.model.alerts.StokerAlarmAlert;
+import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.alerts.StokerAlarmAlertModel;
 
 
 public class StokerAlarm extends AlertCondition
@@ -33,7 +34,7 @@ public class StokerAlarm extends AlertCondition
    public static enum TempAlertType { NONE, LOW, HIGH };
    Date lastAlertDate = null;
    private HashMap<String,SDevice> m_hmConfig = null;
-   StokerAlarmAlert saa = null;
+   StokerAlarmAlertModel saa = null;
          
    public StokerAlarm() { super(); init(); }
    public  StokerAlarm( boolean b ) { super(b); init(); }
@@ -46,7 +47,7 @@ public class StokerAlarm extends AlertCondition
       setConfig();
       executor = Executors.newFixedThreadPool(2);
       handleControllerEvents();
-      saa = new StokerAlarmAlert(false);
+      saa = new StokerAlarmAlertModel(false);
      // saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
    }
    
@@ -100,7 +101,7 @@ public class StokerAlarm extends AlertCondition
       if ( lastAlertDate != null )
       {
          last.setTime( lastAlertDate );
-         last.add( Calendar.MINUTE, 1);
+         last.add( Calendar.MINUTE, 1);  // TODO: add this to StokerWebProperties
       }
          if ( lastAlertDate == null || last.before( current ) )
          {
@@ -122,43 +123,27 @@ public class StokerAlarm extends AlertCondition
                alertList.add("  Low Alarm Setting:  " + sp.getLowerTempAlarm());
             }
             
-            // Get delivery channel and send!
-            //System.out.println("Alarm condition: " + sb.toString());
-            Set<String> alertDelivery = saa.getConfiguredDeliveryMethods();
-            
-            for ( String delivery : alertDelivery )
-            {
-                if ( delivery.compareTo("Browser Alert") == 0)
-                {
-                    AlertDelivery ad = new NotifyBySound();
-                    ad.sendAlert(alertList);
-                }
-                else if ( delivery.compareTo("Email") == 0 )
-                {
-                    AlertDelivery ad = new NotifyByEmail();
-                    ad.sendAlert(alertList);
-                }
-            }
-            
+            Messenger.deliver(saa.getConfiguredDeliveryMethods(), alertList );
+               
          }
 
        // TODO: finish
       
    }
    @Override
-   public void setAlertConfiguration(Alert ab)
+   public void setAlertConfiguration(AlertModel ab)
    {
-      if ( ab instanceof StokerAlarmAlert )
-         saa = (StokerAlarmAlert) ab;
+      if ( ab instanceof StokerAlarmAlertModel )
+         saa = (StokerAlarmAlertModel) ab;
       // TODO: should probably throw in invalid class exception here.
    }
    @Override
-   public Alert getAlertConfiguration()
+   public AlertModel getAlertConfiguration()
    {
        // TODO: this is kind of a hack, this does not really belong here but I had
        // problems putting it in the constructors or init methods because of circular dependencies.
        saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
-      return (Alert) saa;
+      return (AlertModel) saa;
    }
      
    class CheckDataEventRunnable implements Runnable

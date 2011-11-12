@@ -95,6 +95,7 @@ public class GaugeComponent extends Composite
    boolean deviceConfigChanged = false;
 
    // TODO: move these to stokerweb.properties
+   // These are client properties, they'll need to be pushed somehow.
    int iMinGaugeTemp = 0;
    int iMaxGaugeTemp = 800;
    int iGaugeStepping = 100;

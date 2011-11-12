@@ -31,7 +31,7 @@ import sweb.client.dialog.LogFileChooser;
 import sweb.client.dialog.NewLogDialog;
 import sweb.client.dialog.NewNoteDialog;
 
-import sweb.client.dialog.handlers.AlertsDialogHandler;
+import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
 import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.NewNoteDialogHandler;
@@ -46,7 +46,7 @@ import sweb.shared.model.SDevice;
 import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.alerts.Alert;
+import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.logfile.LogDir;
 
 import com.allen_sauer.gwt.voices.client.Sound;
@@ -210,6 +210,7 @@ public class CookerComponent extends Composite
         manageLogsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
         stopLogsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
         noteLogsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
+        alertsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
 
         //noteLogsButton.setEnabled(false);
         HorizontalPanel hpLogs = new HorizontalPanel();
@@ -272,7 +273,7 @@ public class CookerComponent extends Composite
             public void onClick(ClickEvent event)
             {
 
-                stokerService.getAlertConfiguration(new AsyncCallback<ArrayList<Alert>>() {
+                stokerService.getAlertConfiguration(new AsyncCallback<ArrayList<AlertModel>>() {
 
                     public void onFailure(Throwable caught)
                     {
@@ -280,11 +281,11 @@ public class CookerComponent extends Composite
                         
                     }
 
-                    public void onSuccess(ArrayList<Alert> result)
+                    public void onSuccess(ArrayList<AlertModel> result)
                     {
-                        new AlertsSettingsDialog(stokerService, result, new AlertsDialogHandler() {
+                        new AlertsSettingsDialog(stokerService, result, new AlertsSettingsDialogHandler() {
 
-                            public void onReturn(ArrayList<Alert> alertBaseList)
+                            public void onReturn(ArrayList<AlertModel> alertBaseList)
                             {
                                // TODO Pass Alert changes back to server
                                
@@ -801,6 +802,7 @@ public class CookerComponent extends Composite
         manageLogsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
         stopLogsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
         noteLogsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
+        alertsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
 
        // graphStoker.loginEvent();
         for (GaugeComponent gc : mapGuages.values())
