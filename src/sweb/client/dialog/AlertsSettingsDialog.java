@@ -84,6 +84,11 @@ public class AlertsSettingsDialog extends DialogBox
         addTempButton.addClickHandler(addTempButtonClickHandler());
         addTimeButton.addClickHandler( addTimeButtonClickHandler());
         
+        // TODO: Enable these when the alert is added exists
+        addTempButton.setEnabled(false);
+        addTimeButton.setEnabled(false);
+        
+        
         for ( AlertModel a : alertConfig )
         {
            //Alert stokerAlarm = new StokerAlarmAlert();

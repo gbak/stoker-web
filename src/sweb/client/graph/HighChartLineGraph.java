@@ -25,6 +25,7 @@ import java.util.HashMap;
 import org.moxieapps.gwt.highcharts.client.Axis;
 import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Legend;
+import org.moxieapps.gwt.highcharts.client.PlotLine;
 import org.moxieapps.gwt.highcharts.client.Series;
 import org.moxieapps.gwt.highcharts.client.ToolTip;
 import org.moxieapps.gwt.highcharts.client.ToolTipData;
@@ -34,12 +35,14 @@ import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsFormatter;
 import org.moxieapps.gwt.highcharts.client.labels.YAxisLabels;
 import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
+import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
 
 import org.moxieapps.gwt.highcharts.client.labels.Labels;
 
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
+import sweb.shared.model.StokerFan;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -83,6 +86,7 @@ public class HighChartLineGraph extends StokerLineGraph
         chart.setHeight(iHeight);
         chart.setChartTitleText(null);
 
+        
         setHighchartTimezone();
 
       // chart.setOption("/global/useUTC", "false");
@@ -118,6 +122,7 @@ public class HighChartLineGraph extends StokerLineGraph
             .setMin(0.6)
             .setStartOnTick(false)
             .setShowFirstLabel(false)
+          //  .setPlotLines( chart.getYAxis(0).createPlotLine( ).setValue(190))
             .setLabels(new YAxisLabels()
                 .setAlign(Labels.Align.LEFT)
                 .setX(3)
@@ -128,16 +133,18 @@ public class HighChartLineGraph extends StokerLineGraph
                     }
                 }))  ;
 
+        
         chart.getYAxis(1)
             .setAxisTitleText("Blower")
             //.setMin(0.6)
             .setOpposite(true)
-
+            .setGridLineWidth(0)
             .setStartOnTick(false)
             .setShowFirstLabel(false)
             .setMax(20)
-
+             .setLineWidth(1)
             .setLabels(new YAxisLabels().setEnabled(false));
+        
        /*     .setLabels(new YAxisLabels()
                 .setAlign(Labels.Align.RIGHT)
                 .setX(3)
@@ -171,6 +178,10 @@ public class HighChartLineGraph extends StokerLineGraph
             }
             else
             {
+                if ( sd instanceof StokerFan )
+                {
+                    fanID = sd.getID();
+                }
                 s.setYAxis(1);
             }
 

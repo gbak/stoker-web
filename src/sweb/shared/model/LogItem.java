@@ -21,6 +21,7 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+
 public class LogItem implements Serializable
 {
 
@@ -29,7 +30,7 @@ public class LogItem implements Serializable
     String m_strLogName;
     String m_strCookerName;
     ArrayList<SDevice> m_asd = null;
-
+    
     public String toString()
     {
         return m_strLogName;
@@ -47,6 +48,7 @@ public class LogItem implements Serializable
     {
         this( strCookerName, s );
         m_asd = a;
+        
     }
 
     public String getLogName()
@@ -63,5 +65,6 @@ public class LogItem implements Serializable
     {
         return m_asd;
     }
+
 
 }

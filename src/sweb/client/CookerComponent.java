@@ -780,6 +780,7 @@ public class CookerComponent extends Composite
                 return true;
             }
         }
+
         return false;
     }
 

@@ -44,6 +44,10 @@ public class SDevice  implements Serializable
       }
    }
 
+   public boolean equals( SDevice sd )
+   {
+       return strID.compareToIgnoreCase(sd.getID()) == 0;
+   }
    protected SDevice()  { }
 
    public String getID()

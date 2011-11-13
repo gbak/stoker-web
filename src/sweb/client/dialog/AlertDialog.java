@@ -31,6 +31,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
 
 public class AlertDialog extends DialogBox
 {
@@ -58,7 +59,8 @@ public class AlertDialog extends DialogBox
      
         FlexTable ft = new FlexTable();
         
-        HTML ht = new HTML(bam.getMessage());
+        //HTML ht = new HTML(bam.getMessage());
+        Label ht = new Label(bam.getMessage());
         ft.setWidget(0, 1, ht);
         Button silenceButton = new Button("Silence");
         silenceButton.addClickHandler(silenceButtonClickHandler());
@@ -80,6 +82,7 @@ public class AlertDialog extends DialogBox
         {
            public void onClick(ClickEvent event)
            {
+              stopSound();
               db.hide();
            }
         };
