@@ -23,6 +23,11 @@ import java.util.Date;
 
 public class SProbeDataPoint extends SDataPoint implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -644393265758209355L;
+
     private float fTempC;
     private float fTempF;
 
@@ -70,10 +75,23 @@ public class SProbeDataPoint extends SDataPoint implements Serializable
         return fTempC;
     }
 
+    public void update( SDataPoint sdp )
+    {
+       super.update(sdp);
+       if ( sdp instanceof SProbeDataPoint )
+       {
+          SProbeDataPoint pdp = (SProbeDataPoint) sdp;
+          fTempC = pdp.fTempC;
+          fTempF = pdp.fTempF;
+       }
+    }
+    
     @Override
     public float getData()
     {
         return fTempF;
     }
+
+    
 
 }

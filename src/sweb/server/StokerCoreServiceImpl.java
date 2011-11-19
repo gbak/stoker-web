@@ -68,6 +68,14 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * The server side implementation of the RPC service.
  */
+/**
+ * @author gary.bak
+ *
+ */
+/**
+ * @author gary.bak
+ *
+ */
 @SuppressWarnings("serial")
 public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         StokerCoreService, HttpSessionListener 
@@ -96,18 +104,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public void setupCallBack()
     {
        HttpSession httpSession = getThreadLocalRequest().getSession();
-    //   CometSession cometSession = CometServlet.getCometSession( httpSession );
 
        ClientMessagePusher.getInstance().addSession( httpSession );
        
-      /* if ( webSessions.putIfAbsent(httpSession.getId(), cometSession) != null )
-       {
-          //httpSession.invalidate();
-          System.out.println("User already on");
-          webSessions.remove(httpSession.getId());
-          webSessions.put(httpSession.getId(), cometSession);
-       }
-*/
        handleControllerEvents();
 
        if ( m_DPEL == null)
@@ -152,24 +151,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         return DataOrchestrator.getInstance().getLastDPs();
 
     }
-/*
-    private void enqueueCometMessage( Serializable message)
-    {
-        for ( Map.Entry<String, CometSession> entry: webSessions.entrySet())
-        {
-            if ( entry.getValue().isValid() )
-            {
-               entry.getValue().enqueue( message );
-            }
-            else
-            {
-                System.out.println("Removing invalid comet session");
-                entry.getValue().invalidate();
-                webSessions.remove(entry.getKey());
-            }
-
-        }
-    }*/
 
     private void removeControllerEvents()
     {
@@ -466,12 +447,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         }
     }
 
+    /**
+     * Requests the status of the DataController.  Results are returned in the Comet Stream. 
+     */
     private void getStatus()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
-/*        CometSession cometSession = CometServlet.getCometSession( httpSession );
-        if ( cometSession == null )
-            return;*/
 
         Status s = null;
         if ( Controller.getInstance().isDataControllerReady() )
@@ -481,22 +462,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
         ClientMessagePusher.getInstance().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
     }
-/*
-    private void forceLatestDataPush()
-    {
-        HttpSession httpSession = getThreadLocalRequest().getSession();
-        CometSession cometSession = CometServlet.getCometSession( httpSession );
-        if ( cometSession == null )
-            return;
 
-        for ( SDataPoint sdp : DataOrchestrator.getInstance().getLastDPs())
-           cometSession.enqueue(sdp);
-
-        WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
-        cometSession.enqueue( wd );
-    }
-    */
-    
+    /**
+     * Force the server to push the latest data to the specific http session
+     * It will get the data from the data from the comet stream. 
+     */
     private void forceLatestDataPush()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
@@ -508,6 +478,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 ClientMessagePusher.getInstance().sessionPush( httpSession, wd );
     }
 
+    
+    /* (non-Javadoc)
+     * @see sweb.client.StokerCoreService#addNoteToLog(java.lang.String, java.util.ArrayList)
+     */
     public Integer addNoteToLog(String note, ArrayList<String> logList)
             throws IllegalArgumentException
     {

@@ -79,10 +79,25 @@ public abstract class SDataPoint  implements Serializable
        m_collectedTime = d;
    }
 
+   public void update( SDataPoint sdp )
+   {
+       m_collectedTime = sdp.getCollectedDate();
+       m_bTimedEvent = sdp.isTimedEvent();
+   }
+   
    public abstract boolean compare( SDataPoint sdp);
 
    public abstract float getData();
 
+   public String getDebugString()
+   {
+       StringBuilder sb = new StringBuilder();
+       sb.append("DeviceID: " + m_deviceID + "\n");
+       sb.append("collectedTime: " + m_collectedTime + "\n");
+       sb.append("Timed Event: " + m_bTimedEvent + "\n");
+       return sb.toString();
+       		
+   }
    /*
    public static void main(String[] args)
    {

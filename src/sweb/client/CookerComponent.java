@@ -19,50 +19,40 @@
 package sweb.client;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import sweb.client.LoginStatus;
-import sweb.client.StokerCoreServiceAsync;
 import sweb.client.dialog.AlertsSettingsDialog;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.client.dialog.LogFileChooser;
 import sweb.client.dialog.NewLogDialog;
 import sweb.client.dialog.NewNoteDialog;
-
 import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
-import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.LogFileChooserHandler;
+import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.NewNoteDialogHandler;
 import sweb.client.gauge.GaugeComponent;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
-
 import sweb.shared.model.LogItem;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerPitSensor;
-import sweb.shared.model.StokerProbe;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
+import sweb.shared.model.StokerProbe;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.logfile.LogDir;
 
-import com.allen_sauer.gwt.voices.client.Sound;
-import com.allen_sauer.gwt.voices.client.SoundController;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;

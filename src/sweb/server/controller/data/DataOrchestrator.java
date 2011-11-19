@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +61,7 @@ public class DataOrchestrator
 {
     private volatile static DataOrchestrator sds = null;
  //   BlockingDeque<SDataPoint> deqStokerMessages = new LinkedBlockingDeque<SDataPoint>();
-    HashMap<String,SDataPoint> hmLatestData = new HashMap<String,SDataPoint>();
+    ConcurrentHashMap<String,SDataPoint> hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
 
 
     HashMap<String,StokerFile> fileLogList = new HashMap<String,StokerFile>();
@@ -110,21 +111,88 @@ public class DataOrchestrator
        }
     }
 
+    
+    /**
+     * Adds data point to the DataOrchestrator.  This is either a probe or blower data point.  After 
+     * configuring the blower runtime the subscribers are notified.
+     * 
+     * @param dp Datapoint to add
+     */
     public void addDataPoint( SDataPoint dp)
     {
 
-        SDataPoint last =  hmLatestData.get(dp.getDeviceID());
-        if ( last!= null)
+        if ( dp.getDeviceID() == null )
         {
-            if ( last.compare(dp) == false )
+            System.out.println("DeviceID is null");
+            return;
+        }
+        SDataPoint dpFromMap =  hmLatestData.get(dp.getDeviceID());
+        
+        if ( dpFromMap != null)
+        {
+            boolean bChanged = false;
+            if ( dpFromMap.compare(dp) == false )
             {
-                DataPointEvent be = new DataPointEvent(this, false, dp );
+                bChanged = true;
+                // This adds the blower runtime to the BlowerDataPoint class.
+                // It tracks the total runtime for the deviceID.  Time for specific
+                // logs will either have to be calculated on the client or in the log file class.
+                if ( dp instanceof SBlowerDataPoint )
+                {
+                    SBlowerDataPoint bdp = (SBlowerDataPoint) dp;
+                    SBlowerDataPoint bdpFromMap = (SBlowerDataPoint) dpFromMap;
+                    if ( bdp.isFanOn() == false )
+                    {
+   //                     System.out.println("Off: ");
+   //                     System.out.println(" dp ID: " + dp.getDeviceID());
+                        
+                        Date last_d = bdpFromMap.getBlowerOnTime();
+                        Date d = dp.getCollectedDate();
+                        long lastSec = 0;
+                        if ( last_d != null ) 
+                        {
+                           long elapsedSec = d.getTime() - last_d.getTime();
+                           long totalRuntime = bdpFromMap.getTotalRuntime();
+  //                         System.out.println("Total Runtime: " + totalRuntime );
+                           bdpFromMap.setTotalRuntime(elapsedSec + totalRuntime );
+  //                         System.out.println("Fan Off event, total runtime: " + bdpFromMap.getTotalRuntime() );
+                        }
+                    }
+                    else
+                    {
+                       // System.out.println("On: " + dp.getDeviceID());
+                        bdpFromMap.setBlowerOnTime(dp.getCollectedDate());
+                    }
+                
+                }
+            }
+            
+            dpFromMap.update( dp );
+            if ( bChanged )
+            {
+                DataPointEvent be = new DataPointEvent(this, false, dpFromMap );
                 fireStateChange(be);
             }
+       //     System.out.println("Debug: " + dpFromMap.getDebugString());
+            
         }
-
-
-        hmLatestData.put(dp.getDeviceID(),dp);
+        else
+        {
+           // TODO: Removed debug
+           if ( dp instanceof SBlowerDataPoint )
+           {
+               // If blower is running, set the start time to now.  This nees to be done
+               // in case Stoker-web is started while the fan is running, if it runs for a long
+               // time without cycling, it will record no time.
+               
+               SBlowerDataPoint sdp = (SBlowerDataPoint) dp;
+               if ( sdp.isFanOn() == true )
+                  sdp.setBlowerOnTime(sdp.getCollectedDate());
+           }
+        
+           hmLatestData.put(dp.getDeviceID(),dp);
+        }
+        
     }
 
     public ArrayList<SDataPoint> getLastDPs()
@@ -282,6 +350,7 @@ public class DataOrchestrator
     protected void fireStateChange( BlowerEvent be )
     {
        Object[] copy;
+       // Make a copy of the array list so the subscribers do not hold up the synchronized block
        synchronized ( this )
        {
            copy = m_arListener.toArray();

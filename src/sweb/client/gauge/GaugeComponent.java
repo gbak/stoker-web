@@ -496,6 +496,7 @@ public class GaugeComponent extends Composite
    {
        if ( dp instanceof SBlowerDataPoint)
        {
+           System.out.println("GaugeComponent, Runtime: " + ((SBlowerDataPoint)dp).getTotalRuntime());
            stokerProbe.getFanDevice().setFanOn(((SBlowerDataPoint)dp).isFanOn());
            updateFanStatus();
        }

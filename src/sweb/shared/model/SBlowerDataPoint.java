@@ -21,13 +21,13 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import sweb.server.controller.StokerConfiguration;
-
 public class SBlowerDataPoint extends SDataPoint implements Serializable
 {
 
     private static final long serialVersionUID = 5758453043237619452L;
     private boolean bBlowerOn;
+    private long m_lTotalRuntime; 
+    private Date m_blowerOnTime;
 
     public SBlowerDataPoint( )
     {
@@ -77,6 +77,7 @@ public class SBlowerDataPoint extends SDataPoint implements Serializable
        return false;
     }
 
+    @Override
     public boolean compare( SDataPoint sdp )
     {
         if ( sdp instanceof SBlowerDataPoint )
@@ -88,6 +89,48 @@ public class SBlowerDataPoint extends SDataPoint implements Serializable
        return false;
     }
 
+    @Override
+    public void update( SDataPoint sdp)
+    {
+        super.update( sdp );
+        if ( sdp instanceof SBlowerDataPoint )
+        {
+            SBlowerDataPoint bdp = (SBlowerDataPoint) sdp;
+            bBlowerOn = bdp.bBlowerOn;
+           // m_lTotalRuntime = bdp.m_lTotalRuntime;
+          //  m_blowerOnTime = bdp.m_blowerOnTime;
+        }
+    }
+    
+    public String getDebugString()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.getDebugString() );
+        sb.append("Blower ON: " + bBlowerOn + "\n");
+        sb.append("Total Runtime: " + m_lTotalRuntime + "\n");
+        sb.append("Blower On TIme: " + m_blowerOnTime + "\n");
+        return sb.toString();
+    }
+    public void setTotalRuntime( long l )
+    {
+       m_lTotalRuntime = l;    
+    }
+    
+    public long getTotalRuntime()
+    {
+        return m_lTotalRuntime;
+    }
+    
+    public void setBlowerOnTime( Date d )
+    {
+        m_blowerOnTime = d;
+    }
+    
+    public Date getBlowerOnTime() 
+    { 
+        return m_blowerOnTime; 
+    }
+    
     @Override
     public float getData()
     {
