@@ -29,6 +29,7 @@ public class StokerFan extends SDevice  implements Serializable
 
     private static final long serialVersionUID = 7336076181286776312L;
     boolean bFanOn = false;
+    long  m_TotalRuntime = 0;
 
     protected StokerFan()
     {
@@ -65,6 +66,15 @@ public class StokerFan extends SDevice  implements Serializable
         return new String();
     }
 
+    public long getTotalRuntime()
+    {
+        return m_TotalRuntime;
+    }
+    public void setTotalRuntime(long r )
+    {
+        m_TotalRuntime = r;
+    }
+    
     public String debugString()
     {
         StringBuilder sb = new StringBuilder();
@@ -75,7 +85,10 @@ public class StokerFan extends SDevice  implements Serializable
     public void update( SDataPoint dp)
     {
         if ( dp instanceof SBlowerDataPoint )
+        {
            bFanOn = ((SBlowerDataPoint)dp).isFanOn();
+           m_TotalRuntime = ((SBlowerDataPoint)dp).getTotalRuntime();
+        }
     }
 
     @Override

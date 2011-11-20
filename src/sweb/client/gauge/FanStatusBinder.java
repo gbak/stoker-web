@@ -2,6 +2,7 @@ package sweb.client.gauge;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -30,8 +31,7 @@ public class FanStatusBinder extends Composite
         initWidget(uiBinder.createAndBindUi(this));
     }
 
-  //  @UiField Button fanStatusButton;
-  //  @UiField Label  time;
+
     @UiField Button fanStatusButton;
     @UiField Label  time;
 
@@ -42,75 +42,54 @@ public class FanStatusBinder extends Composite
 
     public void fanOn(long updatedTime)
     {
-        fanTimer = new Timer() {
-            public void run() {
-                if(!time.getText().equals("")) {
-                    lFanCounter = lFanCounter + 1;
-                time.setText(formatMinutes(lFanCounter).toString());
+        if ( fanTimer == null )
+        {
+            fanTimer = new Timer() {
+                public void run() {
+                    if(!time.getText().equals("")) {
+                        lFanCounter = lFanCounter + 1;
+                    time.setText(formatMinutes(lFanCounter).toString());
+                    }
                 }
-            }
-        };
-        
-        fanTimer.scheduleRepeating(1000);
+            };
+            
+            fanTimer.scheduleRepeating(1000);
+        }
     }
     
     public void fanOff(long updatedTime)
     {
-        fanTimer.cancel();
+        if ( fanTimer != null )
+        {
+            fanTimer.cancel();
+            fanTimer = null;
+            lFanCounter = (long)Math.floor(updatedTime/1000);
+            System.out.println("Client: updateTime: " + updatedTime );
+            time.setText(formatMinutes(lFanCounter).toString());
+        }
     }
 
     private String formatMinutes( long t )
     {
+       int hh = (int) t / 3600;
+       t = t % 3600;
        int mm = (int) t / 60; //get minutes
        int ss = (int) t % 60; //get Seconds
        
+       int phh = Math.abs(hh);
        int pmm = Math.abs(mm); //convert to positive int
        int pss = Math.abs(ss); //convert to positive int
        
-       String smm = getDoubleDigit(pmm); //convert it to double digit string '1' = '01', '2' = '02'
-       String sss = getDoubleDigit(pss);
+       String shh = getDoubleDigit2(phh);
+       String smm = getDoubleDigit2(pmm); //convert it to double digit string '1' = '01', '2' = '02'
+       String sss = getDoubleDigit2(pss);
         
-       return new String(smm + ":" + sss);
+       return new String(shh + ":" + smm + ":" + sss);
         
     }
     
-    protected static String getDoubleDigit(int i) {
-       String newI = null;
-       switch (i) {
-       case 0:
-               newI = "00";
-               break;
-       case 1:
-               newI = "01";
-               break;
-       case 2:
-               newI = "02";
-               break;
-       case 3:
-               newI = "03";
-               break;
-       case 4:
-               newI = "04";
-               break;
-       case 5:
-               newI = "05";
-               break;
-       case 6:
-               newI = "06";
-               break;
-       case 7:
-               newI = "07";
-               break;
-       case 8:
-               newI = "08";
-               break;
-       case 9:
-               newI = "09";
-               break;
-       default:
-               newI = Integer.toString(i);
-       }
-       return newI;
-     }
-    
+    private String getDoubleDigit2( int t )
+    {
+       return NumberFormat.getFormat("00").format( t );
+    }
 }

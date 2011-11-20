@@ -125,11 +125,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                        }
                    }
 
+                   // The new data point here is a dummy, it is needed to create the sharp
+                   // steps in the blower graph.
                    SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
                    if ( bdp != null && ! bdp.isTimedEvent() )
                    {
                        SBlowerDataPoint newBDP = new SBlowerDataPoint(bdp);
-                       newBDP.setBlowerState(!bdp.isFanOn());
+                       newBDP.setBlowerState(!bdp.isFanOn());  // TODO: check this gbak
+                       newBDP.setTotalRuntime(-1);
                        ClientMessagePusher.getInstance().push(newBDP);
 
                        Calendar cal = Calendar.getInstance();

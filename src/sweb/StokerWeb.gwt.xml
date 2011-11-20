@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='stokerweb'>
+
+  <set-configuration-property name="UiBinder.useSafeHtmlTemplates" value="true" />
+
   <!-- Inherit the core Web Toolkit stuff.                        -->
   <inherits name='com.google.gwt.user.User'/>
 
@@ -17,7 +20,7 @@
  <!--  <inherits name="org.danvk.dygraphs"/> -->
      <inherits name="org.moxieapps.gwt.highcharts.Highcharts"/>
 
-  <!-- Other module inherits                                      -->
+  <!-- Other module inherits -->
 
    <!--  This must be in the public directory when using the debugger --> 
   <!-- <stylesheet src="StokerWeb.css" />  -->

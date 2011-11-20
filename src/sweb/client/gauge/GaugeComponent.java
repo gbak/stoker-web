@@ -90,6 +90,7 @@ public class GaugeComponent extends Composite
    private static final String strFanOffURL = new String("fanOff_s.png");
 
    Image fanImage = new Image(strFanOffURL);
+   FanStatusBinder fsb = null;
 
    StokerProbe stokerProbe = null;
    boolean deviceConfigChanged = false;
@@ -145,12 +146,16 @@ public class GaugeComponent extends Composite
 
        if (sd1.getFanDevice() != null )
        {
+           fsb = new FanStatusBinder();
+           fanStatusHorizontalPanel.add( fsb );
+           /*
           Label lFan = new Label( "Fan: ");
           lFan.setStyleName("fan-Label");
           fanStatusHorizontalPanel.add(lFan);
           fanStatusHorizontalPanel.add(fanImage);
           fanStatusHorizontalPanel.setStyleName("fanStatus-panel");
           fanStatusHorizontalPanel.setHeight("25px");
+          */
 
        }
        else
@@ -496,8 +501,13 @@ public class GaugeComponent extends Composite
    {
        if ( dp instanceof SBlowerDataPoint)
        {
-           System.out.println("GaugeComponent, Runtime: " + ((SBlowerDataPoint)dp).getTotalRuntime());
-           stokerProbe.getFanDevice().setFanOn(((SBlowerDataPoint)dp).isFanOn());
+           System.out.println("GaugeComponent, " + dp.getDeviceID() + " Runtime: " + ((SBlowerDataPoint)dp).getTotalRuntime());
+          // stokerProbe.getFanDevice().setFanOn(((SBlowerDataPoint)dp).isFanOn());
+           
+           if ( ((SBlowerDataPoint)dp).getTotalRuntime() < 0 )  // dummy point, ignore
+               return;
+           
+           stokerProbe.getFanDevice().update(dp);
            updateFanStatus();
        }
        else
@@ -517,9 +527,16 @@ public class GaugeComponent extends Composite
        if ( sf != null )
        {
            if ( sf.isFanOn() )
-               fanImage.setUrl(strFanOnURL);
+           {
+               fsb.fanOn(0);
+               //fanImage.setUrl(strFanOnURL);
+               
+           }
            else
-               fanImage.setUrl(strFanOffURL);
+           {
+               fsb.fanOff(stokerProbe.getFanDevice().getTotalRuntime());
+               //fanImage.setUrl(strFanOffURL);
+           }
            // Fan icon not switching correctly.
        }
 
