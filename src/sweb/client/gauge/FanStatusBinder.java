@@ -42,6 +42,8 @@ public class FanStatusBinder extends Composite
 
     public void fanOn(long updatedTime)
     {
+        fanStatusButton.addStyleName("sweb-fanDisplayButtonOn");
+        fanStatusButton.setText("ON");
         if ( fanTimer == null )
         {
             fanTimer = new Timer() {
@@ -59,6 +61,8 @@ public class FanStatusBinder extends Composite
     
     public void fanOff(long updatedTime)
     {
+        fanStatusButton.removeStyleName("sweb-fanDisplayButtonOn");
+        fanStatusButton.setText("OFF");
         if ( fanTimer != null )
         {
             fanTimer.cancel();

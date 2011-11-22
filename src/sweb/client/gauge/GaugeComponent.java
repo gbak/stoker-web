@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -67,7 +68,8 @@ public class GaugeComponent extends Composite
    FlexTable layout = null;
    DecoratorPanel decPan = null;
    VerticalPanel vp = null;
-   HorizontalPanel fanStatusHorizontalPanel = null;
+  // HorizontalPanel fanStatusHorizontalPanel = null;
+   SimplePanel fanStatusPanel = null;
    DisclosurePanel dp = null;
    Button buttonAlertSettings = null;
    DataTable data;
@@ -121,7 +123,8 @@ public class GaugeComponent extends Composite
        g = new Gauge();
        layout = new FlexTable();
        vp = new VerticalPanel();
-       fanStatusHorizontalPanel = new HorizontalPanel();
+      // fanStatusHorizontalPanel = new HorizontalPanel();
+       fanStatusPanel = new SimplePanel();
        decPan = new DecoratorPanel();
        dp = new DisclosurePanel("Settings");
        options = Options.create();
@@ -147,7 +150,8 @@ public class GaugeComponent extends Composite
        if (sd1.getFanDevice() != null )
        {
            fsb = new FanStatusBinder();
-           fanStatusHorizontalPanel.add( fsb );
+           //fanStatusHorizontalPanel.add( fsb );
+           fanStatusPanel.add( fsb );
            /*
           Label lFan = new Label( "Fan: ");
           lFan.setStyleName("fan-Label");
@@ -160,12 +164,16 @@ public class GaugeComponent extends Composite
        }
        else
        {
-           fanStatusHorizontalPanel.setHeight("25px");
+           // fanStatusHorizontalPanel.setHeight("25px");
+           fanStatusPanel.setHeight("25px");
        }
 
-       vp.add( fanStatusHorizontalPanel );
-       vp.setCellHorizontalAlignment( fanStatusHorizontalPanel, HasHorizontalAlignment.ALIGN_RIGHT);
+       // vp.add( fanStatusHorizontalPanel );
+       // vp.setCellHorizontalAlignment( fanStatusHorizontalPanel, HasHorizontalAlignment.ALIGN_RIGHT);
 
+       vp.add( fanStatusPanel );
+       vp.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
+       
        FlexTable ft = getSettingsPanel(sd1.getFanDevice() != null ? true : false);
        dp.setContent( ft );
        dp.setAnimationEnabled(true);
@@ -528,7 +536,7 @@ public class GaugeComponent extends Composite
        {
            if ( sf.isFanOn() )
            {
-               fsb.fanOn(0);
+               fsb.fanOn(stokerProbe.getFanDevice().getTotalRuntime());
                //fanImage.setUrl(strFanOnURL);
                
            }

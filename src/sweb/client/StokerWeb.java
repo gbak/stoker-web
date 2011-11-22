@@ -600,6 +600,8 @@ public class StokerWeb implements EntryPoint
                 for ( CookerComponent cc : alCookers)
                    cc.draw();
 
+                      
+             //   makeCallBackRequest( new CallBackRequestType( RequestType.FORCE_DATA_PUSH ));
                // startGraphUpdateThread();
             }
 

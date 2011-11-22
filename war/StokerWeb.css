@@ -59,9 +59,6 @@ h1 {
    border-style:solid;  
      border-radius: 3px;
  -moz-border-radius: 3px;
-   }
-   
- 
 }
 .sweb-LogButton:active {
   color:#000000;
@@ -95,6 +92,45 @@ h1 {
     text-align: center; 
 }
 
+.sweb-fanLabel {
+	font-size: 11px;
+	text-align: center;
+	font-weight: bold;
+	color: black;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	margin:  0,0,0,50px; 
+}
+
+.sweb-fanElapsedTime {
+   font-size: 12px;
+   text-align: center;
+   font-weight: normal;
+   color: black;
+   font-family: "Lucida Console", Monaco, monospace;
+   
+}
+.fanStatus-panel {
+    /* border:1px solid #bbb; */ 	
+   padding: 2px 0px 0px 6px;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+}
+
+.sweb-fanDisplayButton {
+   font-size:11px;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+   color:#000000;
+   border-color: #DDDDDD;
+   /* background-color:#FFFFFF; */
+   background-color: #999;
+   border-style:solid;  
+     border-radius: 3px;
+ -moz-border-radius: 3px;
+}
+
+.sweb-fanDisplayButtonOn {
+   background-color:#090
+}
+
 
 
 
@@ -113,19 +149,6 @@ h1 {
   color: red;
 }
 
-.fan-Label {
-	font-size: 1em;
-	text-align: center;
-	font-weight: bold;
-	color: black;
-    font-family: 'Trebuchet MS', Helvetica, sans-serif;
-}
-
-.fanStatus-panel {
-    /* border:1px solid #bbb; */ 	
-   padding: 2px 0px 0px 6px;
-   font-family: 'Trebuchet MS', Helvetica, sans-serif;
-}
 
 .gauge-panel {
   /*  border:1px solid #bbb; */ 

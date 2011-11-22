@@ -7,11 +7,12 @@
 		}
 	</ui:style>
 	<g:HTMLPanel>
-	
-		<g:HorizontalPanel width="100%">
-		   <g:HTML>Fan:</g:HTML>
-		   <g:Button styleName="fanStatus" ui:field="fanStatusButton" width="44px" />
-		   <g:Label ui:field="time">0</g:Label>
+
+		<g:HorizontalPanel width="100%" verticalAlignment="ALIGN_MIDDLE">
+		   <g:HTML styleName="sweb-fanLabel"  >Fan:</g:HTML>
+		   <g:Button styleName="sweb-fanDisplayButton" text="OFF" ui:field="fanStatusButton" width="40px" height="23px" enabled="false"/>
+		   <g:Label styleName="sweb-fanElapsedTime"  ui:field="time" text="00:00:00">0</g:Label>
 		</g:HorizontalPanel>
+
 	</g:HTMLPanel>
 </ui:UiBinder> 

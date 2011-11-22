@@ -468,7 +468,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     /**
      * Force the server to push the latest data to the specific http session
-     * It will get the data from the data from the comet stream. 
+     * It will get the data from the comet stream. 
      */
     private void forceLatestDataPush()
     {

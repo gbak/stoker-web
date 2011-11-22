@@ -181,7 +181,7 @@ public class DataOrchestrator
            // TODO: Removed debug
            if ( dp instanceof SBlowerDataPoint )
            {
-               // If blower is running, set the start time to now.  This nees to be done
+               // If blower is running, set the start time to now.  This needs to be done
                // in case Stoker-web is started while the fan is running, if it runs for a long
                // time without cycling, it will record no time.
                
