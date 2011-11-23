@@ -128,10 +128,22 @@ public class DataOrchestrator
         }
         SDataPoint dpFromMap =  hmLatestData.get(dp.getDeviceID());
         
+        
         if ( dpFromMap != null)
         {
+            boolean forceUpdate = false;
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MINUTE, 1);
+            if ( dpFromMap.getCollectedDate().after(cal.getTime()))
+            {
+                // TODO: add parameter to choose if to use forced updates.
+               forceUpdate = true;
+               System.out.println("Forcing update");
+            }
+
+            
             boolean bChanged = false;
-            if ( dpFromMap.compare(dp) == false )
+            if ( dpFromMap.compare(dp) == false || forceUpdate == true )
             {
                 bChanged = true;
                 // This adds the blower runtime to the BlowerDataPoint class.

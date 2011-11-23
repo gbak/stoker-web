@@ -67,10 +67,17 @@ public class FanStatusBinder extends Composite
         {
             fanTimer.cancel();
             fanTimer = null;
-            lFanCounter = (long)Math.floor(updatedTime/1000);
-            System.out.println("Client: updateTime: " + updatedTime );
-            time.setText(formatMinutes(lFanCounter).toString());
         }
+        else
+        {
+            System.out.println("fanTimer is null!!");  // This may or may not be an error, 
+        }
+
+        lFanCounter = (long)Math.floor(updatedTime/1000);
+        System.out.println("Client: updateTime: " + updatedTime );
+        time.setText(formatMinutes(lFanCounter).toString());
+
+        
     }
 
     private String formatMinutes( long t )

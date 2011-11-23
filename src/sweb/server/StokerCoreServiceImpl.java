@@ -128,18 +128,30 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    // The new data point here is a dummy, it is needed to create the sharp
                    // steps in the blower graph.
                    SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
-                   if ( bdp != null && ! bdp.isTimedEvent() )
+                   if ( bdp != null  )
                    {
-                       SBlowerDataPoint newBDP = new SBlowerDataPoint(bdp);
-                       newBDP.setBlowerState(!bdp.isFanOn());  // TODO: check this gbak
-                       newBDP.setTotalRuntime(-1);
-                       ClientMessagePusher.getInstance().push(newBDP);
-
-                       Calendar cal = Calendar.getInstance();
-                       cal.setTime(bdp.getCollectedDate());
-                       cal.add(Calendar.MILLISECOND, 10);
-                       bdp.setCollectedDate(cal.getTime());
-                       ClientMessagePusher.getInstance().push(bdp);
+                       if (! bdp.isTimedEvent() )
+                       {
+                           SBlowerDataPoint newBDP = new SBlowerDataPoint(bdp);
+                           newBDP.setBlowerState(!bdp.isFanOn());  // TODO: check this gbak
+                           newBDP.setTotalRuntime(-1);
+                           ClientMessagePusher.getInstance().push(newBDP);
+    
+                           Calendar cal = Calendar.getInstance();
+                           cal.setTime(bdp.getCollectedDate());
+                           cal.add(Calendar.MILLISECOND, 10);
+                           bdp.setCollectedDate(cal.getTime());
+                           ClientMessagePusher.getInstance().push(bdp);
+                       }
+                       else
+                       {
+                           // if the event is triggered by time and the status is the same as the
+                           // previous, we don't need the dummy data point.
+                           
+                           // This can be a bug if this event happens to run before the live event
+                           // after the fan switches on.
+                           ClientMessagePusher.getInstance().push(bdp);
+                       }
                    }
 
                 }
