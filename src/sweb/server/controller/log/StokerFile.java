@@ -49,11 +49,14 @@ import sweb.server.controller.events.ConfigControllerEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.DataControllerEvent.EventType;
+import sweb.server.controller.events.WeatherChangeEvent;
+import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.weather.WeatherData;
 
 public class StokerFile
 {
@@ -239,9 +242,56 @@ public class StokerFile
             }
         };
 
+        
+        WeatherChangeEventListener wce = new WeatherChangeEventListener() {
+
+            @Override
+            public void weatherUpdated(WeatherChangeEvent wce)
+            {
+                synchronized (this)
+                {
+                    Writer output = null;
+                    try
+                    {
+                        output = new BufferedWriter(new FileWriter(m_outfile,
+                                true));
+
+                        WeatherData wd = wce.getWeatherData();
+                        output.write(LogFileFormatter.logWeatherDate(Calendar.getInstance().getTime()));
+                        output.write(LogFileFormatter.logPointSeperator());
+                        output.write(LogFileFormatter.logWeather(wd));
+                        output.write(LogFileFormatter.logEnd());
+
+                    }
+                    catch (IOException e)
+                    {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            output.close();
+                        }
+                        catch (IOException e)
+                        {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                
+            }
+            
+        };
+        
         DataOrchestrator.getInstance().addListener(m_dl);
+        
         Controller.getInstance().addConfigEventListener(
                 getConfigEventListener());
+        
+        Controller.getInstance().getWeatherController().addEventListener(wce);
 
     }
 

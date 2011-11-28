@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/smtp.jar"/>
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/gwt-voices-2.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/iText"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

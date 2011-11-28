@@ -42,6 +42,7 @@ import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.logfile.LogNote;
+import sweb.shared.model.weather.WeatherData;
 
 public class LogFileFormatter
 {
@@ -59,6 +60,11 @@ public class LogFileFormatter
     private static final String strNotePrefix = "n:";
     private static final String strNoteFormat = strNotePrefix + strDateFormat;
 
+    private static final String strWeatherPrefix = "w:";
+    private static final String strWeatherDataFormat = "%5s:%5s:%5s:%s";;
+    private static final String strWeatherFormat = strWeatherPrefix + strDateFormat;
+    
+    
     private static final String strDataPointFormat = "%2s:%03.1f";
     private static final String strDataBlowerFormat = "%2s:%1d";
   //  private static final String strDataPitFormat = "%2s:%03.1f:%1d";
@@ -101,21 +107,21 @@ public class LogFileFormatter
                     formatter.format( strDeviceFormat, hmSDIndex.get(sf.getID()),
                             sf.getID(),
                             sf.getProbeType().toString(),0,
-                            "",0,0,sf.getName(),"");
+                            "",0,0,encode(sf.getName()),"");
                     break;
                 case FOOD:
                     StokerProbe sp = (StokerProbe) sd;
                     formatter.format( strDeviceFormat, hmSDIndex.get( sp.getID()),
                             sp.getID(),
                             sp.getProbeType().toString(),sp.getTargetTemp(),
-                            sp.getAlarmEnabled(),sp.getUpperTempAlarm(),sp.getLowerTempAlarm(),sp.getName(),"");
+                            sp.getAlarmEnabled(),sp.getUpperTempAlarm(),sp.getLowerTempAlarm(),encode(sp.getName()),"");
                     break;
                 case PIT:
                     StokerProbe sp2 = (StokerProbe) sd;
                     formatter.format( strDeviceFormat, hmSDIndex.get( sp2.getID() ),
                             sp2.getID(),
                             sp2.getProbeType().toString(),sp2.getTargetTemp(),
-                            sp2.getAlarmEnabled(),sp2.getUpperTempAlarm(),sp2.getLowerTempAlarm(),sp2.getName(),sp2.getFanDevice().getID());
+                            sp2.getAlarmEnabled(),sp2.getUpperTempAlarm(),sp2.getLowerTempAlarm(),encode(sp2.getName()),sp2.getFanDevice().getID());
                 case UNKNOWN:
                     System.err.println("Unknown found while writing log header!");
                     System.err.println("Device: " + sd.toString());
@@ -153,6 +159,39 @@ public class LogFileFormatter
         return sb.toString();
     }
 
+    private static String encode( String enc )
+    {
+        String s = null;
+        try
+        {
+            s = URLEncoder.encode(enc, "UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // TODO Auto-generated catch block
+            System.out.println("Unable to encode string [" + enc + "]");
+            s = "Unable to encode string";
+        }    
+        return s;
+    }
+    
+    private static String decode( String dec )
+    {
+        String s = null;
+        try
+        {
+            s = URLDecoder.decode(dec,"UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            // TODO Auto-generated catch block
+            System.out.println("Unable to decode note string");
+            s = "Unable to decode string";
+        }
+        return s;
+        
+    }
+    
     public static String logNoteDate( Date d)
     {
         Formatter format = new Formatter( Locale.US );
@@ -161,19 +200,7 @@ public class LogFileFormatter
     
     public static String logNote( String note )
     {
-        String s = "";
-        try
-        {
-            s = URLEncoder.encode(note, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            // TODO Auto-generated catch block
-            System.out.println("Unable to encode note string");
-            s = "Unable to encode note string";
-        }
-                
-        return s;
+        return encode( note );
     }
     
     public static String logPointSeperator()
@@ -197,6 +224,24 @@ public class LogFileFormatter
        return format.format(strBlowerFormat,d ).toString();
     }
 
+    public static String logWeatherDate( Date d )
+    {
+        Formatter format = new Formatter( Locale.US);
+        return format.format(strWeatherFormat,d ).toString();
+    }
+    
+    public static String logWeather(WeatherData wd )
+    {
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter( sb, Locale.US);
+
+        formatter.format( strWeatherDataFormat, wd.getCurrentTemperature(), wd.getHumidity(), wd.getWindSpeed(), encode( wd.getText() ) );
+        
+        return sb.toString();
+        
+    }
+    
+    
     private static ArrayList<Integer> getUniqueCookers(ArrayList<SDevice> arSD)
     {
         ArrayList<Integer> alcn = new ArrayList<Integer>();
@@ -362,7 +407,7 @@ public class LogFileFormatter
         Integer alarmHigh = new Integer( strAlarmHigh );
         String strAlarmLow = st.nextToken();
         Integer alarmLow = new Integer( strAlarmLow );
-        String strName = st.nextToken();
+        String strName = decode(st.nextToken());
         String strBlowerID = "";
         if ( strDeviceType.compareTo("PIT") == 0 )
         {
@@ -452,10 +497,13 @@ public class LogFileFormatter
         return ar;
     }
 
-    private static float calculateCelsius(float f) {
+    private static float calculateCelsius(float f) 
+    {
 
         float celsius = (5/9) * (f -32);
 
         return celsius;
-        }
+    }
+    
+    
 }
