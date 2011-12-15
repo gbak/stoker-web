@@ -56,6 +56,7 @@ import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.logfile.LogNote;
 import sweb.shared.model.weather.WeatherData;
 
 public class StokerFile
@@ -423,8 +424,7 @@ public class StokerFile
             Writer output = null;
             try
             {
-                output = new BufferedWriter(new FileWriter(m_outfile,
-                        true));
+                output = new BufferedWriter(new FileWriter(m_outfile, true));
 
                 output.write(LogFileFormatter.logNoteDate(Calendar.getInstance().getTime()));
                 output.write(LogFileFormatter.logPointSeperator() + LogFileFormatter.logNote(note) );
@@ -451,6 +451,37 @@ public class StokerFile
         
     }
      
+    public ArrayList<LogNote> readAllNotes()
+    {
+        ArrayList<LogNote> notes = new ArrayList<LogNote>();
+        try
+        {
+            BufferedReader in = new BufferedReader(new FileReader(m_strLogFileName));
+            String str;
+            while ((str = in.readLine()) != null) {
+               
+                LogNote note = LogFileFormatter.parseNoteLine( str);
+                if ( note != null )
+                    notes.add( note );
+                
+            }
+            in.close();
+
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return notes;
+    }
+    
     public boolean attachToExistingLog( String fileName )
     {
         synchronized( this )
@@ -483,6 +514,10 @@ public class StokerFile
         return true;
     }
 
+    public ArrayList<SDevice> getConfigFromFile()
+    {
+        return getConfigFromExistingFile(m_strLogFileName);
+    }
     public static ArrayList<SDevice> getConfigFromExistingFile( String s )
     {
         ArrayList<SDevice> arSD = new ArrayList<SDevice>();

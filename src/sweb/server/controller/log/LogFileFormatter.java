@@ -257,6 +257,7 @@ public class LogFileFormatter
         return alcn;
     }
 
+
     public static StringBuilder parseLogDataSection(String s, ArrayList<ArrayList<SDataPoint>> arDP )
     {
         StringTokenizer st = new StringTokenizer(s, "\nd");

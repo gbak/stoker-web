@@ -244,6 +244,10 @@ public class DataOrchestrator
         return new ArrayList<ArrayList<SDataPoint>>();
     }
 
+    public ArrayList<SDevice> getConfigSettings( String logName )
+    {
+       return fileLogList.get(logName).getConfigFromFile();    
+    }
     public Set<Entry<String, SDataPoint>> getData()
     {
         return Collections.unmodifiableSet(hmLatestData.entrySet());
@@ -350,6 +354,10 @@ public class DataOrchestrator
 
     }
 
+    public ArrayList<LogList> getNotes(String logName)
+    {
+        return fileLogList.get( logName ).readAllNotes();
+    }
     public void addNoteToLog( String note, ArrayList<String> logList )
     {
         for ( String logName: logList )
