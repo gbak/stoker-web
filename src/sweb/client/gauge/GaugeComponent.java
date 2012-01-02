@@ -67,7 +67,7 @@ public class GaugeComponent extends Composite
    String strGaugeName = "";
    FlexTable layout = null;
    DecoratorPanel decPan = null;
-   VerticalPanel vp = null;
+   
   // HorizontalPanel fanStatusHorizontalPanel = null;
    SimplePanel fanStatusPanel = null;
    DisclosurePanel dp = null;
@@ -90,6 +90,8 @@ public class GaugeComponent extends Composite
 
    private static final String strFanOnURL = new String("fanOn_s.png");
    private static final String strFanOffURL = new String("fanOff_s.png");
+   
+   public static enum Alignment { HOROZONTAL, VERTICAL };
 
    Image fanImage = new Image(strFanOffURL);
    FanStatusBinder fsb = null;
@@ -106,11 +108,12 @@ public class GaugeComponent extends Composite
    String strColorYellow = "#FF9900";
    String strColorRed = "#DC3912";
 
-
-   public GaugeComponent(StokerProbe sd1)
+   public GaugeComponent(StokerProbe sd1, Alignment align )
    {
        //GaugeComponent gc = new GaugeComponent();
-
+       VerticalPanel vp = null;
+       HorizontalPanel hp = null;
+       
        stokerProbe = sd1;
 
        alarmSelectedCheckBox = new CheckBox();
@@ -122,7 +125,12 @@ public class GaugeComponent extends Composite
 
        g = new Gauge();
        layout = new FlexTable();
-       vp = new VerticalPanel();
+       
+       if ( align == Alignment.VERTICAL )
+          vp = new VerticalPanel();
+       else
+          hp = new HorizontalPanel();
+       
       // fanStatusHorizontalPanel = new HorizontalPanel();
        fanStatusPanel = new SimplePanel();
        decPan = new DecoratorPanel();
@@ -134,17 +142,33 @@ public class GaugeComponent extends Composite
 
        Label lName = new Label( sd1.getName());
        lName.setStylePrimaryName("label-GaugeName");
-       vp.add(lName);
-       vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-       vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+       
+       if ( align == Alignment.VERTICAL )
+       {
+          vp.add(lName);
+          vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+          vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
-       vp.addStyleName("sweb-panelGauge");
+          vp.addStyleName("sweb-panelGauge");
+       }
+       else
+       {
+           hp.add(lName);
+           hp.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+           hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
+           hp.addStyleName("sweb-panelGauge");
+            
+       }
        initDataTable();
        initOptions();
 
      //  vp.setCellHorizontalAlignment(g, VerticalPanel.ALIGN_CENTER);
+       
+       if ( align == Alignment.VERTICAL )
        vp.add(g);
+       else
+           hp.add( g );
       
 
        if (sd1.getFanDevice() != null )
@@ -171,15 +195,27 @@ public class GaugeComponent extends Composite
        // vp.add( fanStatusHorizontalPanel );
        // vp.setCellHorizontalAlignment( fanStatusHorizontalPanel, HasHorizontalAlignment.ALIGN_RIGHT);
 
-       vp.add( fanStatusPanel );
-       vp.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
-       
+       if ( align == Alignment.VERTICAL )
+       {
+          vp.add( fanStatusPanel );
+          vp.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
+       }
+       else
+       {
+           hp.add( fanStatusPanel );
+           hp.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
+           
+       }
        FlexTable ft = getSettingsPanel(sd1.getFanDevice() != null ? true : false);
        dp.setContent( ft );
        dp.setAnimationEnabled(true);
 
        // vp.add(dp);
-       vp.add( ft );
+       if ( align == Alignment.VERTICAL )  
+           vp.add( ft );
+       else
+           hp.add( ft );
+       
        ft.addStyleName("sweb-flexGauge");
        
        vp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);

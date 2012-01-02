@@ -43,7 +43,7 @@ public class ReportEngine
     {
         ArrayList<ArrayList<SDataPoint>> dataList = DataOrchestrator.getInstance().getAllDataPoints(logName);
         ArrayList<SDevice> configList = DataOrchestrator.getInstance().getConfigSettings(logName);
-        ArrayList<LogNote> noteList = DataOrchestrator.getInstance().getNotes();
+        ArrayList<LogNote> noteList = DataOrchestrator.getInstance().getNotes(logName);
         
         FanStats fanStats = calculateFanStats( dataList );
         long Duration = getDuration( dataList );

@@ -52,6 +52,7 @@ import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.logfile.LogNote;
 
 /*
  *   Class to pull all stoker messages and persist data
@@ -354,7 +355,7 @@ public class DataOrchestrator
 
     }
 
-    public ArrayList<LogList> getNotes(String logName)
+    public ArrayList<LogNote> getNotes(String logName)
     {
         return fileLogList.get( logName ).readAllNotes();
     }
