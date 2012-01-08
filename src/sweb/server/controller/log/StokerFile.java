@@ -246,7 +246,6 @@ public class StokerFile
         
         WeatherChangeEventListener wce = new WeatherChangeEventListener() {
 
-            @Override
             public void weatherUpdated(WeatherChangeEvent wce)
             {
                 synchronized (this)

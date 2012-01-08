@@ -46,6 +46,7 @@ import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.StokerProbe;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.BrowserAlarmModel;
@@ -80,6 +81,7 @@ import sweb.client.dialog.LoginDialog;
 import sweb.client.dialog.handlers.AlertDialogHandler;
 import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
 import sweb.client.dialog.handlers.LoginDialogHandler;
+import sweb.client.gauge.GaugeComponent.Alignment;
 import sweb.client.weather.WeatherComponent;
 
 
@@ -113,10 +115,13 @@ public class StokerWeb implements EntryPoint
     VerticalPanel vpCookers = new VerticalPanel(); // For Multiple cookers
     Button loginButton = new Button();
     Button updateButton = new Button();
+    Button statusFauxButton = new Button();
     Button testButton = new Button();  // Test various functions.
 
     boolean requiresUpdate = true;  // TODO: hardcoding this to so the button stays enabled.
 
+    boolean bConnected = false;
+    
     String httpSessionID = "";
 
 
@@ -328,6 +333,12 @@ public class StokerWeb implements EntryPoint
            // hp.add( testButton);
              
           //  hp.setBorderWidth(1);
+            statusFauxButton.setEnabled(false);
+            statusFauxButton.setStyleName("sweb-ConnectionButton");
+            statusFauxButton.setText("No Connection");
+            
+            hp.add( statusFauxButton );
+            
             updateButton.setEnabled(false);
             updateButton.setStyleName("sweb-MenuButton");
             hp.add( updateButton );
@@ -414,7 +425,7 @@ public class StokerWeb implements EntryPoint
                                         for ( CookerComponent cc : alCookers )
                                         {
                                             boolean bUpdateGraph = false;
-
+                                            setConnected( true );
                                             cc.updateGauges( sdp );
                                             if ( sdp instanceof SBlowerDataPoint )
                                                 bUpdateGraph = true;
@@ -436,7 +447,7 @@ public class StokerWeb implements EntryPoint
                                                 for ( CookerComponent cc : alCookers )
                                                 {
                                                     cc.setConnected(false);
-                                                   // cc.updateGauges( null );  // empty class will 0 out gauges
+                                                    setConnected(false);
                                                 }
                                                 break;
                                             case CONNECTION_ESTABLISHED:
@@ -449,7 +460,7 @@ public class StokerWeb implements EntryPoint
                                                 for ( CookerComponent cc : alCookers )
                                                 {
                                                     cc.setConnected(true);
-                                                   // cc.updateGauges( null );  // empty class will 0 out gauges
+                                                    setConnected( true );
                                                 }
                                                 break;
                                             case CONFIG_UPDATE:
@@ -560,7 +571,25 @@ public class StokerWeb implements EntryPoint
             });
     }
 
-
+    private void setConnected(boolean connected)
+    {
+        if ( bConnected == connected )
+            return;
+        
+        if ( !connected )
+        {
+           statusFauxButton.setStyleName("sweb-ConnectionButton");
+           statusFauxButton.setText("No Connection");
+           bConnected = false;
+        }
+        else
+        {
+            statusFauxButton.setStyleName("sweb-ConnectionButtonOn");
+            statusFauxButton.setText("  Connected  ");
+            bConnected = true;
+        }
+    }
+    
     private String getUpdateButtonText()
     {
         if ( requiresUpdate == true )
@@ -670,18 +699,18 @@ public class StokerWeb implements EntryPoint
        int iCooker = 0;
        for ( int i = 1; i <= iNumCookers; i++ )
        {
+           // Create a CookerComponent for each cooker.  This is a pit probe with a blower association
            CookerComponent cc = new CookerComponent(stokerService);
 
-         //  DecoratorPanel decp = new DecoratorPanel();
-         //  decp.add( cc.getPanel());
            vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
-          // decp.setWidth("100%");
-          // dp.setStyleName("cookers-DecoratorPanel");
-         //  dp.add( cc.getPanel());
 
-         // vpCookers.setCellWidth(cc.getPanel(), "100%");
-          vpCookers.setWidth("100%");
+           vpCookers.setWidth("100%");
 
+           int numProbes = getNumProbesForCooker( i, alDevices );
+           // Debug ***
+           if ( numProbes > 3 )
+              cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
+           
            Iterator<SDevice> deviceIter = alDevices.iterator();
            while (deviceIter.hasNext())
            {
@@ -689,9 +718,6 @@ public class StokerWeb implements EntryPoint
                if ( sd.getCookerNum() == i)
                {
                    cc.addDevice( sd );
-                   // 1.  Implement add device for cc if possible.
-                   // 2.  Comment out getStokerPanels below
-                   // 3.  get this working
                }
            }
            cc.init();
@@ -700,6 +726,21 @@ public class StokerWeb implements EntryPoint
 
     }
 
+    private int getNumProbesForCooker( int cookerNum,  ArrayList<SDevice> alDevices )
+    {
+        int i = 0;
+        Iterator<SDevice> deviceIter = alDevices.iterator();
+        while (deviceIter.hasNext())
+        {
+            SDevice sd = deviceIter.next();
+            if (( sd.getProbeType() == DeviceType.PIT || sd.getProbeType() == DeviceType.FOOD) && sd.getCookerNum() == cookerNum)
+            {
+               i++;
+            }
+        }
+        return i;
+    }
+    
     private int getNumCookers( ArrayList<SDevice> sda )
     {
         int iMax = 1;

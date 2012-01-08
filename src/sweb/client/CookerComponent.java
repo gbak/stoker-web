@@ -32,6 +32,7 @@ import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.NewNoteDialogHandler;
 import sweb.client.gauge.GaugeComponent;
+import sweb.client.gauge.GaugeComponent.Alignment;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
 import sweb.shared.model.LogItem;
@@ -47,12 +48,15 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.DisclosurePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -89,8 +93,11 @@ public class CookerComponent extends Composite
 
     private DecoratorPanel decPanel = new DecoratorPanel();
     private VerticalPanel outerPanel = new VerticalPanel();
-    private HorizontalPanel hpStokerElements = new HorizontalPanel();
+    private FlowPanel hpStokerElements = new FlowPanel();
+   // private HorizontalPanel hpStokerElements = new HorizontalPanel();
+
     private HorizontalPanel hpStokerHeader = new HorizontalPanel();
+     
   //  private FlowPanel fpStokerHeader = new FlowPanel();
     private SimplePanel sGraphPanel = new SimplePanel();
    // private DecoratorPanel sGraphPanel = new DecoratorPanel();
@@ -128,7 +135,9 @@ public class CookerComponent extends Composite
 
     int m_Width = 0;
     int m_Height = 0;
-
+    
+    Alignment alignment = Alignment.SINGLE;
+    
   //  private StokerLineGraph graphStoker = null;
    // private HashMap<String,StokerLineGraph> listGraphStoker = new HashMap<String,StokerLineGraph>();
     StokerLineGraph graphStoker = null;
@@ -151,11 +160,10 @@ public class CookerComponent extends Composite
         ftCookerType.setStyleName("panel-CookerType");
         ftCookerType.setWidget( 0,0, cookerLabel);
         ftCookerType.setWidget( 0,1, cookerNameLabel );
-        ftCookerType.setWidget( 1,0, statusLabel );
-       // ftCookerType.setWidget( 1,1, StatusImage );
-        ftCookerType.setWidget( 1,1, StatusText );
+      //  ftCookerType.setWidget( 1,0, statusLabel );
+      //  ftCookerType.setWidget( 1,1, StatusText );
 
-        statusLabel.setStyleName("label-Status");
+      //  statusLabel.setStyleName("label-Status");
 
         hpStokerHeader.add( ftCookerType );
 
@@ -183,14 +191,20 @@ public class CookerComponent extends Composite
         FlexTable ftLogs = new FlexTable();
         FlexCellFormatter cellFormatter = ftLogs.getFlexCellFormatter();
 
+        /*ftLogs.setWidth("100%");
+        ftLogs.setWidget(0, 0, noteLogsButton );
+        ftLogs.setWidget(0, 1, manageLogsButton );
+        ftLogs.setWidget(0, 2, newLogButton );
+        ftLogs.setWidget(0, 3, stopLogsButton );
+        ftLogs.setWidget(1, 0, logListBox );*/
         ftLogs.setWidth("100%");
         ftLogs.setWidget(0, 0, noteLogsButton );
         ftLogs.setWidget(0, 1, manageLogsButton );
         ftLogs.setWidget(0, 2, newLogButton );
         ftLogs.setWidget(0, 3, stopLogsButton );
-        ftLogs.setWidget(1, 0, logListBox );
+        ftLogs.setWidget(0, 4, logListBox );
         logListBox.setSize("200px", "25px");
-        cellFormatter.setColSpan(1, 0, 4);
+      //  cellFormatter.setColSpan(1, 0, 4);
         DecoratorPanel dpLogs = new DecoratorPanel();
         dpLogs.addStyleName("sweb-LogsDecorator");
         dpLogs.add( ftLogs );
@@ -224,15 +238,15 @@ public class CookerComponent extends Composite
         hpStokerHeader.setCellHorizontalAlignment( hpLogs , HasHorizontalAlignment.ALIGN_RIGHT);
         hpStokerHeader.setCellVerticalAlignment( hpLogs , HasVerticalAlignment.ALIGN_BOTTOM );
 
-       // hpStokerHeader.setBorderWidth(3);
         outerPanel.setWidth("100%");
         outerPanel.setHeight("100%");
         outerPanel.add( hpStokerHeader);
 
-      //  hpStokerElements.setBorderWidth(2);
-        hpStokerElements.setWidth("100%");
+      //  hpStokerElements.setWidth("100%");
+        hpStokerElements.setWidth(new Integer(Window.getClientWidth() - 40).toString() + "px");
 
-        hpStokerElements.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+        
+      //  hpStokerElements.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
         outerPanel.add(hpStokerElements);
        // outerPanel.setBorderWidth(2);
 
@@ -505,12 +519,16 @@ public class CookerComponent extends Composite
     {
         if ( sd1.isProbe())
         {
-           GaugeComponent gc = new GaugeComponent((StokerProbe)sd1) ;
+           GaugeComponent gc = new GaugeComponent((StokerProbe)sd1, alignment ) ;
            mapGuages.put(sd1.getID(),gc);
-           hpStokerElements.add( gc );
-           hpStokerElements.setCellHorizontalAlignment(gc, HasHorizontalAlignment.ALIGN_LEFT);
-           gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
 
+           gc.addStyleName("sweb-gaugeFlowPanel");  // this is needed to make the flow panel move left to right
+           
+              hpStokerElements.add( gc );
+   //           hpStokerElements.setCellHorizontalAlignment(gc, HasHorizontalAlignment.ALIGN_LEFT);
+              gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
+
+           
            mapDeviceList.put( sd1.getID(), sd1);
            if ( sd1.getProbeType() == DeviceType.PIT )
            {
@@ -525,6 +543,11 @@ public class CookerComponent extends Composite
         }
     }
 
+    public void setOrientation(Alignment a )
+    {
+        alignment = a;
+    }
+    
     public String getName()
     {
        return strCookerName;
@@ -535,18 +558,42 @@ public class CookerComponent extends Composite
         System.out.println("Height is: " + hpStokerElements.getOffsetHeight());
         System.out.println("Width is: " + hpStokerElements.getOffsetWidth());
 
-        m_Width = hpStokerElements.getOffsetWidth() - gaugePanelWidth - 5;
-        m_Height = hpStokerElements.getOffsetHeight();
-
-        //cookerNameLabel.setText("Large Egg");
         cookerNameLabel.setText(strCookerName);
 
-        sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
-        sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
-        DecoratorPanel dp = new DecoratorPanel();
-        dp.add( sGraphPanel);
-         hpStokerElements.add( dp );
+    //    sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
+        DecoratorPanel dpGraph = new DecoratorPanel();
+        
+       // dpGraph.addStyleName("sweb-graphPanel");
 
+        m_Height = 385;
+        if ( alignment == Alignment.SINGLE)
+        {
+            m_Width = hpStokerElements.getOffsetWidth() - gaugePanelWidth - 10;
+            
+            sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
+
+           dpGraph.add( sGraphPanel);
+           hpStokerElements.add( dpGraph );
+        }
+        else
+        {
+            m_Height = 325;
+            m_Width = hpStokerElements.getOffsetWidth()- 20;
+
+            sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
+
+            sGraphPanel.setHeight( m_Height + "px");
+            DisclosurePanel dp = new DisclosurePanel("Graph");
+        //    dp.setWidth(new Integer(hpStokerElements.getOffsetWidth() - 10).toString() + "px");
+            dp.setWidth(new Integer(m_Width).toString() + "px");
+            dp.setVisible(true);
+            dp.setContent( sGraphPanel );
+            dp.setAnimationEnabled(true);
+            
+            dpGraph.add( dp );
+           outerPanel.add( dpGraph );
+        }
+        
         getActiveLogListFromServer();
 
     }
@@ -565,6 +612,7 @@ public class CookerComponent extends Composite
         Widget w = sGraphPanel.getWidget();
         if ( w != null )
            sGraphPanel.remove(w);
+        
         sGraphPanel.add(graphStoker);
 
     }
@@ -619,7 +667,7 @@ public class CookerComponent extends Composite
             if ( b == false )
                updateGauges( null );
 
-            setConnectedImage();
+           // setConnectedImage();
         }
     }
 

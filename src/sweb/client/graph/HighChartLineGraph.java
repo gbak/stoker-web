@@ -83,7 +83,8 @@ public class HighChartLineGraph extends StokerLineGraph
             .setFloating(false)
             .setBorderWidth(0)
            );
-        chart.setHeight(iHeight);
+        chart.setHeight(iHeight - 5);
+        chart.setWidth( iWidth );
         chart.setChartTitleText(null);
 
         

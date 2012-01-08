@@ -36,6 +36,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CellPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratorPanel;
@@ -91,7 +92,7 @@ public class GaugeComponent extends Composite
    private static final String strFanOnURL = new String("fanOn_s.png");
    private static final String strFanOffURL = new String("fanOff_s.png");
    
-   public static enum Alignment { HOROZONTAL, VERTICAL };
+   public static enum Alignment { SINGLE, MULTIPLE };
 
    Image fanImage = new Image(strFanOffURL);
    FanStatusBinder fsb = null;
@@ -102,13 +103,101 @@ public class GaugeComponent extends Composite
    // TODO: move these to stokerweb.properties
    // These are client properties, they'll need to be pushed somehow.
    int iMinGaugeTemp = 0;
-   int iMaxGaugeTemp = 800;
+   int iMaxGaugeTemp =800;
    int iGaugeStepping = 100;
    String strColorGreen = "#109618";
    String strColorYellow = "#FF9900";
    String strColorRed = "#DC3912";
+   
+   Alignment alignment;
 
    public GaugeComponent(StokerProbe sd1, Alignment align )
+   {
+       //GaugeComponent gc = new GaugeComponent();
+
+       alignment = align;
+       CellPanel cellp = null;
+
+       stokerProbe = sd1;
+
+       alarmSelectedCheckBox = new CheckBox();
+
+       if ( sd1.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
+           alarmSelectedCheckBox.setValue( false );
+       else
+           alarmSelectedCheckBox.setValue( true );
+
+       g = new Gauge();
+       layout = new FlexTable();
+       
+       cellp = new VerticalPanel();
+       
+       ((VerticalPanel)cellp).setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+       ((VerticalPanel)cellp).setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+
+
+       
+       fanStatusPanel = new SimplePanel();
+       decPan = new DecoratorPanel();
+       dp = new DisclosurePanel("Settings");
+       dp.setVisible(false);
+       options = Options.create();
+       data = DataTable.create();
+
+       
+       VerticalPanel vp1 = new VerticalPanel();
+       
+       Label lName = new Label( sd1.getName());
+       lName.setStylePrimaryName("label-GaugeName");
+       
+       initDataTable();
+       initOptions();
+  
+
+       if (sd1.getFanDevice() != null )
+       {
+           fsb = new FanStatusBinder();
+           fanStatusPanel.add( fsb );
+       }
+       else
+       {
+           fanStatusPanel.setHeight("25px");
+       }
+ 
+       FlexTable ft = getSettingsPanel(sd1.getFanDevice() != null ? true : false);
+
+       ft.addStyleName("sweb-flexGauge");
+
+       dp.setContent( ft );
+       dp.setAnimationEnabled(true);
+       
+       vp1.add(lName);
+       vp1.add(g); 
+
+       vp1.add( fanStatusPanel );
+   //    vp2.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
+
+       if ( alignment == Alignment.SINGLE)
+       {
+          vp1.add( ft );
+          cellp.addStyleName("sweb-panelGaugeTall");
+       }
+       else
+       {
+           vp1.add( dp );
+           vp1.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT); 
+           cellp.addStyleName("sweb-panelGaugeShort");
+       }
+       
+       cellp.add( vp1 );
+       
+       decPan.setWidget( cellp );
+
+       changeVisibility(LoginStatus.getInstance().getLoginStatus());
+       initWidget( decPan );
+   }
+   
+/*   public GaugeComponent(StokerProbe sd1, Alignment align )
    {
        //GaugeComponent gc = new GaugeComponent();
        VerticalPanel vp = null;
@@ -149,7 +238,7 @@ public class GaugeComponent extends Composite
           vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
           vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
-          vp.addStyleName("sweb-panelGauge");
+          vp.addStyleName("sweb-panelGaugeV");
        }
        else
        {
@@ -157,7 +246,7 @@ public class GaugeComponent extends Composite
            hp.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
            hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
-           hp.addStyleName("sweb-panelGauge");
+           hp.addStyleName("sweb-panelGaugeH");
             
        }
        initDataTable();
@@ -176,14 +265,14 @@ public class GaugeComponent extends Composite
            fsb = new FanStatusBinder();
            //fanStatusHorizontalPanel.add( fsb );
            fanStatusPanel.add( fsb );
-           /*
+           
           Label lFan = new Label( "Fan: ");
           lFan.setStyleName("fan-Label");
           fanStatusHorizontalPanel.add(lFan);
           fanStatusHorizontalPanel.add(fanImage);
           fanStatusHorizontalPanel.setStyleName("fanStatus-panel");
           fanStatusHorizontalPanel.setHeight("25px");
-          */
+          
 
        }
        else
@@ -210,21 +299,34 @@ public class GaugeComponent extends Composite
        dp.setContent( ft );
        dp.setAnimationEnabled(true);
 
-       // vp.add(dp);
-       if ( align == Alignment.VERTICAL )  
-           vp.add( ft );
-       else
-           hp.add( ft );
-       
        ft.addStyleName("sweb-flexGauge");
        
-       vp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);
-       decPan.setWidget( vp );
+       
+       CellPanel cp = null;
+       // vp.add(dp);
+       if ( align == Alignment.VERTICAL )
+       {
+           vp.add( ft );
+           vp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);
+           cp = vp;
+       }
+       else
+       {
+           hp.add( ft );
+           hp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);
+           cp = hp;
+           
+       }
+       
+      
+       
+       
+       decPan.setWidget( cp );
 
 
        changeVisibility(LoginStatus.getInstance().getLoginStatus());
        initWidget( decPan );
-   }
+   }*/
 
    /**
  * Convenience method to Allow the components in the settings panel to be edited.
@@ -655,7 +757,9 @@ public class GaugeComponent extends Composite
 
     options.setWidth(200);
     options.setHeight(210);
-        for ( int i = 0; i < isize; i++ )
+
+    
+    for ( int i = 0; i < isize; i++ )
     {
        sa[i] = new Integer( iTemp ).toString();
        iTemp = iTemp + iGaugeStepping;

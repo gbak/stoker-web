@@ -17,6 +17,30 @@ h1 {
 
 /* Buttons */
 
+.sweb-ConnectionButton {
+   margin: 0 0 5px 0;
+   font-size:15px;
+   font-weight:bold;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+   color:#DDDDDD;
+   background-color:#999;
+   border-style:solid;  
+     border-radius: 3px;
+ -moz-border-radius: 3px;
+   }
+
+.sweb-ConnectionButtonOn {
+   margin: 0 0 5px 0;
+   font-size:15px;
+   font-weight:bold;
+   font-family: 'Trebuchet MS', Helvetica, sans-serif;
+   color:green;
+   background-color: white;
+   border-style:solid;  
+     border-radius: 3px;
+ -moz-border-radius: 3px;
+   }
+   
 .sweb-MenuButton {
    margin: 0 0 5px 0;
    font-size:15px;
@@ -27,9 +51,7 @@ h1 {
    border-style:solid;  
      border-radius: 3px;
  -moz-border-radius: 3px;
-   }
    
- 
 }
 .sweb-MenuButton:active {
   color:#FF9900;
@@ -86,12 +108,25 @@ h1 {
    height: 138px;
 }
 
-.sweb-panelGauge {
+.sweb-graphPanel {
+   height: 385px;
+}
+
+.sweb-gaugeFlowPanel {
+   float: left;
+}
+.sweb-panelGaugeTall{
     width: 200px; 
-    height: 386px; 
+    height: 385px; 
     text-align: center; 
 }
 
+.sweb-panelGaugeShort {
+    width: 200px; 
+    height: 285px; 
+	text-align: center; 
+	
+}
 .sweb-fanLabel {
 	font-size: 11px;
 	text-align: center;
