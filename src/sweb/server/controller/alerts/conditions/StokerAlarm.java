@@ -31,7 +31,7 @@ import sweb.shared.model.alerts.StokerAlarmAlertModel;
 public class StokerAlarm extends AlertCondition
 {
 
-   public static enum TempAlertType { NONE, LOW, HIGH };
+   public static enum TempAlertType { NONE, LOW, HIGH, FOOD };
    Date lastAlertDate = null;
    private HashMap<String,SDevice> m_hmConfig = null;
    StokerAlarmAlertModel saa = null;
@@ -122,6 +122,13 @@ public class StokerAlarm extends AlertCondition
                alertList.add("  Current Temperature: " + data );
                alertList.add("  Low Alarm Setting:  " + sp.getLowerTempAlarm());
             }
+            else if ( t == TempAlertType.FOOD )
+            {
+                alertList.add("Food target temperature alarm on " + sp.getName() );
+                alertList.add("  Current Temperature: " + data );
+                alertList.add("  Alarm Setting:  " + sp.getTargetTemp());
+                
+            }
             
             Messenger.deliver(saa.getConfiguredDeliveryMethods(), alertList );
                
@@ -137,6 +144,7 @@ public class StokerAlarm extends AlertCondition
          saa = (StokerAlarmAlertModel) ab;
       // TODO: should probably throw in invalid class exception here.
    }
+   
    @Override
    public AlertModel getAlertConfiguration()
    {
@@ -179,22 +187,35 @@ public class StokerAlarm extends AlertCondition
                continue;
             }
             
-            // Alarm is enabled for device
-            float data = spdp.getData();
-            if ( data > sp.getUpperTempAlarm()  )
+            if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.ALARM_FIRE )
             {
-               soundTempAlert( TempAlertType.HIGH, sp, data );
+                // Alarm is enabled for device
+                float data = spdp.getData();
+                if ( data > sp.getUpperTempAlarm()  )
+                {
+                   soundTempAlert( TempAlertType.HIGH, sp, data );
+                }
+                else if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.ALARM_FIRE && data < sp.getLowerTempAlarm()  )
+                {
+                   soundTempAlert( TempAlertType.LOW, sp, data );
+                }
             }
-            else if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.ALARM_FIRE && data < sp.getLowerTempAlarm()  )
+            else if (sp.getAlarmEnabled() == StokerProbe.AlarmType.ALARM_FOOD )
             {
-               soundTempAlert( TempAlertType.LOW, sp, data );
+                float data = spdp.getData();
+                if ( data > sp.getTargetTemp()  )
+                {
+                   soundTempAlert( TempAlertType.FOOD, sp, data );
+                }
+                
             }
+               
             
             
-         }
+         } // end for probe data point
          
          
-      }
+      }  // end run
          
    }
 

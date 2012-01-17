@@ -84,8 +84,31 @@ public class LogFileFormatter
       *     FanID ( if any)
       */
 
+    public static enum LineType  { CONFIG, BLOWER, DATA, WEATHER, NOTE, NONE };
 
 
+    public static LineType getLineType( String prefix )
+    {
+       if ( prefix.length() > 2)
+       {
+           System.out.println("Prefix is too long, something must be wrong");
+       }
+       
+       if ( prefix.compareTo( "d:") == 0)
+           return LineType.DATA;
+       else if ( prefix.compareTo("b:") == 0)
+           return LineType.BLOWER;
+       else if ( prefix.compareTo("c:") == 0)
+           return LineType.CONFIG;
+       else if ( prefix.compareTo(":w") == 0 )
+           return LineType.WEATHER;
+       else if ( prefix.compareTo("n:") == 0 )
+           return LineType.NOTE;
+       else 
+           return LineType.NONE;
+       		
+    }
+    
     public static String generateLogHeader( String strCookerName, ArrayList<SDevice> arSD, HashMap<String,String> hmSDIndex )
     {
         StringBuilder sb = new StringBuilder();
@@ -419,12 +442,12 @@ public class LogFileFormatter
         switch( deviceType )
         {
             case PIT:
-                StokerProbe sp = new StokerProbe(strDeviceID, strName, target.intValue(), alarmHigh.intValue(), alarmLow.intValue() );
+                StokerProbe sp = new StokerProbe(strDeviceID, strName, target.intValue(), alarmHigh.intValue(), alarmLow.intValue(), alarmType );
                 StokerFan sf = new StokerFan( strBlowerID, "" );
                 sd = new StokerPitSensor(sp, sf);
                 break;
             case FOOD:
-                StokerProbe spFood = new StokerProbe(strDeviceID, strName, target.intValue(), alarmHigh.intValue(), alarmLow.intValue() );
+                StokerProbe spFood = new StokerProbe(strDeviceID, strName, target.intValue(), alarmHigh.intValue(), alarmLow.intValue(), alarmType );
                 sd = spFood;
                 break;
 
@@ -437,7 +460,7 @@ public class LogFileFormatter
                 sd = null;
 
         }
-
+        sd.setDeviceLogNum(strDeviceNum );
 
         return sd;
 
@@ -482,7 +505,7 @@ public class LogFileFormatter
                 else
                 {
                     boolean blowerState = strValue.equalsIgnoreCase("1") ? true : false;
-                    sdp = new SBlowerDataPoint( strDeviceID, d, !blowerState );
+                    sdp = new SBlowerDataPoint( strDeviceID, d, blowerState );    // TODO:  gbak - why was there a ! before blowerState?
                     ar.add( sdp );
 
                     Calendar cal = Calendar.getInstance();

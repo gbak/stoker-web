@@ -28,7 +28,10 @@
 		<servlet-name>stokerComet</servlet-name>
 		<servlet-class>net.zschech.gwt.comet.server.CometServlet</servlet-class>
 	</servlet>
-  
+   <servlet>
+       <servlet-name>reportServlet</servlet-name>
+       <servlet-class>sweb.server.ReportServlet</servlet-class>
+    </servlet>
   
   <servlet-mapping>
     <servlet-name>stokeServlet</servlet-name>
@@ -37,6 +40,11 @@
   <servlet-mapping>
     <servlet-name>stokerComet</servlet-name>
     <url-pattern>/stokerweb/comet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>reportServlet</servlet-name>
+    <url-pattern>/stokerweb/report</url-pattern>
+    <url-pattern>/stokerweb/report/*</url-pattern>
   </servlet-mapping>
   
   <servlet>

@@ -30,6 +30,7 @@ import java.util.List;
 
 import sweb.client.dialog.AlertDialog;
 import sweb.client.dialog.GeneralMessageDialog;
+import sweb.client.dialog.LogFileChooser;
 
 import net.zschech.gwt.comet.client.CometClient;
 import net.zschech.gwt.comet.client.CometListener;
@@ -53,6 +54,7 @@ import sweb.shared.model.alerts.BrowserAlarmModel;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 import sweb.shared.model.events.LogEvent;
+import sweb.shared.model.logfile.LogDir;
 import sweb.shared.model.weather.WeatherData;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -62,6 +64,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -80,6 +83,7 @@ import com.google.gwt.visualization.client.visualizations.Gauge;
 import sweb.client.dialog.LoginDialog;
 import sweb.client.dialog.handlers.AlertDialogHandler;
 import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
+import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.gauge.GaugeComponent.Alignment;
 import sweb.client.weather.WeatherComponent;
@@ -115,6 +119,7 @@ public class StokerWeb implements EntryPoint
     VerticalPanel vpCookers = new VerticalPanel(); // For Multiple cookers
     Button loginButton = new Button();
     Button updateButton = new Button();
+    Button reportsButton = new Button();
     Button statusFauxButton = new Button();
     Button testButton = new Button();  // Test various functions.
 
@@ -274,6 +279,42 @@ public class StokerWeb implements EntryPoint
 
             });
 
+            reportsButton = new Button( "Reports", new ClickHandler() {
+
+                public void onClick(ClickEvent event)
+                {
+                    stokerService.getLogFileNames(new AsyncCallback<LogDir>() {
+
+                        public void onFailure(Throwable caught)
+                        {
+                            caught.printStackTrace();
+                            System.out.println("Failed to retreive LogFileNames");
+
+                        }
+
+                        public void onSuccess(LogDir result)
+                        {
+                           new LogFileChooser( result, new LogFileChooserHandler() {
+
+                               public void onReturn(String st)
+                               {
+                                   if ( st != null)
+                                   {
+                                       System.out.println("Selected Report: " + st);
+                                       Window.open(GWT.getModuleBaseURL() + "report" + "?log=" + st, "_blank", "enabled");
+                                       
+                                   }
+                                   else
+                                   {
+
+                                   }
+                               }
+                           }).center();
+                        }
+                    });
+                }
+            });
+            
             loginButton = new Button(getLoginButtonText(), new ClickHandler() {
 
                 public void onClick(ClickEvent event)
@@ -338,6 +379,12 @@ public class StokerWeb implements EntryPoint
             statusFauxButton.setText("No Connection");
             
             hp.add( statusFauxButton );
+            
+            reportsButton.setEnabled(false);
+            reportsButton.setStyleName("sweb-MenuButton");
+            hp.add( reportsButton );
+            hp.setCellHorizontalAlignment(reportsButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            hp.setCellVerticalAlignment(reportsButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
             updateButton.setEnabled(false);
             updateButton.setStyleName("sweb-MenuButton");
@@ -759,6 +806,7 @@ public class StokerWeb implements EntryPoint
         LoginStatus.getInstance().setLoginStatus(b);
 
         updateButton.setEnabled(b);
+        reportsButton.setEnabled(b);
         for ( CookerComponent cc : alCookers)
         {
            cc.loginEvent();

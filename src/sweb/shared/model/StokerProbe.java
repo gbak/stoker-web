@@ -72,6 +72,15 @@ public class StokerProbe extends SDevice implements Serializable
         fUpperTempAlarm = up;
         alarm = AlarmType.NONE;
     }
+    
+    public StokerProbe(String id, String name, int f, int up, int dn, AlarmType at )
+    {
+        super(id, name);
+        fTargetTemp = f;
+        fLowerTempAlarm = dn;
+        fUpperTempAlarm = up;
+        alarm = at;
+    }
 
     public void setCurrentTemp( float f )
     {
@@ -146,6 +155,25 @@ public class StokerProbe extends SDevice implements Serializable
         fCurrentTemp = dp.getTempF();
     }
 
+    public String getPrintString()
+    {
+        String str = new String();
+        str = "Name: " + this.getName() + " - Alarm: " + this.getAlarmEnabled();
+        if ( this.getAlarmEnabled() == AlarmType.ALARM_FIRE )
+        {
+            str = str + " - Low Temp: " + this.getLowerTempAlarm() + " - High Temp: " + this.getUpperTempAlarm();
+        }
+        else if ( this.getAlarmEnabled() == AlarmType.ALARM_FOOD)
+        {
+            str = str + " - TargetTemp: " + this.getTargetTemp();
+        }
+        //str = str + " - ID: " + this.getID() + "\n";
+        str = str + "\n";
+  
+        return (str);
+    }
+
+    
     @Override
     public DeviceType getProbeType()
     {

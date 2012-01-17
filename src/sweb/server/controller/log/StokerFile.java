@@ -51,6 +51,8 @@ import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.DataControllerEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
+import sweb.server.controller.log.LogFileFormatter.LineType;
+import sweb.server.report.ReportData;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
@@ -312,7 +314,7 @@ public class StokerFile
         return new ArrayList<SDevice>( m_hmSD.values());
     }
 
-    private String strBuildFileName( String strLogName )
+    private static String strBuildFileName( String strLogName )
     {
         Calendar cal = Calendar.getInstance();
         Format dateFormatter;

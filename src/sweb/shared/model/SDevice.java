@@ -30,6 +30,7 @@ public class SDevice  implements Serializable
     private String strName;
     private int iCookerNum;
     private String strCookerName;
+    private String strDeviceLogNum;  // This is the number of the device as used in the log file.
 
 
    SDevice( String id, String name )
@@ -37,6 +38,8 @@ public class SDevice  implements Serializable
       strID = id;
       strName = name;
       iCookerNum = 1;
+      strDeviceLogNum = "";
+      
       if (( strName.length() > 2 ) &&  (strName.charAt(1) == '_' ))
       {
           try { iCookerNum = new Integer( strName.charAt(0)); }
@@ -95,5 +98,15 @@ public class SDevice  implements Serializable
    public DeviceType getProbeType()
    {
       return DeviceType.UNKNOWN;
+   }
+   
+   public void setDeviceLogNum(String s)
+   {
+       strDeviceLogNum = s;
+   }
+   
+   public String getDeviceLogNum()
+   {
+       return strDeviceLogNum;
    }
 }

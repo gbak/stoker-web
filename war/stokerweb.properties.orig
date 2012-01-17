@@ -6,9 +6,6 @@ stoker_pass=tini
 
 stokerweb_logs_dir=stokerweblogs
 
-# Temps are written to the log file every x milliseconds (60,000) = 60 seconds.
-stokerweb_log_file_period=60000
-
 # Associate the Serial ID of each blower to a Cooker Name
 230000002a55c305=Large Egg
 

@@ -44,6 +44,7 @@ import sweb.shared.model.StokerProbe;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.logfile.LogDir;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -500,7 +501,8 @@ public class CookerComponent extends Composite
 
                 public void onSuccess(Integer result)
                 {
-                   
+                    Window.open(GWT.getModuleBaseURL() + "report", "_blank", "enabled");
+                    
                    // TODO: This is not correct.
                   //  String strLogName = logListBox.getItemText(iSelectedIndex);
                   //  logListBox.removeItem(iSelectedIndex);

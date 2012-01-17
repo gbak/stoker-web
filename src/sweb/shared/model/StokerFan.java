@@ -91,6 +91,11 @@ public class StokerFan extends SDevice  implements Serializable
         }
     }
 
+    public String getPrintString()
+    {
+        return ("Name: " + this.getName() + "\n");
+    }
+    
     @Override
     public DeviceType getProbeType()
     {

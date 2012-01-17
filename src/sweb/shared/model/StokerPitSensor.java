@@ -21,6 +21,7 @@ package sweb.shared.model;
 import java.io.Serializable;
 
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
+import sweb.shared.model.StokerProbe.AlarmType;
 
 public class StokerPitSensor extends StokerProbe implements Serializable
 {
@@ -69,6 +70,25 @@ public class StokerPitSensor extends StokerProbe implements Serializable
         sfan.update(pdp);
     }
 
+    public String getPrintString()
+    {
+        String str = new String();
+        str = "Name: " + this.getName() + " - TargetTemp: " + this.getTargetTemp() + " - Alarm: " + this.getAlarmEnabled();
+        if ( this.getAlarmEnabled() == AlarmType.ALARM_FIRE )
+        {
+            str = str + " - Low Temp: " + this.getLowerTempAlarm() + " - High Temp: " + this.getUpperTempAlarm();
+        }
+        else if ( this.getAlarmEnabled() == AlarmType.ALARM_FOOD)
+        {
+            str = str + " - TargetTemp: " + this.getTargetTemp();
+        }
+        //str = str + " - ID: " + this.getID() + "\n";
+        str = str + "\n";
+        
+        return (str);
+
+    }
+    
     @Override
     public DeviceType getProbeType()
     {

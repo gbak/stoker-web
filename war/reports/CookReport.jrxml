@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CookReport" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="sweb.server.report.JFreeChartReportScriptlet">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="37"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#B6EA7D">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#B4B4B4">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FAFAFA"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="TableData">
+		<field name="value1" class="java.lang.String"/>
+		<field name="value2" class="java.lang.String"/>
+		<field name="value3" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="TableDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="ChartDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<field name="logName" class="java.lang.String"/>
+	<field name="cookDuration" class="java.lang.String"/>
+	<field name="startDate" class="java.lang.String"/>
+	<field name="fanCycles" class="java.lang.String"/>
+	<field name="fanTime" class="java.lang.String"/>
+	<field name="endDate" class="java.lang.String"/>
+	<variable name="Chart" class="net.sf.jasperreports.engine.JRRenderable" calculation="System"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="474" splitType="Stretch">
+			<image>
+				<reportElement x="351" y="0" width="221" height="70"/>
+				<imageExpression><![CDATA["stokerweb5.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="12" y="0" width="88" height="30"/>
+				<textElement>
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Log Name: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="80" width="91" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cook Duration:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="40" width="88" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Start Date:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="113" y="0" width="238" height="30"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{logName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="113" y="80" width="207" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cookDuration}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="113" y="40" width="175" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{startDate}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="Clip" hAlign="Center" hyperlinkType="Reference">
+				<reportElement x="12" y="110" width="548" height="206"/>
+				<imageExpression><![CDATA[$V{Chart}]]></imageExpression>
+				<hyperlinkReferenceExpression><![CDATA["http://www.jfree.org/jfreechart"]]></hyperlinkReferenceExpression>
+			</image>
+			<componentElement>
+				<reportElement key="table" style="table" x="12" y="334" width="548" height="140"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="TableData">
+						<dataSourceExpression><![CDATA[$P{TableDataSource}]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="56">
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="4" y="0" width="48" height="30"/>
+								<textElement>
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Action]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement x="4" y="0" width="48" height="16"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$F{value1}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="55">
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="4" y="0" width="51" height="30"/>
+								<textElement>
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Time]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<box topPadding="2" bottomPadding="2"/>
+							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+								<reportElement stretchType="RelativeToBandHeight" x="4" y="0" width="51" height="16"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$F{value2}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="416">
+						<jr:columnHeader style="table_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement x="4" y="0" width="405" height="30"/>
+								<textElement>
+									<font size="14" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Message]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table_TD" height="20" rowSpan="1">
+							<box topPadding="2" bottomPadding="2"/>
+							<textField isStretchWithOverflow="true">
+								<reportElement x="4" y="0" width="405" height="16"/>
+								<textElement/>
+								<textFieldExpression><![CDATA[$F{value3}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<line>
+				<reportElement x="0" y="29" width="351" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="12" y="60" width="86" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[End Date:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="113" y="60" width="175" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{endDate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="12" y="0" width="119" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Fan Cycles:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="20" width="119" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Fan Time:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="131" y="0" width="251" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fanCycles}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="131" y="20" width="322" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fanTime}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
