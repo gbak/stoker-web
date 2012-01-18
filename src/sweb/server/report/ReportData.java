@@ -217,8 +217,9 @@ public class ReportData
                              }
                              catch ( org.jfree.data.general.SeriesException  se )
                              {
+                                 ts.update( s, sdp.getData());
                                  //TODO: log error
-                                 System.out.println("Series error in log, possibly duplicate");
+                                 System.out.println("Overwriting dummy point in blower graph data");
                              }
                         
                              if ( bFirstDPFound == false)

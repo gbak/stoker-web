@@ -41,13 +41,7 @@ public class ReportServlet extends HttpServlet
           
           ReportData reportData = new ReportData( strReportName );
           
-
-          // old code, remove
-          //ReportDataSource rds = new ReportDataSource();
-        //  JRDataSource dataSource = new JRMapCollectionDataSource( rds.processReport() );
-          
           JRDataSource dataSource = new JRMapCollectionDataSource( reportData.getReportDataSource().getReportData() );
-
           
           HashMap<String,Object> params = reportData.getParams();
           

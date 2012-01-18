@@ -338,10 +338,53 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public ArrayList<ArrayList<SDataPoint>> getAllGraphDataPoints(String logName)
             throws IllegalArgumentException
     {
+        // What a mess this is
+        // This method was originally just this:  return DataOrchestrator.getInstance().getAllDataPoints( logName );
+        // but had to be modified to move the dummy fan values out of the LogFileFormatter
+        // since that method was also used to read the log files.
+        
+        ArrayList<ArrayList<SDataPoint>> outer = new ArrayList<ArrayList<SDataPoint>>();
+        for ( ArrayList<SDataPoint> ar1 : DataOrchestrator.getInstance().getAllDataPoints( logName ))
+        {
+            ArrayList<SDataPoint> ar2 = new ArrayList<SDataPoint>();
+            boolean skipped = false;
+            boolean blower = false;
+            for ( SDataPoint sd : ar1 )
+            {
+                
+               if ( blower == true || sd instanceof SBlowerDataPoint ) 
+               {
+                   SBlowerDataPoint sdp2 = (SBlowerDataPoint) sd;
+                   blower = true;
+                   SBlowerDataPoint sdp3 = new SBlowerDataPoint( sdp2.getDeviceID(), sdp2.getCollectedDate(), !sdp2.isFanOn() );    
+                   ar2.add( sdp3 );
 
-        // Implement me.  Need to read the Default StokerFile and send
-        // all the data points.
-        return DataOrchestrator.getInstance().getAllDataPoints( logName );
+                   Calendar cal = Calendar.getInstance();
+                   cal.setTime(sdp2.getCollectedDate());
+                   cal.add(Calendar.MILLISECOND, 10);
+                   sdp3 = new SBlowerDataPoint( sdp2.getDeviceID(), sdp2.getCollectedDate(), sdp2.isFanOn());
+                   ar2.add( sdp3 );
+               }
+               else
+               {
+                   skipped = true;
+                   break;
+               }
+               
+            }
+            if ( skipped == true )
+            {
+                outer.add( ar1 );
+            }
+            else
+            {
+                outer.add( ar2 );
+            }
+            
+        }
+        
+        return outer;
+        //return DataOrchestrator.getInstance().getAllDataPoints( logName );
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
