@@ -56,15 +56,21 @@ public class ListLogFiles
         LogDir ld = new LogDir( path, "" );
 
         for ( File f : list ) {
+            System.err.println("LogDir:getFiles() processing [" + f.getName() + "]");
             if ( f.isDirectory() )
             {
-                System.err.println( "Dir:" + f.getAbsoluteFile() );
-                ld.addDir( getFiles( f.getAbsolutePath().substring(f.getAbsolutePath().indexOf(baseDir)) ));
+                System.err.println( "LogDir:getFiles() Dir:" + f.getAbsoluteFile() );
+                System.err.println( "LogDir:getFiles() f.getAbsolutePath() [" + f.getAbsolutePath() + "]");
+                System.err.println( "LogDir:getFiles() baseDir [" + baseDir + "]");
+                System.err.println( "LogDir:getFiles() f.getAbsolutePath().indexOf(baseDir) [" + f.getAbsolutePath().indexOf(baseDir) +"]");
+                String s = f.getAbsolutePath().substring(f.getAbsolutePath().indexOf(baseDir));
+                System.err.println("LogDir:getFiles()  Proceeding to dir: [" + s + "]" );
+                ld.addDir( getFiles( s ));
 
             }
             else
             {
-
+                System.err.println("LogDir:getFiles()  Adding file: [" + f.getName() + "]" );
                 ld.addFile( f.getName() );
 
             }

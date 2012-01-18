@@ -49,6 +49,9 @@ public class StokerWebProperties extends Properties
            // TODO: error condition
            stokerWebDir = ".";
         }
+        if ( stokerWebDir.endsWith("/") || stokerWebDir.endsWith("\\"))
+            stokerWebDir = stokerWebDir.substring(0, stokerWebDir.length() - 1);
+        
         System.out.println("Using StokerWebDir = ["+ stokerWebDir + "]");
         try
         {

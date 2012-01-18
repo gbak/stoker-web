@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CookReport" language="groovy" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" scriptletClass="sweb.server.report.JFreeChartReportScriptlet">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="37"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -34,6 +34,7 @@
 	</subDataset>
 	<parameter name="TableDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
 	<parameter name="ChartDataSource" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="StokerWebImage" class="java.io.InputStream"/>
 	<field name="logName" class="java.lang.String"/>
 	<field name="cookDuration" class="java.lang.String"/>
 	<field name="startDate" class="java.lang.String"/>
@@ -48,7 +49,7 @@
 		<band height="474" splitType="Stretch">
 			<image>
 				<reportElement x="351" y="0" width="221" height="70"/>
-				<imageExpression><![CDATA["stokerweb5.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{StokerWebImage}]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="12" y="0" width="88" height="30"/>

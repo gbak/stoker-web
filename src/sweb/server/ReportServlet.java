@@ -48,15 +48,14 @@ public class ReportServlet extends HttpServlet
           
           JRDataSource dataSource = new JRMapCollectionDataSource( reportData.getReportDataSource().getReportData() );
 
-          /*
-          TableDataSource tableData = new TableDataSource();
-          XYDataset  chartDataSource = JFreeChartReportScriptlet.createDataset1();
           
-          HashMap<String,Object> params = new HashMap<String,Object>();
-          params.put( "TableDataSource", tableData);
-          params.put( "ChartDataSource", chartDataSource);*/
+          HashMap<String,Object> params = reportData.getParams();
+          
+          InputStream imgInputStream = getServletConfig().getServletContext().getResourceAsStream("/reports/stokerweb5.png"); 
+          params.put( "StokerWebImage", imgInputStream );
+          
    
-         JasperRunManager.runReportToPdfStream(reportStream, servletOutputStream, reportData.getParams(), dataSource);
+         JasperRunManager.runReportToPdfStream(reportStream, servletOutputStream, params, dataSource);
          response.setContentType("application/pdf");
          servletOutputStream.flush();
          servletOutputStream.close();
