@@ -21,6 +21,8 @@ package sweb.server.controller;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
@@ -53,6 +55,8 @@ public class Controller
     private WeatherController m_WeatherController = null;
     private AlertsController m_AlertsController = null;
 
+    private static final Logger logger = Logger.getLogger(Controller.class.getName());
+    
  //   private ControllerEventListener m_ControllerListener = null;
 
 
@@ -140,7 +144,7 @@ public class Controller
         } // end for String
         if (StokerConfiguration.getInstance().getAllBlowerIDs().size() == 0 )
         {
-            System.out.println("No Blowers configured!");  // TODO: log this message
+            logger.error("No Blowers configured!");
         }
     }
     /**

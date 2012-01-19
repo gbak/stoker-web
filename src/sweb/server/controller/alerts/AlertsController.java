@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.conditions.ConnectionOrConfigChangeAlert;
 import sweb.server.controller.alerts.conditions.StokerAlarm;
 import sweb.server.controller.alerts.conditions.TempAlert;
@@ -38,6 +41,8 @@ public class AlertsController
    ArrayList<TempAlert> tempAlert = new ArrayList<TempAlert>();
    ArrayList<TimedAlert> timedAlert = new ArrayList<TimedAlert>();
 
+   private static final Logger logger = Logger.getLogger(AlertsController.class.getName());
+   
    public AlertsController()
    {
    }
@@ -47,7 +52,7 @@ public class AlertsController
     */
    public void setConfiguration(ArrayList<AlertModel> alertBaseList)
    {
-      System.out.println("AlertsController::setConfiguration");
+      logger.debug("AlertsController::setConfiguration");
       for ( AlertModel ab : alertBaseList )
       {
          if ( ab instanceof StokerAlarmAlertModel )

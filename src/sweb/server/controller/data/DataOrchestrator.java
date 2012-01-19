@@ -36,6 +36,9 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.apache.log4j.Logger;
+
+import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
 import sweb.server.controller.events.BlowerEvent;
 import sweb.server.controller.events.BlowerEventListener;
@@ -71,6 +74,8 @@ public class DataOrchestrator
 
     Timer updateTimer = new Timer();
 
+    private static final Logger logger = Logger.getLogger(DataOrchestrator.class.getName());
+    
     private DataOrchestrator()
     {
         RunTimer _runTimer = new RunTimer();
@@ -124,7 +129,7 @@ public class DataOrchestrator
 
         if ( dp.getDeviceID() == null )
         {
-            System.out.println("DeviceID is null");
+            logger.warn("DeviceID is null");
             return;
         }
         SDataPoint dpFromMap =  hmLatestData.get(dp.getDeviceID());
@@ -139,7 +144,7 @@ public class DataOrchestrator
             {
                 // TODO: add parameter to choose if to use forced updates.
                forceUpdate = true;
-               System.out.println("Forcing update");
+               logger.info("Forcing update");
             }
 
             
@@ -156,9 +161,6 @@ public class DataOrchestrator
                     SBlowerDataPoint bdpFromMap = (SBlowerDataPoint) dpFromMap;
                     if ( bdp.isFanOn() == false )
                     {
-   //                     System.out.println("Off: ");
-   //                     System.out.println(" dp ID: " + dp.getDeviceID());
-                        
                         Date last_d = bdpFromMap.getBlowerOnTime();
                         Date d = dp.getCollectedDate();
                         long lastSec = 0;
@@ -173,8 +175,7 @@ public class DataOrchestrator
                     }
                     else
                     {
-                       // System.out.println("On: " + dp.getDeviceID());
-                        bdpFromMap.setBlowerOnTime(dp.getCollectedDate());
+                         bdpFromMap.setBlowerOnTime(dp.getCollectedDate());
                     }
                 
                 }
@@ -186,7 +187,7 @@ public class DataOrchestrator
                 DataPointEvent be = new DataPointEvent(this, false, dpFromMap );
                 fireStateChange(be);
             }
-       //     System.out.println("Debug: " + dpFromMap.getDebugString());
+            logger.debug("Debug: " + dpFromMap.getDebugString());
             
         }
         else

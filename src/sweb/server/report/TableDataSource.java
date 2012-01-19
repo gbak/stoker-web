@@ -35,7 +35,6 @@ public class TableDataSource implements JRDataSource
       String sFieldName = jrField.getName();
       Object value = null;
       
-      System.out.println("Field Name: " + sFieldName );
       if("value1".equals(sFieldName))
       {
          TableEntry te = arTE.get(index); 

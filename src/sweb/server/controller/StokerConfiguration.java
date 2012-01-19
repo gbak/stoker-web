@@ -24,6 +24,9 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import sweb.server.StokerWebProperties;
 import sweb.server.controller.config.stoker.StokerWebConfigurationController;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
@@ -45,7 +48,8 @@ public class StokerConfiguration
     HashMap<String,SDevice> htStokConfig = new HashMap<String,SDevice>();
     private volatile boolean bisUpToDate = false;
 
-
+    private static final Logger logger = Logger.getLogger(StokerConfiguration.class.getName());
+    
     public static StokerConfiguration getInstance()
     {
         if ( stc == null)

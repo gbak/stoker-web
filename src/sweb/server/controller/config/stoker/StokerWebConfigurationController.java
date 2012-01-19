@@ -37,7 +37,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
+
 import sweb.server.StokerConstants;
+import sweb.server.StokerCoreServiceImpl;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.config.ConfigurationController;
@@ -56,6 +59,7 @@ public class StokerWebConfigurationController extends ConfigurationController
 {
     StokerConfiguration sc = null;
 
+    private static final Logger logger = Logger.getLogger(StokerWebConfigurationController.class.getName());
 
    private String convert( InputStream is)
    {
@@ -109,8 +113,8 @@ public class StokerWebConfigurationController extends ConfigurationController
        String prefix = strInput.substring(0,2).toLowerCase();
        String deviceID = strInput.substring( 2 ).toLowerCase();
 
-     //  System.out.println("Prefix: " + prefix );
-     //  System.out.println("Device ID: " + deviceID );
+     logger.debug("Prefix: " + prefix );
+     logger.debug("Device ID: " + deviceID );
 
        if ( prefix.compareTo("n1") == 0)
        {
@@ -141,7 +145,7 @@ public class StokerWebConfigurationController extends ConfigurationController
            try { sp.setTargetTemp(new Integer( strValue ).intValue()); }
            catch ( NumberFormatException nfe )
            {
-               System.out.println("Invalid number in ta: " + strValue );
+               logger.warn("Invalid number in ta: " + strValue );
                sp.setTargetTemp(0);
            }
        }
@@ -152,7 +156,7 @@ public class StokerWebConfigurationController extends ConfigurationController
            try { sp.setLowerTempAlarm(new Integer( strValue ).intValue()); }
            catch ( NumberFormatException nfe )
            {
-               System.out.println("Invalid number in ta: " + strValue );
+               logger.warn("Invalid number in ta: " + strValue );
                sp.setLowerTempAlarm(0);
            }
        }
@@ -163,7 +167,7 @@ public class StokerWebConfigurationController extends ConfigurationController
            try { sp.setUpperTempAlarm(new Integer( strValue ).intValue()); }
            catch ( NumberFormatException nfe )
            {
-               System.out.println("Invalid number in ta: " + strValue );
+               logger.warn("Invalid number in ta: " + strValue );
                sp.setUpperTempAlarm(0);
            }
        }
@@ -177,7 +181,7 @@ public class StokerWebConfigurationController extends ConfigurationController
            }
            catch ( NumberFormatException nfe)
            {
-               System.out.println("Invalid number in al: " + strValue );
+               logger.warn("Invalid number in al: " + strValue );
                sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
            }
        }
@@ -216,7 +220,7 @@ public class StokerWebConfigurationController extends ConfigurationController
                         int iBegin = strScriptContent.indexOf('[') + 1;
                         int iEnd = strScriptContent.indexOf(']');
                         String strDefaults = strScriptContent.substring(iBegin, iEnd);
-                        System.out.println("Defaults: " + strDefaults );
+                        logger.debug("Defaults: " + strDefaults );
                         StringTokenizer st = new StringTokenizer( strDefaults, ",");
                         while ( st.hasMoreTokens())
                         {
@@ -232,7 +236,7 @@ public class StokerWebConfigurationController extends ConfigurationController
              while ( it.hasNext() )
              {
                 FormField f = it.next();
-                System.out.println("Name: " + f.getName());
+                logger.debug("Name: " + f.getName());
 
                 // qq is the label for the ID checkbox.  We can ignore it.
                 if ( f.getName().compareTo("qq") == 0)
@@ -253,7 +257,7 @@ public class StokerWebConfigurationController extends ConfigurationController
           }
           catch( java.net.ConnectException ce )
           {
-              System.out.println("Caught connection exception while scraping webpage");
+              logger.error("Caught connection exception while scraping webpage");
           }
           catch( Exception e)
           {
@@ -270,6 +274,7 @@ public class StokerWebConfigurationController extends ConfigurationController
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                logger.error(e.getStackTrace());
             }
           }
 
@@ -278,7 +283,7 @@ public class StokerWebConfigurationController extends ConfigurationController
       assignCookerNames();
 
       sc.setUpdatedStaus(true);
-      System.out.println("Config: " + sc.debugString());
+      logger.debug("Config: " + sc.debugString());
       super.fireActionPerformed(new ConfigControllerEvent( this, ConfigControllerEvent.EventType.CONFIG_UPDATE ));
 
    }
@@ -444,7 +449,8 @@ public class StokerWebConfigurationController extends ConfigurationController
       }
       catch (UnsupportedEncodingException uee)
       {
-         System.out.println("Unsupported Character while encoding URL");
+          logger.warn( uee.getStackTrace() );
+       //  System.out.println("Unsupported Character while encoding URL");
       }
 
       int size = alPostData.size();
@@ -477,7 +483,7 @@ public class StokerWebConfigurationController extends ConfigurationController
                    postData.append("&");
            }
 
-           System.out.println("Posting: " + postData.toString());
+           logger.debug("Posting: " + postData.toString());
 
            // Send data
            String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
@@ -493,7 +499,7 @@ public class StokerWebConfigurationController extends ConfigurationController
            String line;
            while ((line = rd.readLine()) != null)
            {
-               System.out.println("Response: " + line );
+               logger.debug("Response: " + line );
            }
            writer.close();
            rd.close();

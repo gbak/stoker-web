@@ -28,6 +28,8 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import sweb.server.controller.data.DataOrchestrator;
 
 public class StokerWebProperties extends Properties
@@ -37,6 +39,8 @@ public class StokerWebProperties extends Properties
     private volatile static StokerWebProperties swp = null;
     private static String stokerWebDir = null;
 
+    private static final Logger logger = Logger.getLogger(StokerWebProperties.class.getName());
+    
     private StokerWebProperties()
     {
         super();
@@ -45,14 +49,14 @@ public class StokerWebProperties extends Properties
         stokerWebDir = mapEnv.get(StokerConstants.ENV_STOKERWEB_DIR);
         if ( stokerWebDir == null )
         {
-           System.err.println("Unable to find STOKERWEB_DIR environment variable, using '.'");
+           logger.error("Unable to find STOKERWEB_DIR environment variable, using '.'");
            // TODO: error condition
            stokerWebDir = ".";
         }
         if ( stokerWebDir.endsWith("/") || stokerWebDir.endsWith("\\"))
             stokerWebDir = stokerWebDir.substring(0, stokerWebDir.length() - 1);
         
-        System.out.println("Using StokerWebDir = ["+ stokerWebDir + "]");
+        logger.info("Using StokerWebDir = ["+ stokerWebDir + "]");
         try
         {
             // add path to classpath for the properties load
@@ -66,14 +70,14 @@ public class StokerWebProperties extends Properties
         }
         catch (IOException ioe)
         {
-            System.out.println("Error loading stokerWeb.properties");
+            logger.error("Error loading stokerWeb.properties");
             ioe.printStackTrace();
             System.exit(1);
         }
       catch (Exception e)
       {
          // TODO Auto-generated catch block
-         System.out.println("Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath");
+         logger.error("Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath");
          e.printStackTrace();
          System.exit(1);
       }
@@ -117,7 +121,7 @@ public class StokerWebProperties extends Properties
         }
         catch(NumberFormatException nfe)
         {
-            System.err.println("Unable to convert property [" + StokerConstants.PROPS_LOG_FILE_PERIOD + "] with value [" +
+            logger.error("Unable to convert property [" + StokerConstants.PROPS_LOG_FILE_PERIOD + "] with value [" +
                     tmpString + "] to a long");
             throw new InvalidStokerWebPropertyException(StokerConstants.PROPS_LOG_FILE_PERIOD);
         }

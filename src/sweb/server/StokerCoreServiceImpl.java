@@ -29,6 +29,8 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.log4j.Logger;
+
 import sweb.client.StokerCoreService;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
@@ -95,6 +97,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     ConfigControllerEventListener m_ccel = null;
     WeatherChangeEventListener m_wcel = null;
 
+    private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
+    
     public HashMap<String,SDevice> getConfiguration()
             throws IllegalArgumentException
     {
@@ -111,7 +115,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
        if ( m_DPEL == null)
        {
-           System.out.println("Creating new listener.");
+           logger.info("Creating new listener.");
            m_DPEL = new DataPointEventListener() {
 
                public void stateChange(DataPointEvent dpe)
@@ -169,7 +173,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     private void removeControllerEvents()
     {
-        System.out.println("Removing event listeners!");
+        logger.info("Removing event listeners!");
         Controller.getInstance().removeDataEventListener( m_dcel );
         Controller.getInstance().removeConfigEventListener(m_ccel);
         Controller.getInstance().removeWeatherChangeEventListener(m_wcel);
@@ -434,13 +438,13 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     public void sessionCreated(HttpSessionEvent arg0)
     {
-        System.out.println("Http Session Created");
+        logger.info("Http Session Created");
 
     }
 
     public void sessionDestroyed(HttpSessionEvent arg0)
     {
-        System.out.println("Http Session Destroyed");
+        logger.info("Http Session Destroyed");
 
         removeControllerEvents();
 

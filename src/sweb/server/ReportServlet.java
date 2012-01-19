@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.jfree.data.xy.XYDataset;
 
 import sweb.server.report.JFreeChartReportScriptlet;
@@ -26,6 +27,7 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 public class ReportServlet extends HttpServlet
 {
    private static final long serialVersionUID = 4044185269678824532L;
+   private static final Logger logger = Logger.getLogger(ReportServlet.class.getName());
 
    protected void doGet(HttpServletRequest request, HttpServletResponse response)
          throws ServletException, IOException
@@ -37,7 +39,7 @@ public class ReportServlet extends HttpServlet
       {
           String queryString = request.getQueryString();
           String strReportName = queryString.substring(4);
-          System.out.println("Report Name selected: " + strReportName );
+          logger.info("Report Name selected: " + strReportName );
           
           ReportData reportData = new ReportData( strReportName );
           
@@ -63,6 +65,7 @@ public class ReportServlet extends HttpServlet
          response.setContentType("text/plain");
          response.getOutputStream().print(stringWriter.toString());
 
+         logger.error(e.getStackTrace());
       }
    }
 }

@@ -38,6 +38,7 @@ import java.util.concurrent.locks.Condition;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetInputListener;
 import org.apache.commons.net.telnet.TelnetNotificationHandler;
+import org.apache.log4j.Logger;
 
 import sun.misc.Lock;
 import sweb.server.StokerConstants;
@@ -87,6 +88,8 @@ public class StokerTelnetController extends DataController
 
     AtomicBoolean abStartHelper = new AtomicBoolean(false);
 
+    private static final Logger logger = Logger.getLogger(StokerTelnetController.class.getName());
+    
     public boolean waitForReady(long lWaitTimeMills )
     {
         final AtomicBoolean go = new AtomicBoolean( );
@@ -144,7 +147,7 @@ public class StokerTelnetController extends DataController
     private void createConnection() throws IOException
     {
 
-        System.out.println("Creating Telnet connection.");
+        logger.info("Creating Telnet connection.");
 
         m_Telnet = new TelnetClient();
         String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
@@ -157,7 +160,7 @@ public class StokerTelnetController extends DataController
 
         if ( m_ReaderThread != null)
         {
-            System.out.println("Interrupting thread");
+            logger.warn("Interrupting thread");
 
             m_ReaderThread.interrupt();
         }
@@ -187,7 +190,7 @@ public class StokerTelnetController extends DataController
             }
             if (x > 10)
             {
-                System.out.println("Unable to connect or login, giving up");
+                logger.warn("Unable to connect or login, giving up");
                 stopInternal();
                 break;
             }
@@ -209,7 +212,7 @@ public class StokerTelnetController extends DataController
         m_StokerState = StokerCmdState.CMD_IN_PROGRESS;
         m_StreamToStoker.write(sendString.getBytes());
         m_StreamToStoker.flush();
-        System.out.println("Sent: [" + new String(sendString.getBytes()) + "]");
+        logger.debug("Sent: [" + new String(sendString.getBytes()) + "]");
     }
 
     private void sendLoginSequence() throws IOException
@@ -229,14 +232,14 @@ public class StokerTelnetController extends DataController
         int x = 0;
         while (m_StokerState != s && x++ < 15)
         {
-            System.out.println("Command in process, waiting...");
+            logger.debug("Command in process, waiting...");
             sleep(2000);
         }
 
         System.out.println("Out of waitForCompletion loop, x: " + x );
         if (x > 15)
         {
-            System.out.println("Command did not return in 30 seconds, reconnecting...");
+            logger.info("Command did not return in 30 seconds, reconnecting...");
             reconnect();
         }
 
@@ -244,7 +247,7 @@ public class StokerTelnetController extends DataController
 
     private void sendTempsCommand()
     {
-        System.out.println("sendTempsCommand()");
+        logger.debug("sendTempsCommand()");
         try
         {
             sendSequence(StokerTelnetCommands.StokerCmdTemps);
@@ -258,7 +261,7 @@ public class StokerTelnetController extends DataController
     }
     private void sendStartCommand()
     {
-        System.out.println("sendStartCommand()");
+        logger.debug("sendStartCommand()");
         try
         {
             sendSequence(StokerTelnetCommands.StokerCmdStart);
@@ -275,7 +278,7 @@ public class StokerTelnetController extends DataController
 
     private void sendStopCommand()
     {
-        System.out.println("sendStopCommand()");
+        logger.info("sendStopCommand()");
         try
         {
             sendSequence(StokerTelnetCommands.StokerCmdStop);
@@ -284,7 +287,7 @@ public class StokerTelnetController extends DataController
         catch (IOException e)
         {
             // Error writing to telnet port
-            System.out.println("Exception caught running stop command, attempting reconnect.");
+            logger.info("Exception caught running stop command, attempting reconnect.");
             reconnect();
         }
 
@@ -302,28 +305,7 @@ public class StokerTelnetController extends DataController
         if ( m_Telnet.isConnected())  // this is to get around a null Pointer exception in the disconnect if the stoker is lost
            m_Telnet.disconnect();
     }
-/*
-    public boolean isMessageAvailable()
-    {
-        return !deqStokerMessages.isEmpty();
-    }
 
-    public String getNextMessage()
-    {
-        if (deqStokerMessages.size() > 0)
-        {
-            try
-            {
-                return deqStokerMessages.removeFirst();
-            }
-            catch (NoSuchElementException nse)
-            {
-
-            }
-        }
-        return null;
-    }
-*/
     private void sleep(long l)
     {
         try
@@ -376,7 +358,7 @@ public class StokerTelnetController extends DataController
                     if (intRead == ' ' && lastRead == ':'
                             && sb.toString().contains(StokerConstants.STOKER_PROMPT_LOGIN))  // login:
                     {
-                        System.out.println("found login string");
+                        logger.info("found login string");
                         sendLoginSequence();
                         sb = new StringBuilder();
                     }
@@ -384,7 +366,7 @@ public class StokerTelnetController extends DataController
                     if (intRead == ' ' && lastRead == ':'
                             && sb.toString().contains(StokerConstants.STOKER_PROMPT_PASSWORD))  // password
                     {
-                        System.out.println("found password string");
+                        logger.info("found password string");
                         sendPasswordSequence();
                         sb = new StringBuilder();
                     }
@@ -392,7 +374,7 @@ public class StokerTelnetController extends DataController
                     if (intRead == ' ' && lastRead == '>' && doubleLastRead == 47
                             && sb.toString().contains("tini") && sb.toString().contains(" />"))
                     {
-                        System.out.println("found tini prompt");
+                        logger.info("found tini prompt");
                         m_LoginState = LoginState.YES;
 
                     }
@@ -400,7 +382,7 @@ public class StokerTelnetController extends DataController
                     if ( intRead == 't' && lastRead == 'r'
                             && sb.toString().contains(StokerConstants.STOKER_CONDITION_START))  // stoker: start
                     {
-                        System.out.println("Stoker Start response detected");
+                        logger.info("Stoker Start response detected");
                         m_StokerState = StokerCmdState.STARTED;
 
                     }
@@ -408,7 +390,7 @@ public class StokerTelnetController extends DataController
                     if ( intRead == 'p' && lastRead == 'o'
                             && sb.toString().contains(StokerConstants.STOKER_CONDITION_STOP))  // stkcmd: stop
                     {
-                        System.out.println("Stoker stopped response detected");
+                        logger.info("Stoker stopped response detected");
                         m_StokerState = StokerCmdState.STOPPED;
 
                     }
@@ -417,8 +399,8 @@ public class StokerTelnetController extends DataController
                     if ( intRead == 'd' && lastRead == 'e' )
                           //  && sb.toString().contains("stkcmd: not started"))
                     {
-                        System.out.println("String: " + sb.toString());
-                        System.out.println("Stoker not started response detected");
+                        logger.debug("String: " + sb.toString());
+                        logger.info("Stoker not started response detected");
                         m_StokerState = StokerCmdState.STOPPED;
 
                     }
@@ -434,17 +416,16 @@ public class StokerTelnetController extends DataController
                             try
                             {
                                 // Not sure if I want this here.
-                               System.out.print("t");
+                               logger.debug("t");
                                 addDataPoint( sb.toString() );
-                               System.out.print("p");
+                              // System.out.print("p");
 
                                m_StokerResponseState = StokerResponseState.TEMPS;
                                m_LastMessageTime = Calendar.getInstance().getTime();
                             }
                             catch ( InvalidDataPointException idp)
                             {
-                                System.out.println("Invalid Data Point: [" + sb.toString() + "]");
-                                //idp.printStackTrace();
+                                logger.warn("Invalid Data Point: [" + sb.toString() + "]");
                             }
 
                                 sb = new StringBuilder();
@@ -461,13 +442,10 @@ public class StokerTelnetController extends DataController
         }
         catch (Exception e)
         {
-            System.err.println("Exception while reading socket:"
-                    + e.getMessage());
-
-            e.printStackTrace();
-            reconnect();
+            logger.error("Exception while reading socket:" + e.getStackTrace() );
+                        reconnect();
         }
-        System.out.println("Reader exiting");
+        logger.error("Reader exiting");
 
     }
 
@@ -497,7 +475,7 @@ public class StokerTelnetController extends DataController
             {
                 leave = true;
 
-                System.out.println("waitForTemps(): Found TEMPS");
+                logger.info("waitForTemps(): Found TEMPS");
                 break;
             }
             sleep(1000);
@@ -523,7 +501,7 @@ public class StokerTelnetController extends DataController
      */
     private void stopInternal()
     {
-        System.out.println("stopInternal()");
+        logger.debug("stopInternal()");
         try
         {
         //   sendStopCommand();  // when disconnecting, it is probably best to leave the stoker running.
@@ -587,7 +565,7 @@ public class StokerTelnetController extends DataController
               // no messages from Stoker in 2 minutes
               // try to restart telnet interface
 
-              System.out.println("No activity from stoker in the last minute, attempting reconnect");
+              logger.warn("No activity from stoker in the last minute, attempting reconnect");
               reconnect();
               return;
           }
@@ -604,14 +582,14 @@ public class StokerTelnetController extends DataController
         {
             if ( abStartHelper.getAndSet(true) == false )
             {
-                System.out.println("StokerTelnet .start()");
+                logger.debug("StokerTelnet .start()");
 
                 m_StokerState = StokerCmdState.ENTRY;
                 m_StokerResponseState = StokerResponseState.NONE;
 
                 if ( m_StokerDataStore == null )
                 {
-                    System.out.println("NO data store defined in telnet controller, not starting");
+                    logger.error("NO data store defined in telnet controller, not starting");
                     return;
                 }
        //     while (telnetState == TelnetState.CONNECTED && stokerState != State.STARTED )
@@ -651,8 +629,8 @@ public class StokerTelnetController extends DataController
                         m_StokerResponseState != StokerResponseState.TEMPS )
                 {
                     // Something is not right.  tear down the connection and leave
-                    System.out.println("StokerTelnetController:start()");
-                    System.out.println("  Status not correct after starting, calling stop()");
+                    logger.error("StokerTelnetController:start()");
+                    logger.error("  Status not correct after starting, calling stop()");
                     stopInternal();
 
                 }
@@ -678,10 +656,10 @@ public class StokerTelnetController extends DataController
             @Override
             public void run()
             {
-                System.out.println("StokerTelnetController:start() run()");
+                logger.debug("StokerTelnetController:start() run()");
                 if ( m_TelnetState != TelnetState.CONNECTED )
                 {
-                    System.out.println("StokerTelnetController:start() run() - calling startHelper()");
+                    logger.debug("StokerTelnetController:start() run() - calling startHelper()");
                    startHelper();
                    return;
                 }

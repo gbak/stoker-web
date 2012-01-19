@@ -8,6 +8,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+
+import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.alerts.delivery.Messenger;
@@ -41,6 +44,7 @@ public class StokerAlarm extends AlertCondition
    
    private ExecutorService executor = null;
    
+   private static final Logger logger = Logger.getLogger(StokerAlarm.class.getName());
    
    private void init()
    {
@@ -180,8 +184,8 @@ public class StokerAlarm extends AlertCondition
             
             StokerProbe sp = (StokerProbe) sd;
             
-            // TODO: log debug
-           // System.out.println("StokerAlarm: DataPoint::StateChange() StokerProbe Name: " + sp.getName());
+            
+            logger.debug("StokerAlarm: DataPoint::StateChange() StokerProbe Name: " + sp.getName());
             if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
             {
                continue;

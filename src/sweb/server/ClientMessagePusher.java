@@ -7,15 +7,20 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
 import sweb.server.controller.Controller;
+import sweb.server.controller.config.stoker.StokerWebConfigurationController;
 
 public class ClientMessagePusher
 {
 
     private volatile static ClientMessagePusher m_ClientMessagePusher = null;
     private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
+    
+    private static final Logger logger = Logger.getLogger(ClientMessagePusher.class.getName());
     
     public static ClientMessagePusher getInstance()
     {
@@ -39,7 +44,7 @@ public class ClientMessagePusher
         if ( webSessions.putIfAbsent(httpSession.getId(), cometSession) != null )
         {
            //httpSession.invalidate();
-           System.out.println("User already on");
+           logger.info("User already on");
            webSessions.remove(httpSession.getId());
            webSessions.put(httpSession.getId(), cometSession);
         }
@@ -56,7 +61,7 @@ public class ClientMessagePusher
             }
             else
             {
-                System.out.println("Removing invalid comet session");
+                logger.warn("Removing invalid comet session");
                 entry.getValue().invalidate();
                 webSessions.remove(entry.getKey());
             }
