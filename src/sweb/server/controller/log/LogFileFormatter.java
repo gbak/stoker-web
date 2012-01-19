@@ -508,19 +508,7 @@ public class LogFileFormatter
                 else
                 {
                     boolean blowerState = strValue.equalsIgnoreCase("1") ? true : false;
-                    
-                    /*
-                 // This is the dummy value used to create the steps in the Highcharts graph.
-                    // I _really_ don't like this here since it screws up the report and anyting else that
-                    // shares this code.
-                    sdp = new SBlowerDataPoint( strDeviceID, d, !blowerState );    
-                    ar.add( sdp );
 
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(d);
-                    cal.add(Calendar.MILLISECOND, 10);
-                    sdp = new SBlowerDataPoint( strDeviceID, cal.getTime(), blowerState );
-                    */
                     sdp = new SBlowerDataPoint( strDeviceID, d, blowerState );
                 }
 

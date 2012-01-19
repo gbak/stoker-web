@@ -59,13 +59,6 @@ public class ClientDataTracker
             {
                SBlowerDataPoint bdp = be.getBlowerDataPoint();
 
-               arBlowerHistory.add( new SBlowerDataPoint( bdp.getDeviceID(), bdp.getCollectedDate(), ! bdp.isFanOn() ));
-
-               Calendar cal = Calendar.getInstance();
-               cal.setTime(bdp.getCollectedDate());
-               cal.add(Calendar.MILLISECOND, 10);
-               bdp.setCollectedDate( cal.getTime());
-
                arBlowerHistory.add( bdp );
             }
 

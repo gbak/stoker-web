@@ -34,6 +34,7 @@ import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsData;
 import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsFormatter;
 import org.moxieapps.gwt.highcharts.client.labels.YAxisLabels;
 import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
+import org.moxieapps.gwt.highcharts.client.plotOptions.LinePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
@@ -42,6 +43,7 @@ import org.moxieapps.gwt.highcharts.client.labels.Labels;
 
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
+import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.StokerFan;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -88,6 +90,7 @@ public class HighChartLineGraph extends StokerLineGraph
         chart.setChartTitleText(null);
 
         
+        
         setHighchartTimezone();
 
       // chart.setOption("/global/useUTC", "false");
@@ -104,6 +107,19 @@ public class HighChartLineGraph extends StokerLineGraph
                         .setLineWidth(1)
                     )
                 ));
+        
+        chart.setLinePlotOptions(new LinePlotOptions()
+                .setLineWidth(1)
+                .setHoverStateLineWidth(2)
+                .setMarker(new Marker()
+                   .setEnabled(false)
+                   .setHoverState(new Marker()
+                        .setEnabled(true)
+                        .setSymbol(Marker.Symbol.DIAMOND)
+                        .setRadius(3)
+                        .setLineWidth(1)
+                        )
+                 ));
         chart.setToolTip(new ToolTip()
                 .setFormatter(new ToolTipFormatter() {
                     public String format(ToolTipData toolTipData) {
@@ -142,33 +158,36 @@ public class HighChartLineGraph extends StokerLineGraph
             .setGridLineWidth(0)
             .setStartOnTick(false)
             .setShowFirstLabel(false)
+            
             .setMax(20)
              .setLineWidth(1)
+             
             .setLabels(new YAxisLabels().setEnabled(false));
         
-       /*     .setLabels(new YAxisLabels()
-                .setAlign(Labels.Align.RIGHT)
-                .setX(3)
-                .setY(16)
-
-                .setFormatter(new AxisLabelsFormatter() {
-                    public String format(AxisLabelsData axisLabelsData) {
-                        return NumberFormat.getFormat("#").format(axisLabelsData.getValueAsDouble());
-                    }
-                }))  ;
-       */
-
 
         for ( SDevice sd : listDeviceList)
         {
             Series s = chart.createSeries();
+            
             mapSeries.put( sd.getID(), s);
 
+            if ( sd.getProbeType() == DeviceType.BLOWER )
+            {
+                chart.addSeries(s
+                        .setName(sd.getName())
+                        .setType(Series.Type.LINE)
+                        .setOption("step", true )
+                        
+                        );
+            }
+            else
+            {
             chart.addSeries(s
                     .setName(sd.getName())
                     .setType(Series.Type.SPLINE)
+                    
                     );
-
+            }
             //  .setPlotOptions(new SplinePlotOptions()
             //      .setColor("#89A54E")
               //));
