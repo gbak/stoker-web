@@ -19,7 +19,6 @@
 package sweb.server.security;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,18 +28,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.data.DataOrchestrator;
 
 public class LoginProperties extends Properties
 {
-
     
     private static final long serialVersionUID = -6912224771507005561L;
     private volatile static LoginProperties lp = null;
     private static Date lastReadDate = null;
 
+    private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
+    
     private LoginProperties()
     {
         super();
@@ -58,7 +59,7 @@ public class LoginProperties extends Properties
         }
         catch (IOException ioe)
         {
-            System.out.println("Error loading login.properties");
+            logger.error("Error loading login.properties: " + ioe.getStackTrace());
         }
     }
 
@@ -97,17 +98,19 @@ public class LoginProperties extends Properties
     {
         setProperty(strLoginID, createHashPass(strPass));
 
-        try {
-           URL url = this.getClass().getClassLoader().getResource(StokerConstants.FILE_LOGIN_PROPERTIES);
-           String strFile = url.getFile();
-           
-           OutputStream output = new FileOutputStream( strFile );
-            //store(new FileOutputStream(StokerConstants.FILE_LOGIN_PROPERTIES), null);
-           store( output, null );
-            
-        }
-        catch (IOException e) {
+        try
+        {
+            URL url = this.getClass().getClassLoader()
+                    .getResource(StokerConstants.FILE_LOGIN_PROPERTIES);
+            String strFile = url.getFile();
 
+            OutputStream output = new FileOutputStream(strFile);
+            store(output, null);
+
+        }
+        catch (IOException e)
+        {
+            logger.error("Error writing out login/pass to login property file, Exception: " + e.getStackTrace());
         }
     }
 

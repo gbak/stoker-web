@@ -21,7 +21,6 @@ package sweb.shared.model;
 import java.io.Serializable;
 
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.StokerProbe.AlarmType;
 
 public class StokerPitSensor extends StokerProbe implements Serializable
 {
@@ -83,7 +82,7 @@ public class StokerPitSensor extends StokerProbe implements Serializable
             str = str + " - TargetTemp: " + this.getTargetTemp();
         }
         //str = str + " - ID: " + this.getID() + "\n";
-        str = str + "\n";
+       // str = str + "\n";
         
         return (str);
 

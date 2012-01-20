@@ -9,19 +9,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import org.jfree.data.time.Minute;
-import org.jfree.data.time.Month;
+import org.apache.log4j.Logger;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYDataset;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.LogFileFormatter;
 import sweb.server.controller.log.LogFileFormatter.LineType;
@@ -32,7 +28,6 @@ import sweb.server.report.TableEntry.ActionType;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.StokerFan;
 import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
@@ -46,8 +41,7 @@ public class ReportData
 
     ReportDataSource rds = new ReportDataSource();
     TableDataSource tableData = new TableDataSource();
-    //XYDataset  chartDataSource = JFreeChartReportScriptlet.createDataset1();
-    
+
     // This needs to be keyed by device ID.  Device name would be ideal, but some idiot may 
     // give a probe a duplicate name, if even possible on the stoker, can't take the chance.
     HashMap<String,TimeSeries> mapProbeChartPoints = new HashMap<String,TimeSeries>();
@@ -56,6 +50,8 @@ public class ReportData
     
     String strLogNameShort = null;
     String strLogFilePath = null;
+    
+    private static final Logger logger = Logger.getLogger(ReportData.class.getName());
     
     public ReportData( String shortLogName ) throws LogNotFoundException, LogReadErrorException
     {
@@ -79,7 +75,6 @@ public class ReportData
         HashMap<String,Object> params = new HashMap<String,Object>();
         params.put( ReportConstants.TABLE_DATA_SOURCE.toString(), tableData);
         
-        //ArrayList<TimeSeriesCollection> arTS = new ArrayList<TimeSeriesCollection>();
         HashMap<String,TimeSeriesCollection> mapTS = new HashMap<String,TimeSeriesCollection>();
         
         TimeSeriesCollection tscAxis1 = new TimeSeriesCollection();
@@ -218,8 +213,7 @@ public class ReportData
                              catch ( org.jfree.data.general.SeriesException  se )
                              {
                                  ts.update( s, sdp.getData());
-                                 //TODO: log error
-                                 System.out.println("Overwriting dummy point in blower graph data");
+                                 logger.warn("Overwriting point in graph data");
                              }
                         
                              if ( bFirstDPFound == false)
@@ -230,13 +224,10 @@ public class ReportData
                                  bFirstDPFound = true;
                              }
                              endDate = sdp.getCollectedDate();
-                             
-                             
                         }
                         
                         break;
                     
-                        
                     case CONFIG:
                         SDevice sd = LogFileFormatter.parseLogConfigLine( str );
                         hmByLogDevNumAndDeviceID.put(sd.getDeviceLogNum(), sd.getID() );
@@ -314,92 +305,12 @@ public class ReportData
         }
         catch (FileNotFoundException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Log file not found: [" + logFilePath + "], Exception: " + e.getStackTrace());
             throw new LogNotFoundException( logFilePath );
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
+            logger.error("IO Exception reading log file: [" + logFilePath + "], Exception: " + e.getStackTrace());
+        }   
     }
-/*
-    public static ReportData getReportData(String fileName)
-    {
-        // IF the file does not exist, return null
-        File tempfile = new File( fileName );
-        if ( ! tempfile.exists() )
-        {
-            return null;
-        }
-
-        HashMap<String,String> hmDevices = new HashMap<String,String>();
-        ArrayList<>
-        
-        try
-        {
-            BufferedReader in = new BufferedReader(new FileReader(fileName));
-            String str;
-            while ((str = in.readLine()) != null)
-            {
-               
-                LineType type = LogFileFormatter.getLineType(str.substring(0, 2));
-                
-                switch ( type )
-                {
-                    case DATA:
-                        for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hm ))
-                        {
-                            hmDeviceSilos.get(sdp.getDeviceID()).add(sdp);
-                        }
-                        break;
-                    case BLOWER:
-                        
-                        break;
-                    case CONFIG:
-                        SDevice sd = LogFileFormatter.parseLogConfigLine( str );
-                        hmDevices.put(sd.getDeviceLogNum(), sd );
-                        break;
-                
-                    case WEATHER:
-                        
-                        break;
-                
-                    case NOTE:
-                        LogNote note = LogFileFormatter.parseNoteLine( str);
-                        if ( note != null )
-                            notes.add( note );
-                        break;
-                
-                    
-                }
-                SDevice sd = LogFileFormatter.parseLogConfigLine( str );
-                
-                // Log lines that are not config devices will return null
-                // the ID of 0 is the cooker Name line.
-                if ( sd != null && sd.getID().compareTo("0") != 0)
-                {
-                   hmSD.put( sd.getID(), sd);
-                }
-                
-            }
-            in.close();
-            arSD = new ArrayList<SDevice>( hmSD.values());
-
-        }
-        catch (FileNotFoundException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-    */
 }

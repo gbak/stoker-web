@@ -29,17 +29,14 @@ import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.config.stoker.StokerWebConfigurationController;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.data.telnet.StokerTelnetCommands;
 import sweb.server.controller.data.telnet.StokerTelnetController;
-import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
 import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
 import sweb.server.controller.events.DataControllerEvent.EventType;
+import sweb.server.controller.events.DataControllerEventListener;
 import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
-//import sweb.server.controller.notify.NotificationController;
 import sweb.server.controller.weather.WeatherController;
 import sweb.shared.model.alerts.AlertModel;
 
@@ -85,15 +82,10 @@ public class Controller
 
     public void init()
     {
+        logger.info("Controller init called");
        m_AlertsController = new AlertsController();
-       
        m_DataController.setDataStore(DataOrchestrator.getInstance());
-
-       // TODO: implement start() and call it instead of now()
        m_ConfigurationController.setConfiguration(StokerConfiguration.getInstance());
-      // m_ConfigurationController.setNow();
-
-      // setupDefaultLog();
 
        m_DataController.addEventListener(new DataControllerEventListener()
        {
@@ -102,7 +94,10 @@ public class Controller
             {
                if ( ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
                {
+                   logger.info("Loading Stoker Configuration");
                    loadConfiguration();
+                   
+                   logger.info("Setting default log");
                    setupDefaultLog();
                }
 

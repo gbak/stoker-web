@@ -28,6 +28,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.zip.GZIPInputStream;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,15 +39,12 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
 
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.shared.model.weather.WeatherData;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
 
 public class WeatherController
 {
@@ -51,6 +52,8 @@ public class WeatherController
     Timer updateTimer = null;
     WeatherData wd = null;
 
+    private static final Logger logger = Logger.getLogger(WeatherController.class.getName());
+    
     public WeatherData getWeather()
     {
         if ( wd == null )
@@ -75,7 +78,7 @@ public class WeatherController
           //resultString = httpRequest("http://where.yahooapis.com/geocode?country=USA&flags=J&postal=30024");
           resultString = httpRequest(strGetWoeidUrl + strGetZipCode);
 
-          System.out.println("Result String: [" + resultString +"]");
+          logger.debug("Result String: [" + resultString +"]");
            JSONObject json = (JSONObject) JSONSerializer.toJSON( resultString );
            JSONObject resultSet = json.getJSONObject("ResultSet");
            JSONArray jsa =  (JSONArray)resultSet.getJSONArray( "Results" );
@@ -85,7 +88,7 @@ public class WeatherController
            {
               JSONObject jo = (JSONObject) o;
               woeid = jo.getString("woeid");
-              System.out.println("woeid: " + woeid);
+              logger.debug("woeid: " + woeid);
            }
 
            //JSONObject results = json.getJSONObject("Results");
@@ -95,7 +98,7 @@ public class WeatherController
               resultString = httpRequest(strWeatherURL + woeid );
               json = (JSONObject) JSONSerializer.toJSON( resultString );
 
-              System.out.println("weather: " + resultString);
+              logger.debug("weather: " + resultString);
            }
            wd = YahooWeatherJsonServerHelper.parseYahooWeatherData( resultString );
        }
@@ -105,7 +108,7 @@ public class WeatherController
        }
        catch ( net.sf.json.JSONException jse )
        {
-          System.out.println("Error getting weather.");
+          logger.warn("Error getting weather.");
           jse.printStackTrace();
        }
 
@@ -133,7 +136,7 @@ public class WeatherController
               resultString= convertStreamToString(instream);
               instream.close();
 
-              System.out.println("Response: " + resultString  );  // TODO: remove
+              logger.debug("Response: " + resultString  );
           }
        }
        catch (IllegalStateException ise )
@@ -142,13 +145,11 @@ public class WeatherController
        }
        catch (ClientProtocolException e)
        {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          logger.error("Client Protocol Exception in httpRequest: " + e.getStackTrace());
        }
        catch (IOException e)
        {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+           logger.error("IO Exception in httpRequest: " + e.getStackTrace());
        }
        return resultString;
 
@@ -219,13 +220,16 @@ public class WeatherController
 
     private void updateWeatherAndFireEvent()
     {
+        logger.info("Fetching Weather");
         wd = fetchWeather();
+        logger.info("Weather fetch complete");
         WeatherChangeEvent wce = new WeatherChangeEvent(this,wd);
         fireActionPerformed( wce );
     }
 
     public void start()
     {
+        logger.info("Starting weather controller");
         if ( updateTimer == null )
         {
             updateTimer = new Timer();
@@ -236,8 +240,7 @@ public class WeatherController
         }
         else
         {
-            System.out.println("Attempting to start Weather Controller and it's already running.");
-            // TODO: system log
+            logger.error("Attempting to start Weather Controller and it's already running.");
         }
 
     }

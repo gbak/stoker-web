@@ -20,34 +20,23 @@ package sweb.server.controller.data.telnet;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.io.OutputStream;
 import java.net.ConnectException;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Condition;
 
 import org.apache.commons.net.telnet.TelnetClient;
-import org.apache.commons.net.telnet.TelnetInputListener;
-import org.apache.commons.net.telnet.TelnetNotificationHandler;
 import org.apache.log4j.Logger;
 
-import sun.misc.Lock;
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
-import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataControllerEvent.EventType;
 import sweb.server.controller.parser.stoker.InvalidDataPointException;
 import sweb.server.controller.parser.stoker.SDataPointHelper;

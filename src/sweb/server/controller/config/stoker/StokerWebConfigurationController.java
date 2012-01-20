@@ -40,7 +40,6 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 import sweb.server.StokerConstants;
-import sweb.server.StokerCoreServiceImpl;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.config.ConfigurationController;
@@ -77,13 +76,11 @@ public class StokerWebConfigurationController extends ConfigurationController
       }
       catch (UnsupportedEncodingException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         logger.error("Unsuppored Encoding exception caught: " + e.getStackTrace());
       }
       catch (IOException e)
       {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         logger.error("IOException running convert");
       }
 
         return ( sb.toString());
@@ -272,8 +269,6 @@ public class StokerWebConfigurationController extends ConfigurationController
             }
             catch (InterruptedException e)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
                 logger.error(e.getStackTrace());
             }
           }
@@ -308,8 +303,6 @@ public class StokerWebConfigurationController extends ConfigurationController
 
    public static void main(String[] args)
    {
-      // TODO Auto-generated method stub
-
       new StokerWebConfigurationController().scrapeWebPage();
    }
 

@@ -19,7 +19,6 @@
 package sweb.server;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -29,8 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-
-import sweb.server.controller.data.DataOrchestrator;
 
 public class StokerWebProperties extends Properties
 {
@@ -50,7 +47,6 @@ public class StokerWebProperties extends Properties
         if ( stokerWebDir == null )
         {
            logger.error("Unable to find STOKERWEB_DIR environment variable, using '.'");
-           // TODO: error condition
            stokerWebDir = ".";
         }
         if ( stokerWebDir.endsWith("/") || stokerWebDir.endsWith("\\"))
@@ -70,15 +66,13 @@ public class StokerWebProperties extends Properties
         }
         catch (IOException ioe)
         {
-            logger.error("Error loading stokerWeb.properties");
-            ioe.printStackTrace();
+            logger.fatal("Error loading stokerWeb.properties: " + ioe.getStackTrace());
             System.exit(1);
         }
       catch (Exception e)
       {
-         // TODO Auto-generated catch block
-         logger.error("Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath");
-         e.printStackTrace();
+         logger.fatal("Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath");
+         logger.fatal(e.getStackTrace());
          System.exit(1);
       }
         

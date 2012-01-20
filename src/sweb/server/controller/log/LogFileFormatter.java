@@ -24,12 +24,13 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
@@ -37,10 +38,10 @@ import sweb.shared.model.SDevice;
 import sweb.shared.model.SDeviceBase;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerDeviceTypes;
+import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.StokerFan;
 import sweb.shared.model.StokerPitSensor;
 import sweb.shared.model.StokerProbe;
-import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.logfile.LogNote;
 import sweb.shared.model.weather.WeatherData;
 
@@ -84,6 +85,8 @@ public class LogFileFormatter
       *     FanID ( if any)
       */
 
+    private static final Logger logger = Logger.getLogger(LogFileFormatter.class.getName());
+    
     public static enum LineType  { CONFIG, BLOWER, DATA, WEATHER, NOTE, NONE };
 
 
@@ -91,7 +94,7 @@ public class LogFileFormatter
     {
        if ( prefix.length() > 2)
        {
-           System.out.println("Prefix is too long, something must be wrong");
+           logger.error("Prefix is too long, something must be wrong");
        }
        
        if ( prefix.compareTo( "d:") == 0)
@@ -191,8 +194,7 @@ public class LogFileFormatter
         }
         catch (UnsupportedEncodingException e)
         {
-            // TODO Auto-generated catch block
-            System.out.println("Unable to encode string [" + enc + "]");
+            logger.warn("Unable to encode string [" + enc + "]");
             s = "Unable to encode string";
         }    
         return s;
@@ -207,8 +209,7 @@ public class LogFileFormatter
         }
         catch (UnsupportedEncodingException e)
         {
-            // TODO Auto-generated catch block
-            System.out.println("Unable to decode note string");
+            logger.warn("Unable to decode note string");
             s = "Unable to decode string";
         }
         return s;
@@ -289,7 +290,7 @@ public class LogFileFormatter
         {
             String token = st.nextToken();
 
-            System.out.println("Next Token: [" + token + "]");
+            logger.debug("Next Token: [" + token + "]");
         }
         return null;
     }
@@ -302,19 +303,19 @@ public class LogFileFormatter
 
             StringTokenizer st = new StringTokenizer(s, "|");
             String strDate = st.nextToken().substring(2);
-            System.out.println("Date: " + strDate );
+            logger.debug("Date: " + strDate );
             SimpleDateFormat sdf = new SimpleDateFormat(strSimpleDateFormat);
             Date d = null;
             try
             {
                 d = sdf.parse(strDate);
-               // System.out.println("Date: " + d.toString());
+               logger.debug("Parsed Date: " + d.toString());
 
             }
             catch (ParseException e)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Parse Exception while in parseLogDataLone ");
+                logger.error(e.getStackTrace());
             }
 
             while ( st.hasMoreTokens() )
@@ -333,15 +334,7 @@ public class LogFileFormatter
                 else
                 {
                     boolean blowerState = strValue.equalsIgnoreCase("1") ? true : false;
-                    /*
-                    sdp = new SBlowerDataPoint( strDeviceID, d, !blowerState );
-                    ar.add( sdp );
 
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(d);
-                    cal.add(Calendar.MILLISECOND, 10);
-                    sdp = new SBlowerDataPoint( strDeviceID, cal.getTime(), blowerState );
-                    */
                     sdp = new SBlowerDataPoint( strDeviceID, d, blowerState );
                 }
 
@@ -376,8 +369,7 @@ public class LogFileFormatter
         }
         catch (ParseException e)
         {
-            // TODO: log
-            System.out.println("Unable to parse date from line: [" + logLine + "]" );
+           logger.error("Unable to parse date from line: [" + logLine + "]" );
         }
 
         
@@ -389,8 +381,7 @@ public class LogFileFormatter
         }
         catch (UnsupportedEncodingException e)
         {
-            // TODO Auto-generated catch block
-            System.out.println("Unable to decode note string");
+            logger.warn("Unable to decode note string");
             s = "Unable to decode note string";
         }
         
@@ -477,19 +468,18 @@ public class LogFileFormatter
 
             StringTokenizer st = new StringTokenizer(s, "|");
             String strDate = st.nextToken().substring(2);
-            System.out.println("Date: " + strDate );
+            logger.debug("Date: " + strDate );
             SimpleDateFormat sdf = new SimpleDateFormat(strSimpleDateFormat);
             Date d = null;
             try
             {
                 d = sdf.parse(strDate);
-               // System.out.println("Date: " + d.toString());
+               logger.debug("Parsed Date: " + d.toString());
 
             }
             catch (ParseException e)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("Error parsing date: " + e.getStackTrace());
             }
 
             while ( st.hasMoreTokens() )

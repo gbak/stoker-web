@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
 import sweb.server.controller.Controller;
-import sweb.server.controller.config.stoker.StokerWebConfigurationController;
 
 public class ClientMessagePusher
 {

@@ -18,20 +18,15 @@
 
 package sweb.server.controller.weather;
 
-import net.sf.json.JSON;
+import org.apache.log4j.Logger;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 import sweb.shared.model.weather.WeatherData;
 
-/*import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONNumber;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.json.client.JSONValue;
-*/
+
 public class YahooWeatherJsonServerHelper
 {
    private static final String PARAM_YAHOO_LOCATION = "location";  // L
@@ -75,6 +70,8 @@ public class YahooWeatherJsonServerHelper
    private static final String ATT_YAHOO_F_HIGH_TEMP = "high_temperature";
    private static final String ATT_YAHOO_F_LOW_TEMP = "low_temperature";
 
+   private static final Logger logger = Logger.getLogger(YahooWeatherJsonServerHelper.class.getName());
+   
    public static WeatherData parseYahooWeatherData( String JSONString )
    {
       String strCity = null;
@@ -162,8 +159,8 @@ public class YahooWeatherJsonServerHelper
 
 
 
-    //  System.out.println("jso: " + JSONFullObject.toString());
-   //   System.out.println("jsoConditions: " + jsoCondition.toString());
+      logger.debug("jso: " + JSONFullObject.toString());
+      logger.debug("jsoConditions: " + jsoCondition.toString());
 
       /*
        *   public WeatherData( String strCity, String strCountry, String strCurrentTemp,

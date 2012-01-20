@@ -25,31 +25,25 @@ import java.util.HashMap;
 import org.moxieapps.gwt.highcharts.client.Axis;
 import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Legend;
-import org.moxieapps.gwt.highcharts.client.PlotLine;
 import org.moxieapps.gwt.highcharts.client.Series;
 import org.moxieapps.gwt.highcharts.client.ToolTip;
 import org.moxieapps.gwt.highcharts.client.ToolTipData;
 import org.moxieapps.gwt.highcharts.client.ToolTipFormatter;
 import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsData;
 import org.moxieapps.gwt.highcharts.client.labels.AxisLabelsFormatter;
+import org.moxieapps.gwt.highcharts.client.labels.Labels;
 import org.moxieapps.gwt.highcharts.client.labels.YAxisLabels;
-import org.moxieapps.gwt.highcharts.client.plotOptions.AreaPlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.LinePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
-import org.moxieapps.gwt.highcharts.client.plotOptions.PlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
-
-import org.moxieapps.gwt.highcharts.client.labels.Labels;
 
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
 import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.StokerFan;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.json.client.JSONArray;
 
 
 public class HighChartLineGraph extends StokerLineGraph

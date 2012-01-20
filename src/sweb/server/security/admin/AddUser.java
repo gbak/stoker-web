@@ -7,10 +7,7 @@ import java.io.InputStreamReader;
 import sweb.server.security.LoginProperties;
 
 public class AddUser
-{
-   /**
-    * @param args
-    */
+{    
    public static void main(String[] args)
    {
       String username = "";

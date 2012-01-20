@@ -22,9 +22,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Formatter;
-import java.util.Locale;
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import sweb.server.controller.StokerConfiguration;
 import sweb.shared.model.SBlowerDataPoint;
@@ -39,16 +39,8 @@ public class SDataPointHelper
     public static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     public static final String OUTPUT_FORMAT = "%3s|%15s|%16s|%5.1f|%5.1f|%1s|%1s\n";
 
-    /*
-    public static String toString(SDataPoint dp)
-    {
-       StringBuilder sb = new StringBuilder();
-       Formatter formatter = new Formatter(sb, Locale.US);
-       formatter.format( OUTPUT_FORMAT, "DPT", getTime(dp.getCollectedDate()), dp.getDeviceID(), dp.getTempC(), dp.getTempF(), dp.hasFan() == false? 0 : 1, dp.bFanOn() == false? 0 : 1 );
-       return formatter.toString();
-    }
-    */
-
+    private static final Logger logger = Logger.getLogger(SDataPointHelper.class.getName());
+    
 
     private static String getTime(Date d)
     {

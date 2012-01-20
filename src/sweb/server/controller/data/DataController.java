@@ -32,12 +32,9 @@ public abstract class DataController
     protected DataOrchestrator m_StokerDataStore = null;
     ArrayList<DataControllerEventListener> arListener = new ArrayList<DataControllerEventListener>();
 
-
     public abstract void start();
     public abstract void stop();
     public abstract boolean isReady();
-
-
 
     /**
      * Waits for the Controller to be in a Ready state.  If

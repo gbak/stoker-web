@@ -20,30 +20,23 @@ package sweb.server.controller.data;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
-import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
 import sweb.server.controller.events.BlowerEvent;
 import sweb.server.controller.events.BlowerEventListener;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.log.ListLogFiles;
@@ -54,7 +47,6 @@ import sweb.shared.model.LogItem;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
-import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.logfile.LogNote;
 
 /*
@@ -64,9 +56,7 @@ import sweb.shared.model.logfile.LogNote;
 public class DataOrchestrator
 {
     private volatile static DataOrchestrator sds = null;
- //   BlockingDeque<SDataPoint> deqStokerMessages = new LinkedBlockingDeque<SDataPoint>();
     ConcurrentHashMap<String,SDataPoint> hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
-
 
     HashMap<String,StokerFile> fileLogList = new HashMap<String,StokerFile>();
     ArrayList<BlowerEventListener> m_arListener = new ArrayList<BlowerEventListener>();
@@ -142,7 +132,6 @@ public class DataOrchestrator
             cal.add(Calendar.MINUTE, 1);
             if ( dpFromMap.getCollectedDate().after(cal.getTime()))
             {
-                // TODO: add parameter to choose if to use forced updates.
                forceUpdate = true;
                logger.info("Forcing update");
             }
@@ -168,9 +157,9 @@ public class DataOrchestrator
                         {
                            long elapsedSec = d.getTime() - last_d.getTime();
                            long totalRuntime = bdpFromMap.getTotalRuntime();
-  //                         System.out.println("Total Runtime: " + totalRuntime );
+                           logger.debug("Total Runtime: " + totalRuntime );
                            bdpFromMap.setTotalRuntime(elapsedSec + totalRuntime );
-  //                         System.out.println("Fan Off event, total runtime: " + bdpFromMap.getTotalRuntime() );
+                           logger.debug("Fan Off event, total runtime: " + bdpFromMap.getTotalRuntime() );
                         }
                     }
                     else
@@ -192,7 +181,6 @@ public class DataOrchestrator
         }
         else
         {
-           // TODO: Removed debug
            if ( dp instanceof SBlowerDataPoint )
            {
                // If blower is running, set the start time to now.  This needs to be done
@@ -240,8 +228,7 @@ public class DataOrchestrator
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("IO Exception calling getAllDataPoints: " + e.getStackTrace());
         }
         return new ArrayList<ArrayList<SDataPoint>>();
     }
@@ -257,7 +244,6 @@ public class DataOrchestrator
 
     public ArrayList<LogItem> getLogList()
     {
-       // return new ArrayList<String>( fileLogList.keySet());
         ArrayList<LogItem> li = new ArrayList<LogItem>();
 
         for ( StokerFile sf : fileLogList.values() )
@@ -287,28 +273,16 @@ public class DataOrchestrator
     public void startLog(String strCookerName, String strLogName) throws LogExistsException
     {
         LogItem li = new LogItem(strCookerName, strLogName);
+        Log.info("Starting log: [" + strLogName + "]");
         startLog( li );
-        //if ( fileLogList.containsKey(strLogName)) throw new LogExistsException(strLogName);
-        //StokerFile sf = new StokerFile( strLogName );
-        //fileLogList.put( strLogName, sf );
-        //sf.start();
     }
-    /*
-    public void startLog( String strLogName, ArrayList<SDevice> asd ) throws LogExistsException
-    {
-        if ( fileLogList.containsKey(strLogName)) throw new LogExistsException(strLogName);
-        StokerFile sf = new StokerFile( strLogName, asd );
-        fileLogList.put( strLogName, sf );
-        sf.start();
-
-    }
-    */
 
     public void startLog( LogItem logItem ) throws LogExistsException
     {
         if ( fileLogList.containsKey(logItem.getLogName())) throw new LogExistsException(logItem.getLogName());
         StokerFile sf = new StokerFile( logItem );
         fileLogList.put( logItem.getLogName(), sf );
+        Log.info("Starting log: [" + logItem.getLogName() + "]");
         sf.start();
 
     }
@@ -319,6 +293,7 @@ public class DataOrchestrator
         if ( sf ==  null ) throw new LogNotFoundException( strLogName );
         fileLogList.remove(sf);
         sf.stop();
+        logger.info("Log stopped: " + strLogName );
     }
 
     public void stopAllLogs()
@@ -348,6 +323,7 @@ public class DataOrchestrator
                 //String logName = fileName.substring(fileName.lastIndexOf("_")).replace(".log", "");
                 StokerFile sfNew = new StokerFile(cookerName, fileName );
                 sfNew.start();
+                logger.info("Attached to existing log file");
 
             }
         }
@@ -360,8 +336,10 @@ public class DataOrchestrator
     {
         return fileLogList.get( logName ).readAllNotes();
     }
+    
     public void addNoteToLog( String note, ArrayList<String> logList )
     {
+        logger.info("Adding note to log: " + note );
         for ( String logName: logList )
         {
             StokerFile sf = fileLogList.get( logName );

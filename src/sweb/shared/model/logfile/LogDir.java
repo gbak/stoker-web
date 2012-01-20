@@ -18,9 +18,11 @@
 
 package sweb.shared.model.logfile;
 
-import java.io.File;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import org.apache.log4j.Logger;
 
 public class LogDir implements Serializable
 {
@@ -32,6 +34,8 @@ public class LogDir implements Serializable
     ArrayList<LogDir> dirList = new ArrayList<LogDir>();
     ArrayList<String> arFiles = new ArrayList<String>();
 
+    private static final Logger logger = Logger.getLogger(LogDir.class.getName());
+    
     public LogDir()
     {
 
@@ -51,13 +55,13 @@ public class LogDir implements Serializable
 
     public void addFile( String fileName )
     {
-        System.out.println("logDir - Adding file: " + fileName );
+        logger.debug("addFile: logDir - Adding file: " + fileName );
         arFiles.add( fileName );
     }
 
     public void addDir( LogDir ld )
     {
-        System.out.println("logDir - Adding Dir: " + ld.dirName );
+        logger.debug("addDir: logDir - Adding Dir: " + ld.dirName );
         dirList.add( ld );
     }
 

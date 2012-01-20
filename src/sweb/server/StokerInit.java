@@ -21,15 +21,9 @@ package sweb.server;
 import javax.servlet.http.HttpServlet;
 
 import sweb.server.controller.Controller;
-import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.ConfigControllerEvent;
-import sweb.server.controller.events.ConfigControllerEventListener;
 import sweb.server.controller.events.DataControllerEvent;
 import sweb.server.controller.events.DataControllerEventListener;
-import sweb.server.controller.events.ConfigControllerEvent.EventType;
-import sweb.server.controller.log.exceptions.LogExistsException;
-import sweb.server.controller.log.exceptions.LogNotFoundException;
 
 public class StokerInit extends HttpServlet
 {

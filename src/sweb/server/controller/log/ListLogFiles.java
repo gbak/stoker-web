@@ -20,6 +20,8 @@ package sweb.server.controller.log;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
@@ -32,6 +34,8 @@ public class ListLogFiles
                                           File.separator + 
                    normalizePath(StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_LOGS_DIR));
 
+    private static final Logger logger = Logger.getLogger(StokerFile.class.getName());
+    
     public static LogDir getAllLogFiles()
     {
         return getFiles(baseDir);
@@ -56,21 +60,21 @@ public class ListLogFiles
         LogDir ld = new LogDir( path, "" );
 
         for ( File f : list ) {
-            System.err.println("LogDir:getFiles() processing [" + f.getName() + "]");
+            logger.debug("LogDir:getFiles() processing [" + f.getName() + "]");
             if ( f.isDirectory() )
             {
-                System.err.println( "LogDir:getFiles() Dir:" + f.getAbsoluteFile() );
-                System.err.println( "LogDir:getFiles() f.getAbsolutePath() [" + f.getAbsolutePath() + "]");
-                System.err.println( "LogDir:getFiles() baseDir [" + baseDir + "]");
-                System.err.println( "LogDir:getFiles() f.getAbsolutePath().indexOf(baseDir) [" + f.getAbsolutePath().indexOf(baseDir) +"]");
+                logger.debug( "LogDir:getFiles() Dir:" + f.getAbsoluteFile() );
+                logger.debug( "LogDir:getFiles() f.getAbsolutePath() [" + f.getAbsolutePath() + "]");
+                logger.debug( "LogDir:getFiles() baseDir [" + baseDir + "]");
+                logger.debug( "LogDir:getFiles() f.getAbsolutePath().indexOf(baseDir) [" + f.getAbsolutePath().indexOf(baseDir) +"]");
                 String s = f.getAbsolutePath().substring(f.getAbsolutePath().indexOf(baseDir));
-                System.err.println("LogDir:getFiles()  Proceeding to dir: [" + s + "]" );
+                logger.debug("LogDir:getFiles()  Proceeding to dir: [" + s + "]" );
                 ld.addDir( getFiles( s ));
 
             }
             else
             {
-                System.err.println("LogDir:getFiles()  Adding file: [" + f.getName() + "]" );
+                logger.debug("LogDir:getFiles()  Adding file: [" + f.getName() + "]" );
                 ld.addFile( f.getName() );
 
             }

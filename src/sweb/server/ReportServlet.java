@@ -12,17 +12,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-import org.jfree.data.xy.XYDataset;
-
-import sweb.server.report.JFreeChartReportScriptlet;
-import sweb.server.report.ReportData;
-import sweb.server.report.ReportDataSource;
-import sweb.server.report.TableDataSource;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperRunManager;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+
+import org.apache.log4j.Logger;
+
+import sweb.server.report.ReportData;
 
 public class ReportServlet extends HttpServlet
 {

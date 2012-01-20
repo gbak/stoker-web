@@ -26,16 +26,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.StokerWebProperties;
 import sweb.server.controller.config.stoker.StokerWebConfigurationController;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
-import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.StokerFan;
 import sweb.shared.model.StokerPitSensor;
-import sweb.shared.model.StokerProbe;
-import sweb.shared.model.StokerDeviceTypes.DeviceType;
 
 /**
  * @author gary.bak

@@ -21,7 +21,6 @@ package sweb.server.controller.log;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,23 +35,20 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.data.DataOrchestrator;
-
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
-
+import sweb.server.controller.events.DataControllerEvent.EventType;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
-import sweb.server.controller.events.DataControllerEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
-import sweb.server.controller.log.LogFileFormatter.LineType;
-import sweb.server.report.ReportData;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
@@ -73,7 +69,6 @@ public class StokerFile
     File m_outfile = null;
     HashMap<String,SDevice> m_hmSD = new HashMap<String,SDevice>();
     HashMap<String,String> m_hmSDIndex = new HashMap<String,String>();
-  //  ClientDataTracker m_sud = new ClientDataTracker();
     int m_iLastMinute = -1;
 
     private EventType m_eventType = EventType.NONE;
@@ -82,6 +77,8 @@ public class StokerFile
 
     private DataPointEventListener m_dl = null;
 
+    private static final Logger logger = Logger.getLogger(StokerFile.class.getName());
+    
     private StokerFile()
     {
        this(null, null);
@@ -89,12 +86,7 @@ public class StokerFile
 
     public StokerFile( String strCookerName,  String strLogFileName )
     {
-       // ArrayList<SDevice> arSD = getConfigFromExistingFile( ListLogFiles.getFullPathForFile(strLogFileName));
-
        this( strCookerName, strLogFileName, getConfigFromExistingFile( ListLogFiles.getFullPathForFile(strLogFileName)) );
-
-
-
     }
 
     private String dirName( String s )
@@ -160,8 +152,7 @@ public class StokerFile
         }
         catch (IOException e1)
         {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            logger.error("Exception writing log header: " +  e1.getStackTrace());
         }
     }
 
@@ -226,8 +217,7 @@ public class StokerFile
                     }
                     catch (IOException e)
                     {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        logger.error("IOException writing to output file: " + e.getStackTrace());
                     }
                     finally
                     {
@@ -237,8 +227,7 @@ public class StokerFile
                         }
                         catch (IOException e)
                         {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            logger.error("Exception closing output file: " + e.getStackTrace());
                         }
                     }
                 }
@@ -267,8 +256,7 @@ public class StokerFile
                     }
                     catch (IOException e)
                     {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        logger.error("IOException writing to output file: " + e.getStackTrace());
                     }
                     finally
                     {
@@ -278,8 +266,7 @@ public class StokerFile
                         }
                         catch (IOException e)
                         {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            logger.error("Exception closing output file: " + e.getStackTrace());
                         }
                     }
                 }
@@ -343,7 +330,7 @@ public class StokerFile
         sb.append(File.separator);
         sb.append(strFileName);
 
-        System.out.println("File: " + sb.toString());
+        logger.info("Output log Filename: " + sb.toString());
         return sb.toString();
     }
 
@@ -390,8 +377,7 @@ public class StokerFile
         }
         catch (FileNotFoundException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("File Not found [" + m_strLogFileName + "] in readAllDataPoints: " + e.getStackTrace());
         }
 
         for ( ArrayList<SDataPoint> ar : hmDeviceSilos.values() )
@@ -433,8 +419,7 @@ public class StokerFile
             }
             catch (IOException e)
             {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("IO Exception on file [" + m_outfile + "] in addNote: " + e.getStackTrace());
             }
             finally
             {
@@ -444,8 +429,7 @@ public class StokerFile
                 }
                 catch (IOException e)
                 {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error("IO Exception closig file [" + m_outfile + "] in addNote: " + e.getStackTrace());
                 }
             }
         }
@@ -471,13 +455,11 @@ public class StokerFile
         }
         catch (FileNotFoundException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("File Not found [" + m_strLogFileName + "] in readAllNotes: " + e.getStackTrace());
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("IO Exception on file [" + m_outfile + "] in readAllNotes: " + e.getStackTrace());
         }
         
         return notes;
@@ -498,7 +480,7 @@ public class StokerFile
             // Check to make sure the configuration matches
             if ( ! compareLoosly(arSD))
             {
-                System.out.println("StokerFile.java - attchToExistingLog() - Configuration does not match!");
+                logger.warn("StokerFile.java - attchToExistingLog() - Configuration does not match!");
                 return false;
             }
 
@@ -547,15 +529,13 @@ public class StokerFile
         }
         catch (FileNotFoundException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("File Not found [" + s + "] in getConfigFromExistingFile: " + e.getStackTrace());
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("IO Exception on file [" + s + "] in getConfigFromExistingFile: " + e.getStackTrace());
         }
-        // TODO: read config information from file and build array List!
+
         return arSD;
     }
 
@@ -585,10 +565,11 @@ public class StokerFile
 
 
         }
-        System.out.println("String: " + sb.toString());
+        logger.debug("test String: " + sb.toString());
 
 
     }
+    /*
     public static void main(String[] args)
     {
         StokerFile sf = new StokerFile();
@@ -596,4 +577,5 @@ public class StokerFile
         sf.test();
 
     }
+    */
 }
