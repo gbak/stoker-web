@@ -10,3 +10,7 @@ appengine-web.xml
 *.log
 gwt-unitCache/
 stokerweb.war
+*.zip
+*.properties
+addUser.jar
+

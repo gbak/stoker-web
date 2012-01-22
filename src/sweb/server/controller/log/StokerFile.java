@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.text.StrLookup;
 import org.apache.log4j.Logger;
 
 import sweb.server.StokerConstants;
@@ -539,6 +540,16 @@ public class StokerFile
         return arSD;
     }
 
+    public String getFilePath()
+    {
+        return m_strLogFileName;
+    }
+    
+    public String getFileName()
+    {
+        return m_strLogFileName.substring(m_strLogFileName.lastIndexOf(File.separatorChar) + 1);
+    }
+    
     private ConfigControllerEventListener getConfigEventListener()
     {
        ConfigControllerEventListener ccl = new   ConfigControllerEventListener() {

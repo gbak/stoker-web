@@ -21,12 +21,8 @@ package sweb.client.graph;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.danvk.Points;
-import org.moxieapps.gwt.highcharts.client.Axis;
-import org.moxieapps.gwt.highcharts.client.Chart;
 import org.moxieapps.gwt.highcharts.client.Legend;
 import org.moxieapps.gwt.highcharts.client.Point;
-import org.moxieapps.gwt.highcharts.client.RangeSelector;
 import org.moxieapps.gwt.highcharts.client.Series;
 import org.moxieapps.gwt.highcharts.client.StockChart;
 import org.moxieapps.gwt.highcharts.client.ToolTip;

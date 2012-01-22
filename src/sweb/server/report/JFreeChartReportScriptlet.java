@@ -49,6 +49,13 @@ public class JFreeChartReportScriptlet extends JRDefaultScriptlet
                 .getParameterValue(ReportConstants.CHART_DATA_SOURCE.toString());
         final XYDataset dataset1 = (XYDataset) mapTS.get("axis1");
         final XYDataset dataset2 = (XYDataset) mapTS.get("axis2");
+        
+        if ( dataset1 == null )
+           logger.warn("axis1 missing from graph");
+        
+        if ( dataset2 == null)
+            logger.warn("Axis2, blower data is missing from graph");
+        
         // final XYDataset dataset =
         // (XYDataset)super.getParameterValue(ReportConstants.CHART_DATA_SOURCE.toString()
         // );

@@ -301,7 +301,7 @@ public class StokerWeb implements EntryPoint
                                    if ( st != null)
                                    {
                                        System.out.println("Selected Report: " + st);
-                                       Window.open(GWT.getModuleBaseURL() + "report" + "?log=" + st, "_blank", "enabled");
+                                       Window.open(GWT.getModuleBaseURL() + "report" + "?logFile=" + st, "_blank", "enabled");
                                        
                                    }
                                    else

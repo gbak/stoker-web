@@ -265,6 +265,18 @@ public class DataOrchestrator
         return li;
     }
 
+    public String getLogFilePath(String strLogName )
+    {
+        StokerFile sf = fileLogList.get(strLogName);
+        return sf.getFilePath();
+    }
+    
+    public String getLogFileName(String strLogName )
+    {
+        StokerFile sf = fileLogList.get(strLogName);
+        return sf.getFileName();
+    }
+    
     public boolean isLogRunning( String strLogName )
     {
        return fileLogList.containsKey(strLogName);

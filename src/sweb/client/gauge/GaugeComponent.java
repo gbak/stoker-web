@@ -46,7 +46,6 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -647,7 +646,7 @@ public class GaugeComponent extends Composite
    {
        if ( dp instanceof SBlowerDataPoint)
        {
-           System.out.println("GaugeComponent, " + dp.getDeviceID() + " Runtime: " + ((SBlowerDataPoint)dp).getTotalRuntime());
+          // logger.debug("GaugeComponent, " + dp.getDeviceID() + " Runtime: " + ((SBlowerDataPoint)dp).getTotalRuntime());
           // stokerProbe.getFanDevice().setFanOn(((SBlowerDataPoint)dp).isFanOn());
            
            if ( ((SBlowerDataPoint)dp).getTotalRuntime() < 0 )  // dummy point, ignore

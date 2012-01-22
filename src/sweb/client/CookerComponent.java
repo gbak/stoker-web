@@ -486,7 +486,7 @@ public class CookerComponent extends Composite
         public void onClick(ClickEvent event)
         {
             final int iSelectedIndex = logListBox.getSelectedIndex();
-            String strLogName = logListBox.getItemText(iSelectedIndex);
+            final String strLogName = logListBox.getItemText(iSelectedIndex);
             if( strLogName.compareTo("Default") == 0)
             {
                 return;
@@ -501,14 +501,8 @@ public class CookerComponent extends Composite
 
                 public void onSuccess(Integer result)
                 {
-                    Window.open(GWT.getModuleBaseURL() + "report", "_blank", "enabled");
                     
-                   // TODO: This is not correct.
-                  //  String strLogName = logListBox.getItemText(iSelectedIndex);
-                  //  logListBox.removeItem(iSelectedIndex);
-
-                  //  addGraph();
-                   
+                    Window.open(GWT.getModuleBaseURL()+ "report" + "?logName=" + strLogName, "_blank", "enabled");
                 }
             });
         }

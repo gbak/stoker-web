@@ -18,6 +18,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
+import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.LogFileFormatter;
 import sweb.server.controller.log.LogFileFormatter.LineType;
@@ -46,23 +47,42 @@ public class ReportData
     // give a probe a duplicate name, if even possible on the stoker, can't take the chance.
     HashMap<String,TimeSeries> mapProbeChartPoints = new HashMap<String,TimeSeries>();
     
-    String strBlowerID = null;
+    String strBlowerID = new String();
     
-    String strLogNameShort = null;
+    
     String strLogFilePath = null;
     
     private static final Logger logger = Logger.getLogger(ReportData.class.getName());
     
-    public ReportData( String shortLogName ) throws LogNotFoundException, LogReadErrorException
+    public ReportData( String name ) throws LogNotFoundException, LogReadErrorException
     {
-        strLogNameShort = shortLogName;
-        strLogFilePath = ListLogFiles.getFullPathForFile( shortLogName );
+        String strLogNameShort;
+        
+        logger.debug("ReportData: passed in log name: [" + name + "]");
+        if ( name.endsWith(".log"))
+        {
+            logger.debug("log file ends in .log");
+            strLogNameShort = name;
+            strLogFilePath = ListLogFiles.getFullPathForFile( name );
+            
+        }
+        else
+        {
+            logger.debug("Log file does not end in .log");
+           strLogFilePath = DataOrchestrator.getInstance().getLogFilePath(name);
+           strLogNameShort = DataOrchestrator.getInstance().getLogFileName(name);
+        }
+        logger.debug("Full path is: " + strLogFilePath );
+        logger.debug("Short log name: " + strLogNameShort );
+        
         if ( strLogFilePath == null )
-            throw new LogNotFoundException(strLogNameShort);
+            throw new LogNotFoundException(strLogFilePath);
         
-        rds.addReportValue(ReportConstants.LOG_NAME, shortLogName.substring(15));
+        rds.addReportValue(ReportConstants.LOG_NAME, strLogNameShort.substring(15));
+        logger.debug("About to call processFile()");
+        
         processFile( strLogFilePath );
-        
+        logger.debug("processFile complete" );
     }
     
     public ReportDataSource getReportDataSource()
@@ -79,6 +99,9 @@ public class ReportData
         
         TimeSeriesCollection tscAxis1 = new TimeSeriesCollection();
         TimeSeriesCollection tscAxis2 = new TimeSeriesCollection();
+        
+        if ( strBlowerID.length() == 0)
+           logger.warn("No blower detected in log file.");
         
         for ( Entry<String,TimeSeries> set : mapProbeChartPoints.entrySet() )
         {
@@ -105,6 +128,8 @@ public class ReportData
     
     private void processFile( String logFilePath ) throws LogReadErrorException, LogNotFoundException
     {
+        logger.debug("processFile : [" + logFilePath + "]");
+        
         File tempfile = new File( logFilePath );
         if ( ! tempfile.exists() )
         {
@@ -128,7 +153,7 @@ public class ReportData
             while ((str = in.readLine()) != null)
             {
                 
-                // This section before the case is for collecting the config information that
+                // This section before the case statement is for collecting the config information that
                 // was previously collected in the case.  We run through the file and when a CONFIG
                 // is detected it reads and then once a non config point is reached this code
                 // is executed and processes the config.
@@ -173,7 +198,7 @@ public class ReportData
                         // Yes this is kind of redundant, but it keeps it out of the data section.
                         for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hmByLogDevNumAndDeviceID ))
                         {
-                            if ( strBlowerID == null )
+                            if ( strBlowerID.length() == 0 )
                             {
                                 // save the blower ID so it can be identified and the Data points can be
                                 // split out of the master hash map for a new graph axis.  getParams() call above.
@@ -201,6 +226,7 @@ public class ReportData
                              if ( ts == null )
                              {
                                  String deviceName = hmByDeviceIDAndSDevice.get(sdp.getDeviceID()).getName();
+                                 logger.debug("Creating new TimeSeries for device: [" + deviceName + "]");
                                  ts = new TimeSeries(deviceName, Second.class );
                                  mapProbeChartPoints.put( sdp.getDeviceID(), ts);
                                  
@@ -267,12 +293,21 @@ public class ReportData
                 int minutes = period.getMinutes();
                 int seconds = period.getSeconds();
                 
-                if ( days > 0)
-                   sbInterval.append(days + " Days ");
-                if ( hours > 0 )
-                   sbInterval.append(hours + " Hours " );
-                if ( minutes > 0 )
+                if ( days == 1)
+                    sbInterval.append(days + " Day ");
+                else if ( days > 1)
+                    sbInterval.append(days + " Days ");
+                
+                if ( hours == 1 )
+                   sbInterval.append(hours + " Hour " );
+                else if ( hours > 1)
+                    sbInterval.append(hours + " Hours " );
+                
+                if ( minutes == 1 )
+                    sbInterval.append(minutes + " Minute ");
+                else if ( minutes > 1 )
                     sbInterval.append(minutes + " Minutes ");
+                
                 if ( days == 0 && hours == 0 && minutes == 0 && seconds > 0)  //  why not, just to prevent confusion
                     sbInterval.append(seconds + " Seconds ");
                 
@@ -291,15 +326,24 @@ public class ReportData
             int fanMinutes = fanPeriod.getMinutes();
             int fanSeconds = fanPeriod.getSeconds();
 
-            if ( fanDays > 0)
+            if ( fanDays == 1)
+                sbFan.append(fanDays + " Day ");
+            else if ( fanDays > 1 )
                 sbFan.append(fanDays + " Days ");
-             if ( fanHour > 0 )
+            
+             if ( fanHour == 1 )
+                 sbFan.append(fanHour + " Hour " );
+             else if ( fanHour > 1 )
                  sbFan.append(fanHour + " Hours " );
-             if ( fanMinutes > 0 )
+             
+             if ( fanMinutes == 1 )
+                 sbFan.append(fanMinutes + " Minute ");
+             else if ( fanMinutes > 1 )
                  sbFan.append(fanMinutes + " Minutes ");
-             if (  fanSeconds > 0)  //  why not, just to prevent confusion
+             
+             if (  fanSeconds > 0) 
                  sbFan.append(fanSeconds + " Seconds ");
-
+             
             rds.addReportValue( ReportConstants.FAN_TIME, sbFan.toString());
 
         }
