@@ -116,7 +116,7 @@ public class ReportServlet extends HttpServlet
             logger.debug("Report output file: [" + jasperFile + "]");
             
             // this will speed up report creation, but may cause problems if the jasper file is stale
-            if ( ! new File(jasperFile).exists())
+       //     if ( ! new File(jasperFile).exists())
             {
                JasperCompileManager.compileReportToFile(copyFile, jasperFile);
             }

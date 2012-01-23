@@ -245,6 +245,8 @@ public class ReportData
                              if ( bFirstDPFound == false)
                              {
                                  startDate = sdp.getCollectedDate();
+                                 fanStart = startDate.getTime();  // this is needed in case the fan is running when 
+                                                                  // stokerweb comes online.  
                                  rds.addReportValue(ReportConstants.START_DATE, startDate );
                                  
                                  bFirstDPFound = true;

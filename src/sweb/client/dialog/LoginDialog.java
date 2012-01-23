@@ -23,8 +23,13 @@ package sweb.client.dialog;
 import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.StokerCoreServiceAsync;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -68,7 +73,7 @@ public class LoginDialog extends DialogBox implements ClickHandler
          public void onClick(ClickEvent event){ d.hide();}
        });
 
-
+       
 
        HTML userHTML = new HTML("<b>Username:</b>");
        HTML passHTML = new HTML("<b>Password:</b>");
@@ -87,9 +92,22 @@ public class LoginDialog extends DialogBox implements ClickHandler
 
       // loginPanel.setStyleName("login-panel login-flexTable");
 
+       
        setWidget( loginPanel );
    }
 
+   @Override
+public void onPreviewNativeEvent(NativePreviewEvent pe )
+{
+    NativeEvent e = pe.getNativeEvent();
+    if ( Event.getTypeInt( e.getType()) == Event.ONKEYPRESS )
+    {
+        if ( e.getKeyCode() == KeyCodes.KEY_ENTER)
+        { 
+            onClick( null );
+        }
+    }
+}
 
 public void onClick(ClickEvent event)
    {

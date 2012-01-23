@@ -237,6 +237,7 @@ public class DataOrchestrator
     {
        return fileLogList.get(logName).getConfigFromFile();    
     }
+    
     public Set<Entry<String, SDataPoint>> getData()
     {
         return Collections.unmodifiableSet(hmLatestData.entrySet());

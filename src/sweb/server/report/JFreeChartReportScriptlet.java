@@ -1,6 +1,7 @@
 package sweb.server.report;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
@@ -61,13 +62,19 @@ public class JFreeChartReportScriptlet extends JRDefaultScriptlet
         // );
 
         final JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, // "Date",
-                null, // "Price Per Unit",
+                null, 
                 dataset1, true, true, false);
 
         final XYPlot plot = chart.getXYPlot();
         final SymbolAxis sa = new SymbolAxis("Blower", new String[]
-        { "OFF", "ON", "", "", "", "", "", "" });
+                              { "OFF", "ON", "", "", "", "", "", "" });
+        
+        Font f = new Font("Lucida Sans",Font.PLAIN, 12);
+
+        sa.setLabelFont(f);
+        chart.getLegend().setItemFont(f);
         plot.setRangeAxis(1, sa);
+        
 
         plot.setDataset(1, dataset2);
         plot.mapDatasetToRangeAxis(1, 1);

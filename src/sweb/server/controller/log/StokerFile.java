@@ -556,6 +556,19 @@ public class StokerFile
 
         public void actionPerformed(ConfigControllerEvent ce)
         {
+            // Configuration Update
+            
+            // Need to popuate new config data!
+            HashMap<String,SDevice> hm = StokerConfiguration.getInstance().data();
+            
+            for ( String s : m_hmSD.keySet() )
+            {
+                if ( hm.containsKey(s) )
+                {
+                    m_hmSD.put( s, hm.get(s));
+                }
+            }
+            
             writeHeader();
         }
 
