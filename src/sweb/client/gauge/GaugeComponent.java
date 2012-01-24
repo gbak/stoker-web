@@ -53,10 +53,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
-import com.google.gwt.visualization.client.DataTable;
+import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.Gauge;
-import com.google.gwt.visualization.client.visualizations.Gauge.Options;
+
 
 /**
  * @author gary.bak
@@ -68,13 +67,12 @@ public class GaugeComponent extends Composite
    FlexTable layout = null;
    DecoratorPanel decPan = null;
    
+   InstantTempDisplay ist = null;
   // HorizontalPanel fanStatusHorizontalPanel = null;
    SimplePanel fanStatusPanel = null;
+   SimplePanel tempPanel = null;
    DisclosurePanel dp = null;
    Button buttonAlertSettings = null;
-   DataTable data;
-   Gauge g = null;
-   Options options = null;
    CheckBox alarmSelectedCheckBox = null;
 
    TextBox targtTempTextBox = null;
@@ -99,14 +97,6 @@ public class GaugeComponent extends Composite
    StokerProbe stokerProbe = null;
    boolean deviceConfigChanged = false;
 
-   // TODO: move these to stokerweb.properties
-   // These are client properties, they'll need to be pushed somehow.
-   int iMinGaugeTemp = 0;
-   int iMaxGaugeTemp =800;
-   int iGaugeStepping = 100;
-   String strColorGreen = "#109618";
-   String strColorYellow = "#FF9900";
-   String strColorRed = "#DC3912";
    
    Alignment alignment;
 
@@ -126,7 +116,34 @@ public class GaugeComponent extends Composite
        else
            alarmSelectedCheckBox.setValue( true );
 
-       g = new Gauge();
+       tempPanel = new SimplePanel();
+    
+       boolean bGauge = false;
+       if ( bGauge )
+       {
+    // TODO:  Condition this to decide what to display
+       Runnable onLoadCallBack = new Runnable() {
+
+           public void run()
+           {
+            
+               ist = new GaugeDisplay();
+               ist.init( "", null );
+               
+               tempPanel.add((Widget) ist ); 
+           }
+
+       };
+       VisualizationUtils.loadVisualizationApi(onLoadCallBack, Gauge.PACKAGE );
+       }
+       else
+       {
+           ist = new DigitDisplayBinder();
+           ist.init("", null);
+           
+           tempPanel.add((Widget) ist );
+       }
+       
        layout = new FlexTable();
        
        cellp = new VerticalPanel();
@@ -140,18 +157,11 @@ public class GaugeComponent extends Composite
        decPan = new DecoratorPanel();
        dp = new DisclosurePanel("Settings");
        dp.setVisible(false);
-       options = Options.create();
-       data = DataTable.create();
 
-       
        VerticalPanel vp1 = new VerticalPanel();
        
        Label lName = new Label( sd1.getName());
        lName.setStylePrimaryName("label-GaugeName");
-       
-       initDataTable();
-       initOptions();
-  
 
        if (sd1.getFanDevice() != null )
        {
@@ -169,9 +179,11 @@ public class GaugeComponent extends Composite
 
        dp.setContent( ft );
        dp.setAnimationEnabled(true);
-       
+
        vp1.add(lName);
-       vp1.add(g); 
+       vp1.add(tempPanel); 
+       vp1.setCellHorizontalAlignment(tempPanel, VerticalPanel.ALIGN_CENTER);
+       vp1.setCellVerticalAlignment(tempPanel, VerticalPanel.ALIGN_MIDDLE);
 
        vp1.add( fanStatusPanel );
    //    vp2.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
@@ -196,136 +208,7 @@ public class GaugeComponent extends Composite
        initWidget( decPan );
    }
    
-/*   public GaugeComponent(StokerProbe sd1, Alignment align )
-   {
-       //GaugeComponent gc = new GaugeComponent();
-       VerticalPanel vp = null;
-       HorizontalPanel hp = null;
-       
-       stokerProbe = sd1;
 
-       alarmSelectedCheckBox = new CheckBox();
-
-       if ( sd1.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
-           alarmSelectedCheckBox.setValue( false );
-       else
-           alarmSelectedCheckBox.setValue( true );
-
-       g = new Gauge();
-       layout = new FlexTable();
-       
-       if ( align == Alignment.VERTICAL )
-          vp = new VerticalPanel();
-       else
-          hp = new HorizontalPanel();
-       
-      // fanStatusHorizontalPanel = new HorizontalPanel();
-       fanStatusPanel = new SimplePanel();
-       decPan = new DecoratorPanel();
-       dp = new DisclosurePanel("Settings");
-       options = Options.create();
-       data = DataTable.create();
-
-       dp.setVisible(false);
-
-       Label lName = new Label( sd1.getName());
-       lName.setStylePrimaryName("label-GaugeName");
-       
-       if ( align == Alignment.VERTICAL )
-       {
-          vp.add(lName);
-          vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-          vp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
-
-          vp.addStyleName("sweb-panelGaugeV");
-       }
-       else
-       {
-           hp.add(lName);
-           hp.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-           hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
-
-           hp.addStyleName("sweb-panelGaugeH");
-            
-       }
-       initDataTable();
-       initOptions();
-
-     //  vp.setCellHorizontalAlignment(g, VerticalPanel.ALIGN_CENTER);
-       
-       if ( align == Alignment.VERTICAL )
-       vp.add(g);
-       else
-           hp.add( g );
-      
-
-       if (sd1.getFanDevice() != null )
-       {
-           fsb = new FanStatusBinder();
-           //fanStatusHorizontalPanel.add( fsb );
-           fanStatusPanel.add( fsb );
-           
-          Label lFan = new Label( "Fan: ");
-          lFan.setStyleName("fan-Label");
-          fanStatusHorizontalPanel.add(lFan);
-          fanStatusHorizontalPanel.add(fanImage);
-          fanStatusHorizontalPanel.setStyleName("fanStatus-panel");
-          fanStatusHorizontalPanel.setHeight("25px");
-          
-
-       }
-       else
-       {
-           // fanStatusHorizontalPanel.setHeight("25px");
-           fanStatusPanel.setHeight("25px");
-       }
-
-       // vp.add( fanStatusHorizontalPanel );
-       // vp.setCellHorizontalAlignment( fanStatusHorizontalPanel, HasHorizontalAlignment.ALIGN_RIGHT);
-
-       if ( align == Alignment.VERTICAL )
-       {
-          vp.add( fanStatusPanel );
-          vp.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
-       }
-       else
-       {
-           hp.add( fanStatusPanel );
-           hp.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
-           
-       }
-       FlexTable ft = getSettingsPanel(sd1.getFanDevice() != null ? true : false);
-       dp.setContent( ft );
-       dp.setAnimationEnabled(true);
-
-       ft.addStyleName("sweb-flexGauge");
-       
-       
-       CellPanel cp = null;
-       // vp.add(dp);
-       if ( align == Alignment.VERTICAL )
-       {
-           vp.add( ft );
-           vp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);
-           cp = vp;
-       }
-       else
-       {
-           hp.add( ft );
-           hp.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT);
-           cp = hp;
-           
-       }
-       
-      
-       
-       
-       decPan.setWidget( cp );
-
-
-       changeVisibility(LoginStatus.getInstance().getLoginStatus());
-       initWidget( decPan );
-   }*/
 
    /**
  * Convenience method to Allow the components in the settings panel to be edited.
@@ -370,7 +253,8 @@ public class GaugeComponent extends Composite
     */
    public void draw()
    {
-      g.draw(data, options);
+       if ( ist != null)
+          ist.draw();
    }
 
    private FlexTable getSettingsPanel(boolean bPitSensor)
@@ -627,19 +511,23 @@ public class GaugeComponent extends Composite
    public void updateCurrentTemp( float f )
    {
        stokerProbe.setCurrentTemp(f);
-       setAlarmRange();
        updateFanStatus();
-       data.setValue(0, 1, (int)f);
-
+       if ( ist != null)
+       {
+           ist.setTemp(f);
+           ist.setAlarmRange(stokerProbe);
+       }
    }
    public void updateData( StokerProbe sp )
    {
       //sp.getCurrentTemp();
       stokerProbe = sp;
-      setAlarmRange();
       updateFanStatus();
-      data.setValue(0, 1, (int)sp.getCurrentTemp());
-
+      if ( ist != null )
+      {
+         ist.setTemp( sp.getCurrentTemp());
+         ist.setAlarmRange(sp);
+      }
    }
 
    public void updateData( SDataPoint dp )
@@ -658,10 +546,13 @@ public class GaugeComponent extends Composite
        else
        {
           stokerProbe.setCurrentTemp(((SProbeDataPoint)dp).getTempF());
+          if ( ist != null )
+          {
+             ist.setAlarmRange(stokerProbe);
+             ist.setTemp(stokerProbe.getCurrentTemp());
+          }
 
-          data.setValue(0, 1, (int)stokerProbe.getCurrentTemp());
-
-          setAlarmRange();
+          
        }
    }
 
@@ -687,92 +578,11 @@ public class GaugeComponent extends Composite
 
    }
 
-   private void setAlarmRange()
-   {
-
-           if ( stokerProbe.getAlarmEnabled().equals(StokerProbe.AlarmType.ALARM_FIRE))
-           {
-               int iTempAlarmLow = stokerProbe.getLowerTempAlarm();
-               int iTempAlarmHigh = stokerProbe.getUpperTempAlarm();
-
-              if ( iTempAlarmHigh > 0)
-              {
-                 options.setRedRange(iTempAlarmHigh, iMaxGaugeTemp);
-                 options.set("redColor", strColorYellow);
-              }
-
-              if ( iTempAlarmLow > 0 )
-              {
-                 options.set("yellowColor", strColorYellow);
-                 options.setYellowRange(iMinGaugeTemp, iTempAlarmLow);
-              }
-
-              // use both the red and yellow ranges modifying the color
-              // to be the same when the temp is in the safe range
-
-              if ( iTempAlarmLow > 0 && stokerProbe.getCurrentTemp() < iTempAlarmLow )
-                 options.set("yellowColor",strColorRed );
-              else if ( iTempAlarmHigh > 0 && stokerProbe.getCurrentTemp() > iTempAlarmHigh )
-                 options.set("redColor",strColorRed );
-           }
-           else if ( stokerProbe.getAlarmEnabled().equals(StokerProbe.AlarmType.ALARM_FOOD))
-           {
-              int iTarget = stokerProbe.getTargetTemp();
-              if ( iTarget > 0)
-              {
-                 options.setRedRange(iTarget, iMaxGaugeTemp);
-                 options.set("redColor", strColorYellow);
-              }
-
-              if ( iTarget > 0 && stokerProbe.getCurrentTemp() > iTarget )
-                  options.set("redColor",strColorRed );
-
-           }
-
-           options.setGreenRange(stokerProbe.getTargetTemp()-2, stokerProbe.getTargetTemp()+2);
-
-
-   }
 
 
 
-   private void initDataTable()
-   {
-      data.addColumn(ColumnType.STRING, "Label");
-      data.addColumn(ColumnType.NUMBER, "Value");
-      data.addRows(1);
-      data.setValue(0, 0, strGaugeName);
-      data.setValue(0, 1, 0);
 
 
- }
-
- private Options initOptions()
- {
-    int isize = ((iMaxGaugeTemp - iMinGaugeTemp) / iGaugeStepping) + 1;
-    String[] sa = new String[isize];
-    int iTemp = iMinGaugeTemp;
-
-
-    options.setWidth(200);
-    options.setHeight(210);
-
-    
-    for ( int i = 0; i < isize; i++ )
-    {
-       sa[i] = new Integer( iTemp ).toString();
-       iTemp = iTemp + iGaugeStepping;
-    }
-    //options.setMajorTicks("0","100","200","300","400","500","600","700","800");
-    options.setMajorTicks(sa);
-    options.setMinorTicks(5);
-    options.set("min", new Integer(iMinGaugeTemp).toString());
-    options.set("max", new Integer(iMaxGaugeTemp).toString());
-
-    setAlarmRange();
-
-    return options;
- }
 /*
  class AlarmButtonHandler implements ClickHandler, KeyUpHandler
  {
