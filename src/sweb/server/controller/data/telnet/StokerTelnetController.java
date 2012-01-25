@@ -405,7 +405,7 @@ public class StokerTelnetController extends DataController
                             try
                             {
                                 // Not sure if I want this here.
-                               logger.debug("t");
+                               logger.trace("t");
                                 addDataPoint( sb.toString() );
                               // System.out.print("p");
 

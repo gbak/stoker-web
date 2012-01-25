@@ -1,5 +1,6 @@
 package sweb.client.gauge;
 
+import sweb.client.gauge.InstantTempDisplay.TempAlert;
 import sweb.shared.model.StokerProbe;
 
 import com.google.gwt.user.client.ui.Composite;
@@ -8,7 +9,7 @@ import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.visualizations.Gauge;
 import com.google.gwt.visualization.client.visualizations.Gauge.Options;
 
-public class GaugeDisplay extends Composite implements InstantTempDisplay
+public class GaugeDisplay extends InstantTempDisplay 
 {
 
     DataTable data;
@@ -73,10 +74,11 @@ public class GaugeDisplay extends Composite implements InstantTempDisplay
     }
     
     @Override
-    public void init(String name, Object o)
+    public void init(StokerProbe sp)
     {
-        initDataTable(name);
+        initDataTable("probe");
         initOptions();
+        localProbe = sp;
         
     }
 
@@ -101,13 +103,7 @@ public class GaugeDisplay extends Composite implements InstantTempDisplay
                   options.setYellowRange(iMinGaugeTemp, iTempAlarmLow);
                }
 
-               // use both the red and yellow ranges modifying the color
-               // to be the same when the temp is in the safe range
 
-               if ( iTempAlarmLow > 0 && stokerProbe.getCurrentTemp() < iTempAlarmLow )
-                  options.set("yellowColor",strColorRed );
-               else if ( iTempAlarmHigh > 0 && stokerProbe.getCurrentTemp() > iTempAlarmHigh )
-                  options.set("redColor",strColorRed );
             }
             else if ( stokerProbe.getAlarmEnabled().equals(StokerProbe.AlarmType.ALARM_FOOD))
             {
@@ -126,6 +122,34 @@ public class GaugeDisplay extends Composite implements InstantTempDisplay
             options.setGreenRange(stokerProbe.getTargetTemp()-2, stokerProbe.getTargetTemp()+2);
     }
 
+    public void checkAlarms( int i )
+    {
+       super.checkAlarms(i);
+       
+       if ( change == true )
+       {
+           int iTempAlarmLow = localProbe.getLowerTempAlarm();
+           int iTempAlarmHigh = localProbe.getUpperTempAlarm();
+
+           if ( tempAlert == TempAlert.HIGH)
+           {
+                  options.set("redColor",strColorRed );
+                  options.set("yellowColor",strColorYellow );
+           }
+           else if ( tempAlert == TempAlert.LOW )
+           {
+               options.set("redColor",strColorYellow );
+               options.set("yellowColor",strColorRed );
+           }
+           else if ( tempAlert == TempAlert.NONE )
+           {
+               options.set("redColor",strColorYellow );
+               options.set("yellowColor",strColorYellow );
+           }
+       }
+       
+    }
+    
     @Override
     public void draw()
     {
@@ -137,14 +161,14 @@ public class GaugeDisplay extends Composite implements InstantTempDisplay
     public void setTemp(float f)
     {
         data.setValue(0, 1, (int)f);
-        
+        checkAlarms((int) f );
     }
 
     @Override
     public void setTemp(int i)
     {
         data.setValue(0, 1, i);
-        
+        checkAlarms(i);
     }
 
    

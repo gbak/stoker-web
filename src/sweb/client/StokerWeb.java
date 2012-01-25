@@ -28,21 +28,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import sweb.client.dialog.AlertDialog;
-import sweb.client.dialog.GeneralMessageDialog;
-import sweb.client.dialog.LogFileChooser;
-
 import net.zschech.gwt.comet.client.CometClient;
 import net.zschech.gwt.comet.client.CometListener;
 import net.zschech.gwt.comet.client.CometSerializer;
 import net.zschech.gwt.comet.client.SerialTypes;
-import sweb.client.dialog.StokerMenu;
-import sweb.server.controller.StokerConfiguration;
+import sweb.client.dialog.AlertDialog;
+import sweb.client.dialog.GeneralMessageDialog;
+import sweb.client.dialog.LogFileChooser;
+import sweb.client.dialog.LoginDialog;
+import sweb.client.dialog.handlers.AlertDialogHandler;
+import sweb.client.dialog.handlers.LogFileChooserHandler;
+import sweb.client.dialog.handlers.LoginDialogHandler;
+import sweb.client.gauge.GaugeComponent.Alignment;
+import sweb.client.weather.WeatherComponent;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.CallBackRequestType.RequestType;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
-import sweb.shared.model.LogItem;
 import sweb.shared.model.SBlowerDataPoint;
 import sweb.shared.model.SDataPoint;
 import sweb.shared.model.SDevice;
@@ -61,9 +63,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Cookies;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -73,20 +73,8 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.visualization.client.VisualizationUtils;
-import com.google.gwt.visualization.client.visualizations.AnnotatedTimeLine;
-import com.google.gwt.visualization.client.visualizations.Gauge;
-
-import sweb.client.dialog.LoginDialog;
-import sweb.client.dialog.handlers.AlertDialogHandler;
-import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
-import sweb.client.dialog.handlers.LogFileChooserHandler;
-import sweb.client.dialog.handlers.LoginDialogHandler;
-import sweb.client.gauge.GaugeComponent.Alignment;
-import sweb.client.weather.WeatherComponent;
 
 
 
@@ -414,10 +402,18 @@ public class StokerWeb implements EntryPoint
                 }
 
             };
-
+            onLoadCallBack.run();
+/*
 
             VisualizationUtils.loadVisualizationApi(onLoadCallBack, Gauge.PACKAGE, AnnotatedTimeLine.PACKAGE);
-
+*/
+            // Consider not calling this if the stoker if offline,this allows the reports
+            // to be generated with stoker offline.  This couild replace the stoker not
+            // conencted page.
+            
+            
+            //getStokerConfiguration();
+            
             currentPage = LoadedPage.CONNECTED_PAGE;
             RootPanel.get().add( dp );
         }
@@ -544,7 +540,7 @@ public class StokerWeb implements EntryPoint
                                     else if ( message instanceof BrowserAlarmModel )
                                     {
                                         // TODO: Open Alarm Dialog.  
-                                        //       Have quite button and suppress for either:
+                                        //       Have quiet button and suppress for either:
                                         //       x minutes
                                         //       until Alarm condition is gone
                                         //       forever ( remove alarm )
@@ -667,18 +663,13 @@ public class StokerWeb implements EntryPoint
 
             public void onSuccess(HashMap<String,SDevice> result)
             {
-                System.out.println("Visualization init complete.");
+                System.out.println("getConfiguration complete.");
 
-               // if ( alCookers.size() == 0)
-                   createCookers( result, alCookers );
-
+                createCookers( result, alCookers );
 
                 for ( CookerComponent cc : alCookers)
                    cc.draw();
 
-                      
-             //   makeCallBackRequest( new CallBackRequestType( RequestType.FORCE_DATA_PUSH ));
-               // startGraphUpdateThread();
             }
 
         });

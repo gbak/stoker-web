@@ -4,26 +4,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.alerts.delivery.Messenger;
-import sweb.server.controller.alerts.delivery.Notify;
-import sweb.server.controller.alerts.delivery.NotifyByEmail;
-import sweb.server.controller.alerts.delivery.NotifyByBrowser;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
-
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
-
 import sweb.shared.model.SDevice;
 import sweb.shared.model.SProbeDataPoint;
 import sweb.shared.model.StokerProbe;

@@ -591,12 +591,17 @@ public class CookerComponent extends Composite
         }
         
         getActiveLogListFromServer();
+        
 
     }
 
     private void addGraph()
     {
-        String strLogName = logListBox.getItemText(logListBox.getSelectedIndex());
+        int index = logListBox.getSelectedIndex();
+        if ( index < 0 )
+            return;   // not ready for datapoints yet.
+                
+        String strLogName = logListBox.getItemText(index);
 
      // graphStoker = new StokerLineGraph(Width, gaugePanelHeight, mapDeviceList);
         graphStoker = new HighChartLineGraph(m_Width, m_Height, hmLogItems.get( strLogName ).getLogItems());
@@ -799,7 +804,12 @@ public class CookerComponent extends Composite
      */
     private boolean existsInActiveLog( SDataPoint sdp)
     {
-        String strSelectedLog = logListBox.getItemText(logListBox.getSelectedIndex());
+        int selected = logListBox.getSelectedIndex();
+        if ( selected < 0 )
+            return false;    // ignore data points if the list box is not ready
+        
+      //  System.out.println("existsInActiveLog - Selected Index: " + selected );
+        String strSelectedLog = logListBox.getItemText(selected);
         LogItem li = hmLogItems.get( strSelectedLog );
 
         if ( li == null )

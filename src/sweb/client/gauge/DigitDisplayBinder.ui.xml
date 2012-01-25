@@ -12,9 +12,13 @@
 		<g:SimplePanel height="165px" width="160px">
 		
 		 <g:DecoratorPanel ui:field="tempDecorator">
-		   <g:SimplePanel height="90px" width="150px">
+		   <g:VerticalPanel height="110px" width="150px">
 		      <g:Label  ui:field="displayTemp"></g:Label>
-		   </g:SimplePanel>
+		         <g:HorizontalPanel ui:field="digitHPanelHighLow">
+		      	     <g:Label horizontalAlignment="left" ui:field="lowTemp"></g:Label>
+		      	     <g:Label horizontalAlignment="right" ui:field="highTemp"></g:Label>
+		      	 </g:HorizontalPanel>
+		   </g:VerticalPanel>
 		   </g:DecoratorPanel>
 		</g:SimplePanel>
 	

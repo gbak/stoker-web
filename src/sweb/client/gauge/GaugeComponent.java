@@ -128,9 +128,10 @@ public class GaugeComponent extends Composite
            {
             
                ist = new GaugeDisplay();
-               ist.init( "", null );
+               ist.init( stokerProbe );
                
-               tempPanel.add((Widget) ist ); 
+               tempPanel.add((Widget) ist );
+               ist.setAlarmRange(stokerProbe);
            }
 
        };
@@ -139,9 +140,10 @@ public class GaugeComponent extends Composite
        else
        {
            ist = new DigitDisplayBinder();
-           ist.init("", null);
+           ist.init(stokerProbe);
            
            tempPanel.add((Widget) ist );
+           ist.setAlarmRange(stokerProbe);
        }
        
        layout = new FlexTable();
@@ -449,6 +451,7 @@ public class GaugeComponent extends Composite
                }
                stokerProbe.setTargetTemp(i);
                System.out.println("Change detected in Target "  );
+               ist.setAlarmRange(stokerProbe);
                deviceConfigChanged = true;
             // TODO: fire flag update event;
            }
@@ -471,6 +474,7 @@ public class GaugeComponent extends Composite
                    return;
                }
                stokerProbe.setUpperTempAlarm(i);
+               ist.setAlarmRange(stokerProbe);
                deviceConfigChanged = true;
             // TODO: fire flag update event;
            }
@@ -491,6 +495,7 @@ public class GaugeComponent extends Composite
                    return;
                }
                stokerProbe.setLowerTempAlarm(i);  // TODO: need integer validation
+               ist.setAlarmRange(stokerProbe);
                deviceConfigChanged = true;
                // TODO: fire flag update event;
            }
@@ -515,7 +520,7 @@ public class GaugeComponent extends Composite
        if ( ist != null)
        {
            ist.setTemp(f);
-           ist.setAlarmRange(stokerProbe);
+           //ist.setAlarmRange(stokerProbe);
        }
    }
    public void updateData( StokerProbe sp )
@@ -526,7 +531,7 @@ public class GaugeComponent extends Composite
       if ( ist != null )
       {
          ist.setTemp( sp.getCurrentTemp());
-         ist.setAlarmRange(sp);
+        // ist.setAlarmRange(sp);
       }
    }
 

@@ -176,7 +176,7 @@ public class DataOrchestrator
                 DataPointEvent be = new DataPointEvent(this, false, dpFromMap );
                 fireStateChange(be);
             }
-            logger.debug("Debug: " + dpFromMap.getDebugString());
+            logger.trace("Debug: " + dpFromMap.getDebugString());
             
         }
         else
@@ -243,6 +243,10 @@ public class DataOrchestrator
         return Collections.unmodifiableSet(hmLatestData.entrySet());
     }
 
+    /**
+     * Returns all the logs currently running on the server
+     * @return ArrayList of LogItem 
+     */
     public ArrayList<LogItem> getLogList()
     {
         ArrayList<LogItem> li = new ArrayList<LogItem>();

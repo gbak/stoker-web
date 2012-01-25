@@ -105,7 +105,7 @@ h1 {
 }
 
 .sweb-flexGauge {
-   height: 138px;
+   height: 132px;
 }
 
 .sweb-graphPanel {
@@ -117,7 +117,7 @@ h1 {
 }
 .sweb-panelGaugeTall{
     width: 200px; 
-    height: 385px; 
+    height: 375px; 
     text-align: center; 
 }
 
@@ -166,7 +166,49 @@ h1 {
    background-color:#090
 }
 
+.sweb-tempDecorator {
+    margin-top: 25px;
+	background-color: #D6D6D6;
+	border-width: 3px;
+	border-color: black;
+ }
+ 
+.sweb-displayTemp {
+   font-size: 85px;
+   /*font-family: 'Trebuchet MS', Helvetica, sans-serif; */
+    font-family: 'DS-Digital'; 
+	font-weight: normal;
+	color: green;
+	background-color: #D6D6D6;
+	text-align: center;
+   /* font-family: 'Courier New'; */
 
+}
+.sweb-digitTempLowLabel {
+   font-size: 22px;
+   /*font-family: 'Trebuchet MS', Helvetica, sans-serif; */
+    font-family: 'DS-Digital'; 
+	font-weight: normal;
+	color: blue;
+}
+
+.sweb-digitTempHighLabel {
+    font-size: 22px;
+    font-family: 'DS-Digital'; 
+	font-weight: normal;
+	color: red;
+}
+
+.flash {
+   text-decoration: blink;
+}
+
+.red {
+   color: red;
+}
+.blue {
+   color: blue;
+}
 
 
 
