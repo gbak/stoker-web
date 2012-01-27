@@ -508,5 +508,13 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         return 0;
     }
 
+    @Override
+    public HashMap<String, String> getClientProperties()
+            throws IllegalArgumentException
+    {
+        
+        return StokerWebProperties.getInstance().getClientProperties();
+    }
+
     
 }

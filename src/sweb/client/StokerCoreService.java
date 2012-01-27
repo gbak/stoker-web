@@ -63,4 +63,6 @@ public interface StokerCoreService extends RemoteService
     ArrayList<AlertModel> getAlertConfiguration() throws IllegalArgumentException;
     void setAlertConfiguration( ArrayList<AlertModel> alertBaseList ) throws IllegalArgumentException;
     Integer addNoteToLog( String note, ArrayList<String> logList ) throws IllegalArgumentException;
+    
+    HashMap<String,String> getClientProperties() throws IllegalArgumentException;
 }

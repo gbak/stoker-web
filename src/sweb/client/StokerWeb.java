@@ -39,7 +39,7 @@ import sweb.client.dialog.LoginDialog;
 import sweb.client.dialog.handlers.AlertDialogHandler;
 import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.LoginDialogHandler;
-import sweb.client.gauge.GaugeComponent.Alignment;
+import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.weather.WeatherComponent;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.CallBackRequestType.RequestType;
@@ -116,6 +116,8 @@ public class StokerWeb implements EntryPoint
     boolean bConnected = false;
     
     String httpSessionID = "";
+    
+    HashMap<String,String> properties = null;
 
 
     @SerialTypes(
@@ -188,7 +190,7 @@ public class StokerWeb implements EntryPoint
             dp.setWidth("100%");
             dp.setHeight("100%");
 
-            hp.add( new Image("stokerweb5.png"));
+            hp.add( new Image( "stokerweb5.png"));
             hp.setWidth("100%");
 
             final String sessionID = Cookies.getCookie("sid");
@@ -330,7 +332,7 @@ public class StokerWeb implements EntryPoint
                     }
                     else
                     {
-                        new LoginDialog(stokerService, new LoginDialogHandler() {
+                            new LoginDialog(stokerService,new LoginDialogHandler() {
 
                             public void onLoginReturn(String st)
                             {
@@ -393,16 +395,23 @@ public class StokerWeb implements EntryPoint
             wc = new WeatherComponent( weatherData );
 
             dp.add( wc, DockPanel.SOUTH );
-            Runnable onLoadCallBack = new Runnable() {
+            
+            stokerService.getClientProperties(new AsyncCallback<HashMap<String,String>>() {
 
-                public void run()
+                public void onFailure(Throwable caught)
                 {
-                   getStokerConfiguration();
+                    // TODO Auto-generated method stub
 
                 }
 
-            };
-            onLoadCallBack.run();
+                public void onSuccess(HashMap<String,String> hm)
+                {
+                    properties = hm;
+                    getStokerConfiguration();
+                }
+
+            });
+            
 /*
 
             VisualizationUtils.loadVisualizationApi(onLoadCallBack, Gauge.PACKAGE, AnnotatedTimeLine.PACKAGE);
@@ -704,7 +713,7 @@ public class StokerWeb implements EntryPoint
 
 
 
-    private void createCookers(HashMap<String,SDevice> result, ArrayList<CookerComponent> cooker)
+    private void createCookers(HashMap<String,SDevice> result, ArrayList<CookerComponent> cooker )
     {
        ArrayList<SDevice> alDevices = new ArrayList<SDevice>(result.values());
 
@@ -738,7 +747,7 @@ public class StokerWeb implements EntryPoint
        for ( int i = 1; i <= iNumCookers; i++ )
        {
            // Create a CookerComponent for each cooker.  This is a pit probe with a blower association
-           CookerComponent cc = new CookerComponent(stokerService);
+           CookerComponent cc = new CookerComponent(stokerService, properties);
 
            vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
 

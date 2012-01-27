@@ -4,6 +4,8 @@
 <property name="gwt.dir" value="C:\java\gwt-2.3.0" />
 <property name="gwt.sdk" value="C:\java\gwt-2.3.0" />
 
+<property name="gwt.localworkers" value="3" />
+
 <path id="compile.classpath">
     <fileset dir="${build.dir}/WEB-INF/lib">
         <include name="**/*.jar" />
@@ -50,6 +52,8 @@
       <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
       <jvmarg value="-Xmx256M"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
+	  <arg value="-localWorkers" />
+	  <arg value="${gwt.localworkers}" />
       <arg value="sweb.StokerWeb"/>
     </java>
   </target>

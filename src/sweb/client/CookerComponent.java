@@ -31,8 +31,8 @@ import sweb.client.dialog.handlers.AlertsSettingsDialogHandler;
 import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.NewLogDialogHandler;
 import sweb.client.dialog.handlers.NewNoteDialogHandler;
-import sweb.client.gauge.GaugeComponent;
-import sweb.client.gauge.GaugeComponent.Alignment;
+import sweb.client.gauge.ProbeComponent;
+import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
 import sweb.shared.model.LogItem;
@@ -84,7 +84,7 @@ public class CookerComponent extends Composite
     private static final String strNotConnectedText = "Not Connected";
 
 
-    private HashMap<String,GaugeComponent> mapGuages = new HashMap<String,GaugeComponent>();
+    private HashMap<String,ProbeComponent> mapGuages = new HashMap<String,ProbeComponent>();
     private HashMap<String,SDevice> mapDeviceList = new HashMap<String,SDevice>();
 
     // List of logs that are currently active on the server.
@@ -134,6 +134,8 @@ public class CookerComponent extends Composite
     private boolean bGraphUpdate = false;
     private Date    lastGraphUpdateDate = null;
 
+    HashMap<String,String> properties = null;
+    
     int m_Width = 0;
     int m_Height = 0;
     
@@ -145,10 +147,11 @@ public class CookerComponent extends Composite
 
     StokerCoreServiceAsync stokerService;
 
-    public CookerComponent(StokerCoreServiceAsync s)
+    public CookerComponent(StokerCoreServiceAsync s, HashMap<String,String> p)
     {
 
         stokerService = s;
+        properties = p;
         listBoxProfiles.addItem("Custom");
         listBoxProfiles.setTitle("Profiles");
 
@@ -515,7 +518,7 @@ public class CookerComponent extends Composite
     {
         if ( sd1.isProbe())
         {
-           GaugeComponent gc = new GaugeComponent((StokerProbe)sd1, alignment ) ;
+           ProbeComponent gc = new ProbeComponent((StokerProbe)sd1, alignment, properties ) ;
            mapGuages.put(sd1.getID(),gc);
 
            gc.addStyleName("sweb-gaugeFlowPanel");  // this is needed to make the flow panel move left to right
@@ -723,11 +726,15 @@ public class CookerComponent extends Composite
             {
                 if ( sdp instanceof SBlowerDataPoint )
                 {
-                    mapGuages.get(m_PitID).updateData(sdp);
+                    ProbeComponent pc = mapGuages.get(m_PitID);
+                    if ( pc != null )
+                       pc.updateData(sdp);
                 }
                 else
                 {
-                    mapGuages.get(sdp.getDeviceID()).updateData(sdp);
+                    ProbeComponent pc = mapGuages.get(sdp.getDeviceID());
+                    if ( pc != null )
+                       pc.updateData(sdp);
                 }
 
             }
@@ -738,7 +745,7 @@ public class CookerComponent extends Composite
         }
         else
         {
-            for ( GaugeComponent gc : mapGuages.values() )
+            for ( ProbeComponent gc : mapGuages.values() )
             {
                 gc.updateCurrentTemp(0);
             }
@@ -830,7 +837,7 @@ public class CookerComponent extends Composite
 
     public void draw()
     {
-        for (GaugeComponent gc : mapGuages.values())
+        for (ProbeComponent gc : mapGuages.values())
         {
            gc.draw();
         }
@@ -850,7 +857,7 @@ public class CookerComponent extends Composite
         alertsButton.setVisible(LoginStatus.getInstance().getLoginStatus());
 
        // graphStoker.loginEvent();
-        for (GaugeComponent gc : mapGuages.values())
+        for (ProbeComponent gc : mapGuages.values())
         {
            gc.loginEvent();
         }
@@ -861,7 +868,7 @@ public class CookerComponent extends Composite
     public ArrayList<SDevice> getConfigUpdates()
     {
         ArrayList<SDevice> alDevList = new ArrayList<SDevice>();
-        for (GaugeComponent gc : mapGuages.values())
+        for (ProbeComponent gc : mapGuages.values())
         {
             SDevice s = gc.getConfigUpdates();
             if ( s != null)

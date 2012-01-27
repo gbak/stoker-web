@@ -24,8 +24,11 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -96,6 +99,8 @@ public class StokerWebProperties extends Properties
                 }
             }
         }
+        
+        
         return swp;
     }
 
@@ -133,4 +138,21 @@ public class StokerWebProperties extends Properties
        method.invoke(urlClassLoader, new Object[]{u});
      }
 
+    public HashMap<String,String> getClientProperties()
+    {
+        HashMap<String,String> hm = new HashMap<String,String>();
+        
+        for ( Map.Entry<Object,Object> e : swp.entrySet() )
+        {
+            String key = (String)e.getKey();
+            String value = (String)e.getValue();
+            
+            if ( key.contains("client") )
+            {
+                hm.put( key, value );
+            }
+        }
+        
+        return hm;
+    }
 }

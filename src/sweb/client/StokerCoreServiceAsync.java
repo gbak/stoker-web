@@ -66,4 +66,6 @@ public interface StokerCoreServiceAsync
     void getAlertConfiguration( AsyncCallback<ArrayList<AlertModel>> callback) throws IllegalArgumentException;
     void setAlertConfiguration( ArrayList<AlertModel> alertBaseList, AsyncCallback<Void> callback ) throws IllegalArgumentException;
     void addNoteToLog( String note, ArrayList<String> logList, AsyncCallback<Integer> callback ) throws IllegalArgumentException;
+    
+    void getClientProperties( AsyncCallback<HashMap<String,String>> properties) throws IllegalArgumentException;
 }

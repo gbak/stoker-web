@@ -19,6 +19,8 @@
 package sweb.client.gauge;
 
 
+import java.util.HashMap;
+
 import sweb.client.LoginStatus;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.shared.FieldVerifier;
@@ -61,7 +63,7 @@ import com.google.gwt.visualization.client.visualizations.Gauge;
  * @author gary.bak
  *
  */
-public class GaugeComponent extends Composite
+public class ProbeComponent extends Composite
 {
    String strGaugeName = "";
    FlexTable layout = null;
@@ -97,13 +99,14 @@ public class GaugeComponent extends Composite
    StokerProbe stokerProbe = null;
    boolean deviceConfigChanged = false;
 
-   
+   HashMap<String,String> properties = null;
    Alignment alignment;
 
-   public GaugeComponent(StokerProbe sd1, Alignment align )
+   public ProbeComponent(StokerProbe sd1, Alignment align, HashMap<String,String> p )
    {
        //GaugeComponent gc = new GaugeComponent();
 
+       properties = p;
        alignment = align;
        CellPanel cellp = null;
 
@@ -118,32 +121,35 @@ public class GaugeComponent extends Composite
 
        tempPanel = new SimplePanel();
     
-       boolean bGauge = false;
-       if ( bGauge )
-       {
-    // TODO:  Condition this to decide what to display
-       Runnable onLoadCallBack = new Runnable() {
-
-           public void run()
-           {
-            
-               ist = new GaugeDisplay();
-               ist.init( stokerProbe );
-               
-               tempPanel.add((Widget) ist );
-               ist.setAlarmRange(stokerProbe);
-           }
-
-       };
-       VisualizationUtils.loadVisualizationApi(onLoadCallBack, Gauge.PACKAGE );
-       }
-       else
+       String tempDisplayType = properties.get("client.tempDisplayType");
+       if ( tempDisplayType == null )
+           tempDisplayType = "gauge";
+       
+       
+       if ( tempDisplayType.equalsIgnoreCase("text") )
        {
            ist = new DigitDisplayBinder();
            ist.init(stokerProbe);
            
            tempPanel.add((Widget) ist );
            ist.setAlarmRange(stokerProbe);
+       }
+       else
+       {
+           Runnable onLoadCallBack = new Runnable() 
+           {
+               public void run()
+               {
+                   ist = new GaugeDisplay(properties);
+                   ist.init( stokerProbe );
+                   
+                   tempPanel.add((Widget) ist );
+                   ist.setAlarmRange(stokerProbe);
+               }
+
+           };
+           VisualizationUtils.loadVisualizationApi(onLoadCallBack, Gauge.PACKAGE );
+
        }
        
        layout = new FlexTable();

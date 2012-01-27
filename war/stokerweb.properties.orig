@@ -9,6 +9,17 @@ stokerweb_logs_dir=stokerweblogs
 # Associate the Serial ID of each blower to a Cooker Name
 230000002a55c305=Large Egg
 
+
+########### Client Settings ######################
+
+# This can be gauge or text
+client.tempDisplayType=text
+
+client.tempDisplayGauge.gaugeMax=400
+client.tempDisplayGauge.gaugeMin=0
+client.tempDisplayGauge.gaugeStepping=50
+
+
 # Mail settings
 mail.sendTo=xxx@gmail.com
 mail.password=
@@ -28,3 +39,5 @@ weather_zipcode=30024
 # These should not change, it is important that there are no spaces after the trailing '='
 weather_woeid_url=http://where.yahooapis.com/geocode?country=USA&flags=J&postal=
 weather_get_by_woeid_url=http://weather.yahooapis.com/forecastjson?w=
+
+

@@ -1,5 +1,7 @@
 package sweb.client.gauge;
 
+import java.util.HashMap;
+
 import sweb.client.gauge.InstantTempDisplay.TempAlert;
 import sweb.shared.model.StokerProbe;
 
@@ -21,14 +23,19 @@ public class GaugeDisplay extends InstantTempDisplay
     int iMinGaugeTemp = 0;
     int iMaxGaugeTemp = 400;
     int iGaugeStepping = 50;
+    
     String strColorGreen = "#109618";
     String strColorYellow = "#FF9900";
     String strColorRed = "#DC3912";
+    
+    HashMap<String,String> properties = null;
 
-    public GaugeDisplay()
+    public GaugeDisplay(HashMap<String,String> p)
     {
        g = new Gauge();
     
+       properties = p;
+       
        options = Options.create();
        data = DataTable.create();
        
@@ -48,15 +55,55 @@ public class GaugeDisplay extends InstantTempDisplay
 
     private Options initOptions()
     {
-       int isize = ((iMaxGaugeTemp - iMinGaugeTemp) / iGaugeStepping) + 1;
-       String[] sa = new String[isize];
-       int iTemp = iMinGaugeTemp;
+       
 
 
        options.setWidth(190);
        options.setHeight(200);
 
+       String gaugeMax = properties.get("client.tempDisplayGauge.gaugeMax");
+       String gaugeMin = properties.get("client.tempDisplayGauge.gaugeMin");
+       String gaugeStepping = properties.get("client.tempDisplayGauge.gaugeStepping");
        
+       if ( gaugeMax != null )
+       {
+           try
+           {
+              iMaxGaugeTemp = Integer.parseInt( gaugeMax );
+           }
+           catch ( NumberFormatException nfe)
+           {
+               System.out.println("Invald number for gaugeMax");
+           }
+       }
+        
+       if ( gaugeMin != null )
+       {
+           try
+           {
+              iMinGaugeTemp = Integer.parseInt( gaugeMin );
+           }
+           catch ( NumberFormatException nfe)
+           {
+               System.out.println("Invald number for gaugeMin");
+           }
+       }
+       if ( gaugeStepping != null )
+       {
+           try
+           {
+               iGaugeStepping = Integer.parseInt( gaugeStepping );
+           }
+           catch ( NumberFormatException nfe)
+           {
+               System.out.println("Invald number for gaugeStepping");
+           }
+       }
+
+       int isize = ((iMaxGaugeTemp - iMinGaugeTemp) / iGaugeStepping) + 1;
+       String[] sa = new String[isize];
+       int iTemp = iMinGaugeTemp;
+
        for ( int i = 0; i < isize; i++ )
        {
           sa[i] = new Integer( iTemp ).toString();
@@ -76,7 +123,8 @@ public class GaugeDisplay extends InstantTempDisplay
     @Override
     public void init(StokerProbe sp)
     {
-        initDataTable("probe");
+        initDataTable("");  // this label will go inside the gauge.  The probe name would be nice,
+                            // it crowds the gauge.
         initOptions();
         localProbe = sp;
         
@@ -146,6 +194,7 @@ public class GaugeDisplay extends InstantTempDisplay
                options.set("redColor",strColorYellow );
                options.set("yellowColor",strColorYellow );
            }
+           change = false;
        }
        
     }
