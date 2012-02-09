@@ -226,8 +226,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
                 public void weatherUpdated(WeatherChangeEvent wce)
                 {
-                    ClientMessagePusher.getInstance()
-                            .push(wce.getWeatherData());
+                    WeatherData wd = wce.getWeatherData();
+                    if ( wd != null )
+                       ClientMessagePusher.getInstance().push(wd);
                 }
 
             };
@@ -488,6 +489,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
            ClientMessagePusher.getInstance().sessionPush( httpSession, sdp);
 
         WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
+        if ( wd != null )
                 ClientMessagePusher.getInstance().sessionPush( httpSession, wd );
     }
 
