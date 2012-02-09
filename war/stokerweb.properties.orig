@@ -12,8 +12,8 @@ stokerweb_logs_dir=stokerweblogs
 
 ########### Client Settings ######################
 
-# This can be gauge or text
-client.tempDisplayType=text
+# This can be 'gauge' or 'text'
+client.tempDisplayType=gauge
 
 client.tempDisplayGauge.gaugeMax=400
 client.tempDisplayGauge.gaugeMin=0

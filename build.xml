@@ -54,6 +54,8 @@
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
 	  <arg value="-localWorkers" />
 	  <arg value="${gwt.localworkers}" />
+	  <!--arg value="-style" />
+	  <arg value="PRETTY" /-->
       <arg value="sweb.StokerWeb"/>
     </java>
   </target>

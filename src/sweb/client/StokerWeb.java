@@ -41,6 +41,7 @@ import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.weather.WeatherComponent;
+import sweb.server.ClientMessagePusher;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.CallBackRequestType.RequestType;
 import sweb.shared.model.HardwareDeviceStatus;
@@ -65,6 +66,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
@@ -291,8 +293,10 @@ public class StokerWeb implements EntryPoint
                                    if ( st != null)
                                    {
                                        System.out.println("Selected Report: " + st);
-                                       Window.open(GWT.getModuleBaseURL() + "report" + "?logFile=" + st, "_blank", "enabled");
+                                       String url = new String( GWT.getModuleBaseURL() + "report" + "?logFile=" + st );
+                                     //  Window.open( url, "_blank", "enabled" );
                                        
+                                       new DownloadIFrame(url);
                                    }
                                    else
                                    {
@@ -400,7 +404,7 @@ public class StokerWeb implements EntryPoint
 
                 public void onFailure(Throwable caught)
                 {
-                    // TODO Auto-generated method stub
+                    System.out.println("Failure getting client Properties.  This is serious!");
 
                 }
 
@@ -412,16 +416,22 @@ public class StokerWeb implements EntryPoint
 
             });
             
-/*
 
-            VisualizationUtils.loadVisualizationApi(onLoadCallBack, Gauge.PACKAGE, AnnotatedTimeLine.PACKAGE);
-*/
             // Consider not calling this if the stoker if offline,this allows the reports
             // to be generated with stoker offline.  This couild replace the stoker not
             // conencted page.
             
             
             //getStokerConfiguration();
+            
+            Window.addWindowClosingHandler(new Window.ClosingHandler() { 
+                @Override 
+                public void onWindowClosing(ClosingEvent event) { 
+                      System.out.println("Browser Close event caught!"); 
+                      
+                      
+                } 
+          }); 
             
             currentPage = LoadedPage.CONNECTED_PAGE;
             RootPanel.get().add( dp );
@@ -431,6 +441,7 @@ public class StokerWeb implements EntryPoint
 
     private void initCallBack()
     {
+        
           stokerService.setupCallBack(new AsyncCallback<Void>() {
 
                     public void onSuccess(Void result) {

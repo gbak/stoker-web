@@ -42,12 +42,27 @@ public class ClientMessagePusher
         
         if ( webSessions.putIfAbsent(httpSession.getId(), cometSession) != null )
         {
-           //httpSession.invalidate();
+          // httpSession.invalidate();
            logger.info("User already on");
            webSessions.remove(httpSession.getId());
            webSessions.put(httpSession.getId(), cometSession);
         }
 
+    }
+    
+    public void removeSession( HttpSession httpSession )
+    {
+       CometSession cometSession = CometServlet.getCometSession(httpSession);
+       try
+       {
+           cometSession.invalidate();
+           webSessions.remove(httpSession.getId());
+           httpSession.invalidate();
+       }
+       catch ( IllegalStateException  ise )
+       {
+           System.out.println("Error invalidating session; likely invalid already");
+       }
     }
     
     private void enqueueCometMessage( Serializable message)
@@ -56,12 +71,13 @@ public class ClientMessagePusher
         {
             if ( entry.getValue().isValid() )
             {
+                logger.trace("sending message to browser ");
                entry.getValue().enqueue( message );
             }
             else
             {
                 logger.warn("Removing invalid comet session");
-                entry.getValue().invalidate();
+             //   entry.getValue().invalidate();
                 webSessions.remove(entry.getKey());
             }
 

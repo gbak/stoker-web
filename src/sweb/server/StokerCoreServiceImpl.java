@@ -133,28 +133,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
                    if ( bdp != null  )
                    {
-                       if (! bdp.isTimedEvent() )
-                       {
-                           SBlowerDataPoint newBDP = new SBlowerDataPoint(bdp);
-                        //   newBDP.setBlowerState(!bdp.isFanOn());  // TODO: check this gbak
-                       //    newBDP.setTotalRuntime(-1);
-                        //   ClientMessagePusher.getInstance().push(newBDP);
-    
-                         //  Calendar cal = Calendar.getInstance();
-                         //  cal.setTime(bdp.getCollectedDate());
-                         //  cal.add(Calendar.MILLISECOND, 10);
-                        //   bdp.setCollectedDate(cal.getTime());
-                           ClientMessagePusher.getInstance().push(bdp);
-                       }
-                       else
-                       {
-                           // if the event is triggered by time and the status is the same as the
-                           // previous, we don't need the dummy data point.
-                           
-                           // This can be a bug if this event happens to run before the live event
-                           // after the fan switches on.
-                           ClientMessagePusher.getInstance().push(bdp);
-                       }
+                      ClientMessagePusher.getInstance().push(bdp);
                    }
 
                 }
@@ -181,63 +160,80 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private void handleControllerEvents()
     {
 
-        DataControllerEventListener m_dcel = new DataControllerEventListener() {
-
-            public void actionPerformed(DataControllerEvent ce)
-            {
-                switch( ce.getEventType())
-                {
-                    case CONNECTION_ESTABLISHED:
-                        ClientMessagePusher.getInstance().push( new ControllerEventLight(EventTypeLight.CONNECTION_ESTABLISHED));
-                       break;
-                    case NONE:
-                        break;
-                    case LOST_CONNECTION:
-                        ClientMessagePusher.getInstance().push( new ControllerEventLight(EventTypeLight.LOST_CONNECTION));
-                        break;
-                    default:
-
-                }
-               if ( ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
-               {
-
-               }
-            }
-
-        };
-
-        Controller.getInstance().addDataEventListener(m_dcel);
-
-        ConfigControllerEventListener m_ccel = new ConfigControllerEventListener() {
-
-            public void actionPerformed(ConfigControllerEvent ce)
-            {
-                switch( ce.getEventType())
-                {
-                    case NONE:
-                        break;
-                    case CONFIG_UPDATE:
-                        ClientMessagePusher.getInstance().push( new ControllerEventLight(EventTypeLight.CONFIG_UPDATE));
-                        break;
-                    default:
-                }
-            }
-
-           };
-
-        Controller.getInstance().addConfigEventListener(m_ccel);
-
-        WeatherChangeEventListener m_wcel = new WeatherChangeEventListener()
+        if (m_dcel == null)
         {
+            m_dcel = new DataControllerEventListener() {
 
-            public void weatherUpdated(WeatherChangeEvent wce)
-            {
-                ClientMessagePusher.getInstance().push( wce.getWeatherData() );
-            }
+                public void actionPerformed(DataControllerEvent ce)
+                {
+                    switch (ce.getEventType())
+                    {
+                        case CONNECTION_ESTABLISHED:
+                            ClientMessagePusher
+                                    .getInstance()
+                                    .push(new ControllerEventLight(
+                                            EventTypeLight.CONNECTION_ESTABLISHED));
+                            break;
+                        case NONE:
+                            break;
+                        case LOST_CONNECTION:
+                            ClientMessagePusher.getInstance().push(
+                                    new ControllerEventLight(
+                                            EventTypeLight.LOST_CONNECTION));
+                            break;
+                        default:
 
-        };
+                    }
+                    if (ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
+                    {
 
-        Controller.getInstance().addWeatherChangeEventListener(m_wcel);
+                    }
+                }
+
+            };
+
+            Controller.getInstance().addDataEventListener(m_dcel);
+
+        }
+
+        if (m_ccel == null)
+        {
+            m_ccel = new ConfigControllerEventListener() {
+
+                public void actionPerformed(ConfigControllerEvent ce)
+                {
+                    switch (ce.getEventType())
+                    {
+                        case NONE:
+                            break;
+                        case CONFIG_UPDATE:
+                            ClientMessagePusher.getInstance().push(
+                                    new ControllerEventLight(
+                                            EventTypeLight.CONFIG_UPDATE));
+                            break;
+                        default:
+                    }
+                }
+
+            };
+
+            Controller.getInstance().addConfigEventListener(m_ccel);
+        }
+
+        if (m_wcel == null)
+        {
+            m_wcel = new WeatherChangeEventListener() {
+
+                public void weatherUpdated(WeatherChangeEvent wce)
+                {
+                    ClientMessagePusher.getInstance()
+                            .push(wce.getWeatherData());
+                }
+
+            };
+
+            Controller.getInstance().addWeatherChangeEventListener(m_wcel);
+        }
     }
     
     public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
@@ -444,8 +440,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public void sessionDestroyed(HttpSessionEvent arg0)
     {
         logger.info("Http Session Destroyed");
-
-        removeControllerEvents();
+        HttpSession hs = arg0.getSession();
+        ClientMessagePusher.getInstance().removeSession(hs);
+      //  removeControllerEvents();  // Is this correct?  gbak
 
     }
 

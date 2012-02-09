@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-beanutils-1.8.3.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang-2.6.jar"/>
@@ -21,7 +20,21 @@
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/smtp.jar"/>
 	<classpathentry kind="lib" path="C:/java/workspace/stoker-web/war/WEB-INF/lib/gwt-voices-2.0.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jasper"/>
+	<classpathentry kind="lib" path="C:/java/eclipse/plugins/javax.servlet_2.5.0.v201103041518.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/joda-time-2.0.jar"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-beanutils-1.8.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-collections-2.1.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-digester-1.7.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-javaflow-20060411.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/groovy-all-1.7.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jasperreports-4.5.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jasperreports-fonts-4.5.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jasperreports-javaflow-4.5.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jcommon-1.0.15.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jfreechart-1.0.12.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/mailapi.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/smtp.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
