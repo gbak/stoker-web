@@ -96,6 +96,9 @@ public class LoginProperties extends Properties
 
     public void addLoginIDAndPass(String strLoginID, String strPass)
     {
+    	//String strStokerWebProperties.getInstance().get(StokerConstants.ENV_STOKERWEB_DIR);
+    	StokerWebProperties.getInstance();
+    	
         setProperty(strLoginID, createHashPass(strPass));
 
         try

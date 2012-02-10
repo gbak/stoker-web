@@ -1,8 +1,10 @@
 <project name="stokerweb" basedir="." default="default">
 <property name="src.dir" value="src" />
 <property name="build.dir" value="war" />
-<property name="gwt.dir" value="C:\java\gwt-2.3.0" />
-<property name="gwt.sdk" value="C:\java\gwt-2.3.0" />
+<property name="gwt.dir" value="C:\java\gwt-2.4.0" />
+<property name="gwt.sdk" value="C:\java\gwt-2.4.0" />
+<property name="log4j" value="${build.dir}/WEB-INF/lib/log4j-1.2.15.jar" />
+<property name="addUserTemp.dir" value="addUserTemp" />
 
 <property name="gwt.localworkers" value="3" />
 
@@ -68,6 +70,7 @@
 
 
   <target name="addUser" depends="javac" description="Create addUser jar file">
+    <unjar src="${log4j}" dest="${addUserTemp.dir}" />
     <jar destfile="addUser.jar">
                 <manifest>
                     <attribute name="Main-Class" value="sweb.server.security.admin.AddUser"/>
@@ -77,11 +80,16 @@
 		                    sweb/server/StokerWebProperties.class,
 		                    sweb/server/InvalidStokerWebPropertyException.class"
 		          excludes=""/>
+				<fileset dir="${addUserTemp.dir}"
+				  includes="**/*"
+				  excludes="" />
+				
 		<!--fileset dir="war/WEB-INF/classes/"
 		    includesfile="war/WEB-INF/classes/sweb/server/StokerWebProperties.class" /-->
 		    
 	       
         </jar>
+		<delete dir="${addUserTemp.dir}" failonerror="false" />
   </target>
 
   <target name="release" depends="war,addUser" description="Build package for release">

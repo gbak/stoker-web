@@ -294,9 +294,9 @@ public class StokerWeb implements EntryPoint
                                    {
                                        System.out.println("Selected Report: " + st);
                                        String url = new String( GWT.getModuleBaseURL() + "report" + "?logFile=" + st );
-                                     //  Window.open( url, "_blank", "enabled" );
+                                       Window.open( url, "_blank", "enabled" );
                                        
-                                       new DownloadIFrame(url);
+                                   //    new DownloadIFrame(url);
                                    }
                                    else
                                    {

@@ -74,8 +74,10 @@ public class StokerWebProperties extends Properties
         }
       catch (Exception e)
       {
-         logger.fatal("Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath");
+    	  String strError = "Error loading stokerWeb.properties, likely caused by error while adding stokerWebDir to classpath"; 
+         logger.fatal(strError);
          logger.fatal(e.getStackTrace());
+         System.out.println(strError);
          System.exit(1);
       }
         
