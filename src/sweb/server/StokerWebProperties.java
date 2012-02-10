@@ -49,13 +49,15 @@ public class StokerWebProperties extends Properties
         stokerWebDir = mapEnv.get(StokerConstants.ENV_STOKERWEB_DIR);
         if ( stokerWebDir == null )
         {
-           logger.error("Unable to find STOKERWEB_DIR environment variable, using '.'");
+            String s = "Unable to find STOKERWEB_DIR environment variable, using '.'";
+     //      logger.error(s);
+           System.out.println(s);
            stokerWebDir = ".";
         }
         if ( stokerWebDir.endsWith("/") || stokerWebDir.endsWith("\\"))
             stokerWebDir = stokerWebDir.substring(0, stokerWebDir.length() - 1);
         
-        logger.info("Using StokerWebDir = ["+ stokerWebDir + "]");
+     //   logger.info("Using StokerWebDir = ["+ stokerWebDir + "]");
         try
         {
             // add path to classpath for the properties load
@@ -69,6 +71,7 @@ public class StokerWebProperties extends Properties
         }
         catch (IOException ioe)
         {
+            System.out.println("Error loading stokerWeb.properties: " + ioe.getStackTrace());
             logger.fatal("Error loading stokerWeb.properties: " + ioe.getStackTrace());
             System.exit(1);
         }

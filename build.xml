@@ -78,6 +78,7 @@
                 <fileset dir="war/WEB-INF/classes/" 
 		          includes="sweb/server/security/**/*.class,
 		                    sweb/server/StokerWebProperties.class,
+							sweb/server/logging/LoggingConfigurator.class,
 		                    sweb/server/InvalidStokerWebPropertyException.class"
 		          excludes=""/>
 				<fileset dir="${addUserTemp.dir}"
@@ -95,10 +96,12 @@
   <target name="release" depends="war,addUser" description="Build package for release">
      <!--rename src="stokerweb.war" dest="stokerweb-${version}.war" replace="true" /-->
      <copy file="war/stokerweb.properties.orig" tofile="./stokerweb.properties" overwrite="true" />
+	 <copy file="war/log4j.properties.orig" tofile="./log4j.properties" overwrite="true" />
      <zip destfile="stokerweb-${version}.zip">
      
                 <fileset dir="." 
 		          includes="stokerweb.properties,
+				            log4j.properties
 		                    stokerweb.war,
 		                    addUser.jar"
 		          excludes=""/>
