@@ -121,16 +121,17 @@ public class Controller
             boolean bTryAgain = true;
         //    while ( bTryAgain )
         //    {
-                if ( ! DataOrchestrator.getInstance().isLogRunning("Default"))
+            String strDefaultName = "Default_" + strCookerName;
+                if ( ! DataOrchestrator.getInstance().isLogRunning(strDefaultName ))
                 {
                     try
                     {
-                        DataOrchestrator.getInstance().startLog(strCookerName, "Default");
+                        DataOrchestrator.getInstance().startLog(strCookerName, strDefaultName);
                         bTryAgain = false;
                     }
                     catch (LogExistsException e)
                     {
-                        try { DataOrchestrator.getInstance().stopLog("Default"); } catch (LogNotFoundException e1) { }
+                        try { DataOrchestrator.getInstance().stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
                     }
                 }
 

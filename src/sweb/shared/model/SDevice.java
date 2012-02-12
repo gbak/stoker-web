@@ -42,7 +42,7 @@ public class SDevice  implements Serializable
       
       if (( strName.length() > 2 ) &&  (strName.charAt(1) == '_' ))
       {
-          try { iCookerNum = new Integer( strName.charAt(0)); }
+          try { iCookerNum = new Integer( strName.substring(0,1)).intValue(); }
           catch ( NumberFormatException nfe ) {}
       }
    }
