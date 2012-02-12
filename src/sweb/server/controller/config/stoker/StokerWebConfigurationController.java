@@ -45,11 +45,11 @@ import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.events.ConfigControllerEvent;
 
-import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerFan;
-import sweb.shared.model.StokerPitSensor;
-import sweb.shared.model.StokerProbe;
-import sweb.shared.model.StokerProbe.AlarmType;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.stoker.StokerProbe.AlarmType;
 
 
 import net.htmlparser.jericho.*;

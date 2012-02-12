@@ -44,9 +44,9 @@ import sweb.server.controller.log.StokerFile;
 import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogNote;
 
 /*

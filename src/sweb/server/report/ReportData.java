@@ -26,13 +26,13 @@ import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.server.controller.log.exceptions.LogReadErrorException;
 import sweb.server.report.JasperReportConstants.ReportConstants;
 import sweb.server.report.TableEntry.ActionType;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerFan;
-import sweb.shared.model.StokerPitSensor;
-import sweb.shared.model.StokerProbe;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogNote;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.stoker.StokerProbe;
 
 public class ReportData
 {

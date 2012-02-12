@@ -3,7 +3,7 @@ package sweb.client.dialog;
 import java.util.ArrayList;
 
 import sweb.client.dialog.handlers.NewNoteDialogHandler;
-import sweb.shared.model.SDevice;
+import sweb.shared.model.devices.SDevice;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;

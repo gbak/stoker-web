@@ -27,9 +27,9 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 import sweb.server.controller.StokerConfiguration;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.data.SProbeDataPoint;
 /*
  *  Helper class to SDataPoint since GWT did not like the complex set of classes
  *  in the shared section.

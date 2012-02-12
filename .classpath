@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/smtp.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/smartgwt"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

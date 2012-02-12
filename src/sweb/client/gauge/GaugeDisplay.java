@@ -3,7 +3,7 @@ package sweb.client.gauge;
 import java.util.HashMap;
 
 import sweb.client.gauge.InstantTempDisplay.TempAlert;
-import sweb.shared.model.StokerProbe;
+import sweb.shared.model.stoker.StokerProbe;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;

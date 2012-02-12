@@ -32,17 +32,17 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.SDeviceBase;
-import sweb.shared.model.SProbeDataPoint;
-import sweb.shared.model.StokerDeviceTypes;
-import sweb.shared.model.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.StokerFan;
-import sweb.shared.model.StokerPitSensor;
-import sweb.shared.model.StokerProbe;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.SDeviceBase;
 import sweb.shared.model.logfile.LogNote;
+import sweb.shared.model.stoker.StokerDeviceTypes;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.weather.WeatherData;
 
 public class LogFileFormatter

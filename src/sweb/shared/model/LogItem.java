@@ -21,6 +21,8 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import sweb.shared.model.devices.SDevice;
+
 
 public class LogItem implements Serializable
 {

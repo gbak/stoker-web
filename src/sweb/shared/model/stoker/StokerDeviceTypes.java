@@ -16,13 +16,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.client.dialog.handlers;
+package sweb.shared.model.stoker;
 
-import java.util.ArrayList;
-
-import sweb.shared.model.devices.SDevice;
-
-public interface NewLogDialogHandler
+public class StokerDeviceTypes
 {
-    public void onReturn( String sLogName, ArrayList<SDevice> arSD );
+    public static enum DeviceType { UNKNOWN, PIT, FOOD, BLOWER };
+
+    public static DeviceType getDeviceTypeForString( String deviceType )
+    {
+        if ( deviceType.compareToIgnoreCase("PIT") == 0)
+            return DeviceType.PIT;
+        else if ( deviceType.compareToIgnoreCase("FOOD") == 0)
+            return DeviceType.FOOD;
+        else if ( deviceType.compareToIgnoreCase("BLOWER") == 0)
+            return DeviceType.BLOWER;
+        else
+            return DeviceType.UNKNOWN;
+    }
 }

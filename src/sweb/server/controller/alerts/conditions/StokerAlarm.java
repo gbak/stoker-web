@@ -17,11 +17,11 @@ import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.SProbeDataPoint;
-import sweb.shared.model.StokerProbe;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;
+import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerProbe;
 
 
 public class StokerAlarm extends AlertCondition

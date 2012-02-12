@@ -3,8 +3,8 @@ package sweb.client.gauge;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsRenderable;
 
-import sweb.shared.model.StokerProbe;
-import sweb.shared.model.StokerProbe.AlarmType;
+import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.stoker.StokerProbe.AlarmType;
 
 
 public abstract class InstantTempDisplay extends Composite

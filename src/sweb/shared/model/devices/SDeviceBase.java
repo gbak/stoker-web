@@ -15,14 +15,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
+package sweb.shared.model.devices;
 
-package sweb.client.dialog.handlers;
+import java.io.Serializable;
 
-import java.util.ArrayList;
-
-import sweb.shared.model.devices.SDevice;
-
-public interface NewLogDialogHandler
+public class SDeviceBase extends SDevice implements Serializable
 {
-    public void onReturn( String sLogName, ArrayList<SDevice> arSD );
+
+
+    private static final long serialVersionUID = 2510566898300196467L;
+
+public SDeviceBase( String strCookerNum, String strCookerName )
+   {
+       super( "0", "none");
+       setCookerName( strCookerName );
+       setCookerNum(new Integer(strCookerNum));
+       // TODO: probably should catch the InvalidNumberException here
+
+   }
 }

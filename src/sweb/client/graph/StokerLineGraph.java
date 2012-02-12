@@ -21,8 +21,8 @@ package sweb.client.graph;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 
 import com.google.gwt.user.client.ui.Composite;
 

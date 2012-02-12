@@ -24,12 +24,12 @@ import java.util.HashMap;
 import sweb.client.LoginStatus;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.shared.FieldVerifier;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.SProbeDataPoint;
-import sweb.shared.model.StokerFan;
-import sweb.shared.model.StokerProbe;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerProbe;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;

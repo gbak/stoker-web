@@ -23,9 +23,9 @@ import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
 import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogDir;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;

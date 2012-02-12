@@ -36,13 +36,13 @@ import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.StokerProbe;
 import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogDir;
+import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;

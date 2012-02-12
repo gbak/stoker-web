@@ -40,7 +40,7 @@ import sweb.server.controller.events.DataControllerEvent;
 import sweb.server.controller.events.DataControllerEvent.EventType;
 import sweb.server.controller.parser.stoker.InvalidDataPointException;
 import sweb.server.controller.parser.stoker.SDataPointHelper;
-import sweb.shared.model.SDataPoint;
+import sweb.shared.model.data.SDataPoint;
 
 /*  This class does the following:
  *     Creates connection to Stoker

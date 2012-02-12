@@ -37,10 +37,10 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.LinePlotOptions;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
 
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.StokerFan;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;

@@ -51,10 +51,10 @@ import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogNote;
 import sweb.shared.model.weather.WeatherData;
 

@@ -20,7 +20,7 @@ package sweb.server.controller.events;
 
 import java.util.EventObject;
 
-import sweb.shared.model.SBlowerDataPoint;
+import sweb.shared.model.data.SBlowerDataPoint;
 
 public class BlowerEvent extends EventObject
 {

@@ -35,8 +35,8 @@ import org.moxieapps.gwt.highcharts.client.labels.YAxisLabels;
 import org.moxieapps.gwt.highcharts.client.plotOptions.Marker;
 import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
 
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;

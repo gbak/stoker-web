@@ -21,9 +21,9 @@ package sweb.server.controller.events;
 import java.util.ArrayList;
 import java.util.EventObject;
 
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.data.SProbeDataPoint;
 
 public class DataPointEvent extends EventObject
 {

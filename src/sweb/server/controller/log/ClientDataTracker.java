@@ -25,8 +25,8 @@ import java.util.Map.Entry;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.BlowerEvent;
 import sweb.server.controller.events.BlowerEventListener;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
 
 /*
  * This class saves the last datapoints that were requested.
