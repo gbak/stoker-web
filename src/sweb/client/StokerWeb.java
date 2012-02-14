@@ -110,6 +110,7 @@ public class StokerWeb implements EntryPoint
     Button loginButton = new Button();
     Button updateButton = new Button();
     Button reportsButton = new Button();
+    Button configButton = new Button();
     Button statusFauxButton = new Button();
     Button testButton = new Button();  // Test various functions.
 
@@ -271,6 +272,44 @@ public class StokerWeb implements EntryPoint
 
             });
 
+            configButton = new Button("Configuration", new ClickHandler() 
+            {
+
+                @Override
+                public void onClick(ClickEvent event)
+                {
+
+                    stokerService
+                            .getConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
+
+                                public void onFailure(Throwable caught)
+                                {
+                                    caught.printStackTrace();
+                                    System.out
+                                            .println("Client configuration failure");
+                                }
+
+                                public void onSuccess( HashMap<String, SDevice> result)
+                                {
+                                    ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
+                                    com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
+                                    window.setTitle("Dragging a window");
+                                    window.setWidth(400);
+                                    window.setHeight(330);
+                                    window.setCanDragReposition(true);
+                                    window.setCanDragResize(true);
+                                    window.addItem(new sweb.client.Widgets.Configuration(arsd));
+
+                                    com.smartgwt.client.widgets.Canvas canvasMain = new com.smartgwt.client.widgets.Canvas();
+                                    canvasMain.addChild(window);
+                                    canvasMain.draw();
+                                }
+
+                            });
+                }
+            });
+
+            
             reportsButton = new Button( "Reports", new ClickHandler() {
 
                 public void onClick(ClickEvent event)
@@ -373,6 +412,12 @@ public class StokerWeb implements EntryPoint
             statusFauxButton.setText("No Connection");
             
             hp.add( statusFauxButton );
+            
+            configButton.setEnabled(false);
+            configButton.setStyleName("sweb-MenuButton");
+            hp.add( configButton );
+            hp.setCellHorizontalAlignment(configButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            hp.setCellVerticalAlignment(configButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
             reportsButton.setEnabled(false);
             reportsButton.setStyleName("sweb-MenuButton");
@@ -818,6 +863,7 @@ public class StokerWeb implements EntryPoint
 
         updateButton.setEnabled(b);
         reportsButton.setEnabled(b);
+        configButton.setEnabled(b);
         for ( CookerComponent cc : alCookers)
         {
            cc.loginEvent();

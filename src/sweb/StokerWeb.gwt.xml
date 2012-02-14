@@ -21,6 +21,9 @@
 
   <!-- Other module inherits -->
 
+   <inherits name="com.smartgwt.SmartGwt"/>
+
+
    <!--  This must be in the public directory when using the debugger --> 
   <!-- <stylesheet src="StokerWeb.css" />  -->
    
