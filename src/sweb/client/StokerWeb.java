@@ -60,8 +60,11 @@ import sweb.shared.model.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.weather.WeatherData;
 
+import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Cookies;
@@ -96,6 +99,8 @@ public class StokerWeb implements EntryPoint
 
     private static enum LoadedPage { NONE, CONNECTED_PAGE, NOT_CONNECTED_PAGE };
 
+    private long startTimeMillis;
+    
     LoadedPage currentPage = LoadedPage.NONE;
 
     ArrayList<CookerComponent> alCookers = new ArrayList<CookerComponent>();
@@ -144,12 +149,13 @@ public class StokerWeb implements EntryPoint
 
             public void onFailure(Throwable caught)
             {
-                System.out.println("Failure calling makeCometRequest()");
+                Log.error("Failure calling makeCometRequest()");
 
             }
 
             public void onSuccess(Void result)
             {
+                Log.debug("makeCallBackRequest cometRequest success");
 
 
             }
@@ -159,19 +165,47 @@ public class StokerWeb implements EntryPoint
 
     public void onModuleLoad()
     {
-     //   RootPanel.get().clear();
+     
+        /*
+         * Install an UncaughtExceptionHandler which will produce <code>FATAL</code> log messages
+         */
+        Log.setUncaughtExceptionHandler();
 
+        // use deferred command to catch initialization exceptions in onModuleLoad2
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+          @Override
+          public void execute() {
+            onModuleLoad2();
+          }
+        });
+
+        
+
+    }
+    
+    private void onModuleLoad2()
+    {
+        if (Log.isDebugEnabled()) 
+        {
+            startTimeMillis = System.currentTimeMillis();
+          }
+        
+        Log.info("onModuleLoad()");
         initCallBack();
-
-
-
-     //   RootPanel.get().add( dp );
+        
+        if (Log.isDebugEnabled()) {
+            long endTimeMillis = System.currentTimeMillis();
+            float durationSeconds = (endTimeMillis - startTimeMillis) / 1000F;
+            Log.debug("Duration: " + durationSeconds + " seconds");
+          }
     }
 
     private void initNotConnectedPage(Date d)
     {
+        Log.debug("initNotConnectedPage");
         if ( currentPage != LoadedPage.NOT_CONNECTED_PAGE )
         {
+            Log.info("Stoker not connected, setting up not connected page");
            RootPanel.get().clear();
 
            DockPanel dpDisconnected = new DockPanel();
@@ -185,7 +219,7 @@ public class StokerWeb implements EntryPoint
 
     private void initStokerPage(Date d)
     {
-
+        Log.debug("initStokerPage()");
         if ( currentPage != LoadedPage.CONNECTED_PAGE )
         {
             RootPanel.get().clear();
@@ -197,19 +231,22 @@ public class StokerWeb implements EntryPoint
             hp.setWidth("100%");
 
             final String sessionID = Cookies.getCookie("sid");
+            
             if ( sessionID != null )
             {
+                Log.info("Found sessionID: " + sessionID);
                 stokerService.validateSession( sessionID, new AsyncCallback<Integer>() {
                     public void onFailure(Throwable caught)
                     {
                         // TODO Auto-generated method stub
-
+                        Log.error("Failure attempting to validate session");
                     }
 
                     public void onSuccess(Integer result)
                     {
                         if ( result.intValue() == 1)
                         {
+                            Log.info("Session validated successfully");
                            httpSessionID = sessionID;
                            userLoggedIn( true );
                            loginButton.setText(getLoginButtonText());
@@ -219,6 +256,7 @@ public class StokerWeb implements EntryPoint
             }
             else
             {
+                Log.info("no session found for user.");
                 userLoggedIn( false );
             }
 
@@ -243,9 +281,11 @@ public class StokerWeb implements EntryPoint
 
                 public void onClick(ClickEvent event)
                 {
+                    Log.info("Updating Stoker settings");
                     ArrayList<SDevice> alUpdates = new ArrayList<SDevice>();
                     for ( CookerComponent cc : alCookers )
                     {
+                        Log.debug("Getting config updates from cooker: " + cc.getName());
                         alUpdates.addAll( cc.getConfigUpdates());
                     }
                     stokerService.updateConfiguration( alUpdates, new AsyncCallback<Integer>() {
@@ -253,11 +293,13 @@ public class StokerWeb implements EntryPoint
                         public void onFailure(Throwable caught)
                         {
                             // TODO Auto-generated method stub
+                            Log.error("updateConfiguration Failure");
 
                         }
 
                         public void onSuccess(Integer result)
                         {
+                            Log.info("Update Configuration success");
                             if ( result.intValue() == 1 )
                             {
                                 new GeneralMessageDialog( "Success", "New Settings saved to Stoker").center();
@@ -279,6 +321,7 @@ public class StokerWeb implements EntryPoint
                 public void onClick(ClickEvent event)
                 {
 
+                    Log.debug("Configuration button clicked");
                     stokerService
                             .getConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
 
@@ -291,14 +334,15 @@ public class StokerWeb implements EntryPoint
 
                                 public void onSuccess( HashMap<String, SDevice> result)
                                 {
+                                    Log.info("Opening configuration window");
                                     ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
                                     com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
                                     window.setTitle("Dragging a window");
-                                    window.setWidth(400);
-                                    window.setHeight(330);
+                                    window.setWidth(700);
+                                    window.setHeight(380);
                                     window.setCanDragReposition(true);
                                     window.setCanDragResize(true);
-                                    window.addItem(new sweb.client.Widgets.Configuration(arsd));
+                                    window.addItem(new sweb.client.widgets.Configuration(arsd));
 
                                     com.smartgwt.client.widgets.Canvas canvasMain = new com.smartgwt.client.widgets.Canvas();
                                     canvasMain.addChild(window);
@@ -314,6 +358,8 @@ public class StokerWeb implements EntryPoint
 
                 public void onClick(ClickEvent event)
                 {
+                    Log.info("Opening reports log chooser");
+                    Log.debug("Reports button clicked");
                     stokerService.getLogFileNames(new AsyncCallback<LogDir>() {
 
                         public void onFailure(Throwable caught)
@@ -331,7 +377,7 @@ public class StokerWeb implements EntryPoint
                                {
                                    if ( st != null)
                                    {
-                                       System.out.println("Selected Report: " + st);
+                                       Log.info("Generating Selected Report: " + st);
                                        String url = new String( GWT.getModuleBaseURL() + "report" + "?logFile=" + st );
                                        Window.open( url, "_blank", "enabled" );
                                        
@@ -353,8 +399,10 @@ public class StokerWeb implements EntryPoint
                 public void onClick(ClickEvent event)
                 {
                     //Integer loginStatus;
+                    Log.debug("Login button selected");
                     if ( LoginStatus.getInstance().getLoginStatus())
                     {
+                        Log.info("Calling logout");
                         stokerService.logout(new AsyncCallback<Void>() {
 
                             public void onFailure(Throwable caught)
@@ -365,6 +413,7 @@ public class StokerWeb implements EntryPoint
 
                             public void onSuccess(Void result)
                             {
+                                Log.info("Logout success");
                                 LoginStatus.getInstance().setLoginStatus(false);
                                 userLoggedIn(false );
                                 loginButton.setText(getLoginButtonText());
@@ -381,6 +430,7 @@ public class StokerWeb implements EntryPoint
                             {
                                 if ( st != null)
                                 {
+                                    Log.info("Login success");
                                     httpSessionID = st;
                                     userLoggedIn( true );
                                     loginButton.setText(getLoginButtonText());
@@ -391,6 +441,7 @@ public class StokerWeb implements EntryPoint
                                 }
                                 else
                                 {
+                                    Log.info("Login failure");
                                     userLoggedIn(false );
                                     loginButton.setText(getLoginButtonText());
                                 }
@@ -445,6 +496,7 @@ public class StokerWeb implements EntryPoint
 
             dp.add( wc, DockPanel.SOUTH );
             
+            Log.debug("Getting client properties");
             stokerService.getClientProperties(new AsyncCallback<HashMap<String,String>>() {
 
                 public void onFailure(Throwable caught)
@@ -455,6 +507,7 @@ public class StokerWeb implements EntryPoint
 
                 public void onSuccess(HashMap<String,String> hm)
                 {
+                    Log.debug("Client properties received");
                     properties = hm;
                     getStokerConfiguration();
                 }
@@ -490,35 +543,34 @@ public class StokerWeb implements EntryPoint
           stokerService.setupCallBack(new AsyncCallback<Void>() {
 
                     public void onSuccess(Void result) {
-                            System.out.println("connect Success");
+                            Log.info("setupCallBacked returned Success");
                             CometSerializer serializer = GWT.create(StokerCometSerializer.class);
                             CometClient client = new CometClient(GWT.getModuleBaseURL() + "comet",serializer, new CometListener() {
 
                               public void onConnected(int heartbeat)
                               {
-                                 System.out.println("Connected, heartbeat: " + heartbeat );
+                                 Log.info("Connected, heartbeat: " + heartbeat );
                               }
 
                               public void onDisconnected()
                               {
-                                 System.out.println("Disconnected");
+                                 Log.info("Disconnected");
                               }
 
                               public void onError(Throwable exception, boolean connected)
                               {
-                                 System.out.println("Error");
-                                 //exception.printStackTrace();
-                                 System.out.println("Connected: " + connected);
+                                 Log.error("Error from Comet");
+                                 
                               }
 
                               public void onHeartbeat()
                               {
-                                 System.out.println("Client, Heartbeat");
+                                 Log.info("Client, Heartbeat");
                               }
 
                               public void onRefresh()
                               {
-                                 System.out.println("Refresh");
+                                 Log.info("Comet Refresh");
                                }
 
                               public void onMessage(List<? extends Serializable> messages)
@@ -527,7 +579,7 @@ public class StokerWeb implements EntryPoint
                                 {
                                     if (message instanceof SDataPoint)
                                     {
-
+                                        Log.trace("Datapoint received, " + message.toString());
                                         SDataPoint sdp = (SDataPoint) message;
 
                                         for ( CookerComponent cc : alCookers )
@@ -547,10 +599,12 @@ public class StokerWeb implements EntryPoint
                                     }
                                     else if ( message instanceof ControllerEventLight)
                                     {
+                                        Log.debug("ControllerEventLight message received, " + message.toString());
                                         ControllerEventLight event = (ControllerEventLight) message;
                                         switch ( event.getEventType() )
                                         {
                                             case LOST_CONNECTION:   // Add this code
+                                                Log.info("Lost connection to Stoker");
                                                 eventState = EventTypeLight.LOST_CONNECTION;
                                                 for ( CookerComponent cc : alCookers )
                                                 {
@@ -559,6 +613,7 @@ public class StokerWeb implements EntryPoint
                                                 }
                                                 break;
                                             case CONNECTION_ESTABLISHED:
+                                                Log.info("Connection to Stoker established");
                                                 eventState = EventTypeLight.CONNECTION_ESTABLISHED;
                                                 if ( currentPage != LoadedPage.CONNECTED_PAGE )
                                                 {
@@ -572,6 +627,7 @@ public class StokerWeb implements EntryPoint
                                                 }
                                                 break;
                                             case CONFIG_UPDATE:
+                                                Log.info("Configuration update received from server");
                                                 if ( currentPage != LoadedPage.CONNECTED_PAGE )
                                                 {
                                                     initStokerPage(null);  // TODO: implement date
@@ -584,26 +640,31 @@ public class StokerWeb implements EntryPoint
                                     }
                                     else if ( message instanceof WeatherData )
                                     {
+                                        Log.info("New weather information received");
                                         if ( wc != null)
                                            wc.update((WeatherData) message);
                                     }
                                     else if ( message instanceof HardwareDeviceStatus )  // GET_STATUS
                                     {
+                                        Log.info("Hardware Device messaage");
                                         HardwareDeviceStatus hds = (HardwareDeviceStatus) message;
 
                                         if ( hds.getHardwareStatus() == Status.CONNECTED )
                                         {
+                                            Log.info("Hardware Status: Connected");
                                             initStokerPage(hds.getDate() );
                                             makeCallBackRequest( new CallBackRequestType( RequestType.FORCE_DATA_PUSH ));
                                         }
                                         else if ( hds.getHardwareStatus() == Status.DISCONNECTED )
                                         {
+                                            Log.info("Hardware status: Disconnected");
                                             initNotConnectedPage( hds.getDate() );
                                         }
 
                                     }
                                     else if ( message instanceof BrowserAlarmModel )
                                     {
+                                        Log.info("Browser Alarm Model message received");
                                         // TODO: Open Alarm Dialog.  
                                         //       Have quiet button and suppress for either:
                                         //       x minutes
@@ -623,6 +684,7 @@ public class StokerWeb implements EntryPoint
                                     }
                                     else if ( message instanceof LogEvent )
                                     {
+                                        Log.info("LogEvent message received");
                                        LogEvent le = (LogEvent) message;
                                        
                                        
@@ -630,16 +692,19 @@ public class StokerWeb implements EntryPoint
                                        {
                                            if ( cc.getName().compareTo(le.getCookerName()) == 0)
                                            {
+                                              Log.info("Log Event for Cooker: " + le.getCookerName() );
                                               switch ( le.getEventType() )
                                               {
                                                  case NONE:
                                                     break;
                                                  case NEW:
                                                     cc.logAdded();
+                                                    Log.info("Log added");
                                                     break;
                                                  case UPDATED:
                                                     break;
                                                  case DELETED:
+                                                     Log.info("Log deleted, " + message.toString());
                                                     cc.removeLog(((LogEvent) message).getLogName());
                                                     break;
                                                  default:       
@@ -656,13 +721,14 @@ public class StokerWeb implements EntryPoint
                                      */
                                     else
                                     {
-                                        System.out.println("unknown message "
+                                        Log.error("unknown message "
                                                 + message);
                                     }
                                 }
                                  // Draw here
                                 for ( CookerComponent cc : alCookers )
                                 {
+                                    Log.trace("Calling draw for cooker: " + cc.getName());
                                     cc.draw();
                                 }
                               }
@@ -674,6 +740,7 @@ public class StokerWeb implements EntryPoint
                     }
 
                     public void onFailure(Throwable caught) {
+                        Log.error("setupCallBacked returned Failure");
                        System.out.println("Failure");
                     }
             });
@@ -717,12 +784,13 @@ public class StokerWeb implements EntryPoint
 
     private void getStokerConfiguration()
     {
+        Log.debug("getStokerConfiguration()");
         stokerService.getConfiguration(new AsyncCallback<HashMap<String,SDevice>>() {
 
             public void onFailure(Throwable caught)
             {
                 caught.printStackTrace();
-                System.out.println("Client configuration failure");
+                Log.error("Client configuration failure");
 
             }
 
@@ -730,10 +798,14 @@ public class StokerWeb implements EntryPoint
             {
                 System.out.println("getConfiguration complete.");
 
+                Log.info("Successfully retreived stoker configuration from server");
                 createCookers( result, alCookers );
 
                 for ( CookerComponent cc : alCookers)
+                {
+                    Log.trace("Calling draw for cooker: " + cc.getName());
                    cc.draw();
+                }
 
             }
 
@@ -771,6 +843,7 @@ public class StokerWeb implements EntryPoint
 
     private void createCookers(HashMap<String,SDevice> result, ArrayList<CookerComponent> cooker )
     {
+        Log.debug("createCookers()");
        ArrayList<SDevice> alDevices = new ArrayList<SDevice>(result.values());
 
        Collections.sort(alDevices, new Comparator<SDevice>() {
@@ -798,12 +871,14 @@ public class StokerWeb implements EntryPoint
            });
 
        int iNumCookers = getNumCookers( alDevices );
+       Log.debug("Found [" + iNumCookers + "] cookers");
 
        int iCooker = 0;
        for ( int i = 1; i <= iNumCookers; i++ )
        {
            // Create a CookerComponent for each cooker.  This is a pit probe with a blower association
            CookerComponent cc = new CookerComponent(stokerService, properties);
+           
 
            vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
 
@@ -811,6 +886,7 @@ public class StokerWeb implements EntryPoint
 
            int numProbes = getNumProbesForCooker( i, alDevices );
            // Debug ***
+           Log.debug("numProbes is [" + numProbes + "]");
            if ( numProbes > 3 )
               cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
            
@@ -859,6 +935,7 @@ public class StokerWeb implements EntryPoint
 
     private void userLoggedIn( boolean b )
     {
+        Log.info("Setting login status: " + b );
         LoginStatus.getInstance().setLoginStatus(b);
 
         updateButton.setEnabled(b);

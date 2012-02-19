@@ -23,6 +23,8 @@
 
    <inherits name="com.smartgwt.SmartGwt"/>
 
+   <inherits name="com.allen_sauer.gwt.log.gwt-log-OFF" />
+    <extend-property name="log_level" values="DEBUG,WARN"/>
 
    <!--  This must be in the public directory when using the debugger --> 
   <!-- <stylesheet src="StokerWeb.css" />  -->
