@@ -55,7 +55,7 @@ public class Configuration extends VLayout
         hStack.setHeight(200); 
         hStack.setWidth100();
   
-        final ConfigurationTreeGrid myList1 = new ConfigurationTreeGrid();  
+        final ConfigurationListGrid myList1 = new ConfigurationListGrid();  
         myList1.setCanDragRecordsOut(true);  
         myList1.setCanAcceptDroppedRecords(true);  
         myList1.setCanReorderFields(true);  
@@ -66,25 +66,23 @@ public class Configuration extends VLayout
        myList1.setData(getData());  
         hStack.addMember(myList1);  
   
-        final ConfigurationTreeGrid myList2 = new ConfigurationTreeGrid();  
+        final ConfigurationListGrid myList2 = new ConfigurationListGrid();  
         myList2.setCanDragRecordsOut(true);  
         myList2.setCanAcceptDroppedRecords(true);  
         myList2.setCanReorderRecords(true);  
         
         Log.debug("Configuration: Created TreeGrids");
   
-        VStack vStack = new VStack(0);  
-        vStack.setWidth(170);  
-        vStack.setHeight(74);  
-        vStack.setLayoutAlign(Alignment.CENTER);  
+     
+        
   
         tabSet = new TabSet();
         tabSet.setTabBarPosition(Side.TOP);  
         tabSet.setWidth(400);  
         tabSet.setHeight(200);   
         
-        HLayout buttons = new HLayout();
-        buttons.setMembersMargin(15);
+        HLayout buttonLayout = new HLayout();
+     //   buttons.setMembersMargin(15);
         
         IButton addButton = new IButton("Add Cooker");
         addButton.addClickHandler(new ClickHandler() {  
@@ -94,8 +92,20 @@ public class Configuration extends VLayout
                 if (tabSet.getTabs().length == 0) {  
                     tabSet.selectTab(0);  
                 }  
+                Tab tTab = new Tab("Cooker1");  
+                tTab.setCanClose(true);  
+                tTab.setPane(new ConfigurationTabPane());  
+                tabSet.addTab(tTab);  
+                
             }  
         });  
+
+        buttonLayout.addMember(addButton);
+        VLayout tabPane = new VLayout();
+        tabPane.addMember( tabSet );
+    // tabPane.addMember( buttonLayout );
+        
+
         
        /* TransferImgButton rightImg = new TransferImgButton(TransferImgButton.RIGHT);  
         rightImg.addClickHandler(new ClickHandler() {  
@@ -114,10 +124,13 @@ public class Configuration extends VLayout
         vStack.addMember(leftImg);  
   */
         Log.debug("Configuration: adding members");
-        hStack.addMember(vStack);  
-        hStack.addMember(myList2);  
+       
+       // hStack.addMember(myList2);  
   
+        hStack.addMember( tabSet );
         this.addMember( hStack );
+        this.addMember( buttonLayout );
+        this.setAlign(Alignment.CENTER);
         hStack.draw();  
     
     }
@@ -127,18 +140,26 @@ public class Configuration extends VLayout
         
     }
     
-    /*private RecordList getData()
+    private RecordList getData()
     {
         RecordList rl = new RecordList();
         for ( SDevice sd : stokerConf )
         {
             DeviceType dt = sd.getProbeType();
+            String deviceTypeString;
+            if (( dt.toString().compareToIgnoreCase("PIT") == 0 ) || (dt.toString().compareToIgnoreCase("FOOD") == 0 )) 
+                deviceTypeString = "Temp";
+            else
+                deviceTypeString = "Blower";
             
-           ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), dt.toString());
+           ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), deviceTypeString );
+           
            rl.add( r );
+           
         }
         return rl;
-    }*/
+    }
+    /*
     private Tree getData()
     {
         Log.debug("Configuration getData()");
@@ -185,6 +206,9 @@ public class Configuration extends VLayout
               
                   blowerNode.setCanAcceptDrop(false);
                   rl.add( blowerNode, tn);
+                 
+                  
+             
               }
             
            
@@ -195,57 +219,6 @@ public class Configuration extends VLayout
         }
         return rl;
     }
-    
-    class ConfigurationTreeGrid extends TreeGrid
-    {
-        ConfigurationTreeGrid() {
-            setWidth(400);
-            setCellHeight(25);
-            setImageSize(16);
-            setShowEdges(true);
-            setBorder("0px");
-            setBodyStyleName("normal");
-            setShowHeader(true);
-            setLeaveScrollbarGap(false);
-            setEmptyMessage("<br><br>Drag &amp; drop probes here");
-            setCanReorderRecords(true);  
-            setCanAcceptDroppedRecords(true);  
-            setCanDragRecordsOut(true);  
-            
-            addNodeClickHandler(new NodeClickHandler() {           
-                     @Override
-                     public void onNodeClick(NodeClickEvent event) {
-                            String name = event.getNode().getName();
-                            SC.say("Node Clicked: " + name);
-                     }
-                 });
-
-
-                    
-            addDropHandler(new DropHandler() {
-
-                @Override
-                public void onDrop(DropEvent event)
-                
-                {
-                 
-                    Log.debug(event.getSource().getClass().toString());
-                    
-                }} );
-            //ListGridField partSrcField = new ListGridField("partSrc", 24);
-         //   partSrcField.setType(ListGridFieldType.IMAGE);
-          //  partSrcField.setImgDir("pieces/16/");
-
-            TreeGridField probeIDField = new TreeGridField("probeId",150);
-            TreeGridField probeTypeField = new TreeGridField("probeType", 80 );
-            TreeGridField probeNameField = new TreeGridField("probeName", 150);
-            probeNameField.setCanEdit( true );
-
-            setFields( probeNameField, probeTypeField, probeIDField );
-
-          //  setTrackerImage(new ImgProperties("pieces/24/cubes_all.png", 24, 24));
-        }
-        
-    }
+    */
     
 }

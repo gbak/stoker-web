@@ -80,6 +80,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.smartgwt.client.widgets.events.CloseClickEvent;
+import com.smartgwt.client.widgets.events.CloseClickHandler;
 
 
 
@@ -336,14 +338,24 @@ public class StokerWeb implements EntryPoint
                                 {
                                     Log.info("Opening configuration window");
                                     ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
-                                    com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
+                                    final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
                                     window.setTitle("Dragging a window");
-                                    window.setWidth(700);
+                                    window.setWidth(900);
                                     window.setHeight(380);
                                     window.setCanDragReposition(true);
                                     window.setCanDragResize(true);
                                     window.addItem(new sweb.client.widgets.Configuration(arsd));
+                                    window.centerInPage();
+                                    window.addCloseClickHandler(new CloseClickHandler() {  
 
+                                        @Override
+                                        public void onCloseClick(
+                                                CloseClickEvent event)
+                                        {
+                                            
+                                            window.destroy(); 
+                                        }  
+                                    });  
                                     com.smartgwt.client.widgets.Canvas canvasMain = new com.smartgwt.client.widgets.Canvas();
                                     canvasMain.addChild(window);
                                     canvasMain.draw();

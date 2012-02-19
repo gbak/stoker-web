@@ -4,7 +4,7 @@ import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.tree.TreeGridField;
 import com.smartgwt.client.widgets.tree.TreeNode;
 
-public class ProbeRecord extends TreeNode
+public class ProbeRecord extends ListGridRecord
 {
 
     public ProbeRecord()
