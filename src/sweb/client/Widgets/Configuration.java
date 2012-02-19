@@ -18,6 +18,7 @@ import com.smartgwt.client.types.DragDataAction;
 import com.smartgwt.client.types.GroupStartOpen;
 import com.smartgwt.client.types.Side;
 import com.smartgwt.client.types.TreeModelType;
+import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
@@ -31,6 +32,8 @@ import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeGridField;
 import com.smartgwt.client.widgets.tree.TreeNode;
+import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
+import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
 
 import com.smartgwt.client.widgets.events.ClickEvent;  
 import com.smartgwt.client.widgets.events.ClickHandler;
@@ -209,11 +212,23 @@ public class Configuration extends VLayout
             setCanAcceptDroppedRecords(true);  
             setCanDragRecordsOut(true);  
             
+            addNodeClickHandler(new NodeClickHandler() {           
+                     @Override
+                     public void onNodeClick(NodeClickEvent event) {
+                            String name = event.getNode().getName();
+                            SC.say("Node Clicked: " + name);
+                     }
+                 });
+
+
+                    
             addDropHandler(new DropHandler() {
 
                 @Override
                 public void onDrop(DropEvent event)
+                
                 {
+                 
                     Log.debug(event.getSource().getClass().toString());
                     
                 }} );
