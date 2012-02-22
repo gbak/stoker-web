@@ -1,31 +1,43 @@
 package sweb.client.widgets;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.smartgwt.client.types.AutoFitWidthApproach;
+import com.smartgwt.client.types.Autofit;
 import com.smartgwt.client.widgets.events.DropEvent;
 import com.smartgwt.client.widgets.events.DropHandler;
+import com.smartgwt.client.widgets.events.DropMoveEvent;
+import com.smartgwt.client.widgets.events.DropMoveHandler;
+import com.smartgwt.client.widgets.events.MouseOutEvent;
+import com.smartgwt.client.widgets.events.MouseOutHandler;
 import com.smartgwt.client.widgets.grid.ListGrid;
 import com.smartgwt.client.widgets.grid.ListGridField;
 
 public class ConfigurationListGrid extends ListGrid 
 {
-    public ConfigurationListGrid() 
+    public ConfigurationListGrid(String type) 
     {
-        setWidth(300);
+        setWidth(310);
         setCellHeight(25);
-        setImageSize(16);
+       // setImageSize(16);
         setShowEdges(true);
+        setEdgeSize(3);
         setBorder("0px");
         setBodyStyleName("normal");
         setShowHeader(true);
-        setLeaveScrollbarGap(false);
+        setLeaveScrollbarGap(true);
         setEmptyMessage("<br><br>Drag &amp; drop probes here");
         setCanReorderRecords(true);  
         setCanAcceptDroppedRecords(true);  
         setCanDragRecordsOut(true);  
         
-      //  setDragType("");
+        setDragType(type);
+        setDropTypes(type);
         
+        setScrollbarSize(8);
       
+       // setAutoFitData(Autofit.BOTH);   
+        setAutoFitWidthApproach(AutoFitWidthApproach. BOTH);
+        
       /*  addNodeClickHandler(new NodeClickHandler() {           
                  @Override
                  public void onNodeClick(NodeClickEvent event) {
@@ -46,11 +58,21 @@ public class ConfigurationListGrid extends ListGrid
                 Log.debug(event.getSource().getClass().toString());
                 
             }} );
-        //ListGridField partSrcField = new ListGridField("partSrc", 24);
-     //   partSrcField.setType(ListGridFieldType.IMAGE);
-      //  partSrcField.setImgDir("pieces/16/");
+        
+        
+        
+        addDropMoveHandler(new DropMoveHandler() {
 
-        ListGridField probeIDField = new ListGridField("probeId",120);
+            @Override
+            public void onDropMove(DropMoveEvent event)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+            
+        });
+
+        ListGridField probeIDField = new ListGridField("probeId",115);
         ListGridField probeTypeField = new ListGridField("probeType", 60 );
         ListGridField probeNameField = new ListGridField("probeName", 120);
         probeNameField.setCanEdit( true );

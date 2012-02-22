@@ -341,7 +341,7 @@ public class StokerWeb implements EntryPoint
                                     final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
                                     window.setTitle("Dragging a window");
                                     window.setWidth(900);
-                                    window.setHeight(380);
+                                    window.setHeight(420);
                                     window.setCanDragReposition(true);
                                     window.setCanDragResize(true);
                                     window.addItem(new sweb.client.widgets.Configuration(arsd));

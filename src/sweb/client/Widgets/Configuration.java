@@ -51,35 +51,42 @@ public class Configuration extends VLayout
         Log.debug("Configuration constructor");
         stokerConf = arsd;
         
-        HStack hStack = new HStack();
-        hStack.setHeight(200); 
+        HLayout hStack = new HLayout();
+       // hStack.setHeight(400); 
+        hStack.setHeight100();
         hStack.setWidth100();
+        hStack.setAlign(Alignment.CENTER);
   
-        final ConfigurationListGrid myList1 = new ConfigurationListGrid();  
-        myList1.setCanDragRecordsOut(true);  
-        myList1.setCanAcceptDroppedRecords(true);  
-        myList1.setCanReorderFields(true);  
-        myList1.setDragDataAction(DragDataAction.MOVE); 
-   //     myList1.setGroupStartOpen(GroupStartOpen.ALL);  
-   //     myList1.setGroupByField("probeType"); 
+        VLayout sourceProbes = new VLayout();
         
-       myList1.setData(getData());  
-        hStack.addMember(myList1);  
+        final ConfigurationListGrid tempProbeList = new ConfigurationListGrid("temp");  
+        tempProbeList.setCanDragRecordsOut(true);  
+        tempProbeList.setCanAcceptDroppedRecords(true);  
+        tempProbeList.setCanReorderFields(true);  
+        tempProbeList.setDragDataAction(DragDataAction.MOVE); 
+
+        
+       tempProbeList.setData(getData("temp"));  
+          
   
-        final ConfigurationListGrid myList2 = new ConfigurationListGrid();  
-        myList2.setCanDragRecordsOut(true);  
-        myList2.setCanAcceptDroppedRecords(true);  
-        myList2.setCanReorderRecords(true);  
+        final ConfigurationListGrid blowerProbeList = new ConfigurationListGrid("blower");  
+        blowerProbeList.setCanDragRecordsOut(true);  
+        blowerProbeList.setCanAcceptDroppedRecords(true);  
+        blowerProbeList.setCanReorderRecords(true);  
+        blowerProbeList.setData(getData("blower"));
+        
         
         Log.debug("Configuration: Created TreeGrids");
   
+        sourceProbes.addMember( tempProbeList );
+        sourceProbes.addMember( blowerProbeList );
      
-        
+        hStack.addMember(sourceProbes);
   
         tabSet = new TabSet();
         tabSet.setTabBarPosition(Side.TOP);  
         tabSet.setWidth(400);  
-        tabSet.setHeight(200);   
+        tabSet.setHeight(350);   
         
         HLayout buttonLayout = new HLayout();
      //   buttons.setMembersMargin(15);
@@ -128,8 +135,9 @@ public class Configuration extends VLayout
        // hStack.addMember(myList2);  
   
         hStack.addMember( tabSet );
+        hStack.addMember( buttonLayout );
         this.addMember( hStack );
-        this.addMember( buttonLayout );
+        //this.addMember( buttonLayout );
         this.setAlign(Alignment.CENTER);
         hStack.draw();  
     
@@ -140,7 +148,7 @@ public class Configuration extends VLayout
         
     }
     
-    private RecordList getData()
+    private RecordList getData(String type)
     {
         RecordList rl = new RecordList();
         for ( SDevice sd : stokerConf )
@@ -151,10 +159,13 @@ public class Configuration extends VLayout
                 deviceTypeString = "Temp";
             else
                 deviceTypeString = "Blower";
-            
-           ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), deviceTypeString );
            
-           rl.add( r );
+            if ( type.compareToIgnoreCase(deviceTypeString) == 0)
+            {
+               ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), deviceTypeString );
+           
+               rl.add( r );
+            }
            
         }
         return rl;
