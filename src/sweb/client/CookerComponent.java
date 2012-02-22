@@ -705,6 +705,11 @@ public class CookerComponent extends Composite
         logListBox.clear();
         for ( LogItem l : li )
         {
+            if ( l.getCookerName() == null || strCookerName == null )
+            {
+                // TODO: show cooker missing error
+                return;
+            }
             if ( l.getCookerName().compareTo(strCookerName) == 0)
             {
                hmLogItems.put( l.getLogName(), l );

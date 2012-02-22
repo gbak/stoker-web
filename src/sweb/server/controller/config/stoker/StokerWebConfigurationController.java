@@ -38,6 +38,7 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
@@ -291,6 +292,11 @@ public class StokerWebConfigurationController extends ConfigurationController
       {
          SDevice sd = sc.getDevice(s);
          String strName = StokerWebProperties.getInstance().getProperty(s);
+         if ( strName == null )
+         {
+             logger.warn("Cooker missing name in properties file: " + sd.getID());
+             strName = sd.getID();
+         }
          hm.put( new Integer(sd.getCookerNum()), strName);
       }
 

@@ -25,15 +25,14 @@ public class ConfigurationListGrid extends ListGrid
         setBodyStyleName("normal");
         setShowHeader(true);
         setLeaveScrollbarGap(true);
-        setEmptyMessage("<br><br>Drag &amp; drop probes here");
+       // setEmptyMessage("<br><br>Drag &amp; drop probes here");
         setCanReorderRecords(true);  
         setCanAcceptDroppedRecords(true);  
         setCanDragRecordsOut(true);  
         
         setDragType(type);
         setDropTypes(type);
-        
-        setScrollbarSize(8);
+       
       
        // setAutoFitData(Autofit.BOTH);   
         setAutoFitWidthApproach(AutoFitWidthApproach. BOTH);

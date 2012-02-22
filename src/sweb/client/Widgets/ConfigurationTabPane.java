@@ -1,5 +1,8 @@
 package sweb.client.widgets;
 
+import java.util.ArrayList;
+
+import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.DropEvent;
 import com.smartgwt.client.widgets.events.DropHandler;
@@ -7,18 +10,31 @@ import com.smartgwt.client.widgets.events.DropMoveEvent;
 import com.smartgwt.client.widgets.events.DropMoveHandler;
 import com.smartgwt.client.widgets.events.MouseOutEvent;
 import com.smartgwt.client.widgets.events.MouseOutHandler;
+import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.layout.VStack;
 
 public class ConfigurationTabPane extends VLayout
 {
 
+    VLayout vp = new VLayout();
+    private final ConfigurationListGrid pitProbeRecord;
+    private final ConfigurationListGrid blowerProbe;
+    private final ConfigurationListGrid tempProbes;
+    
     ConfigurationTabPane()
     {
+        vp.setAlign(VerticalAlignment.TOP);
+        vp.setHeight100();
+        vp.setWidth100();
+        vp.setLayoutMargin(5);
+        vp.setMembersMargin(5);
+        
         Label pit = new Label("Pit Probe");
-        final ConfigurationListGrid pitProbeRecord = new ConfigurationListGrid("temp");
+        pitProbeRecord = new ConfigurationListGrid("temp");
 
         pitProbeRecord.setShowHeader(false);
+        pitProbeRecord.setHeight(40);
         
         pitProbeRecord.addDropHandler(new DropHandler() {
             @Override
@@ -43,13 +59,14 @@ public class ConfigurationTabPane extends VLayout
             
         });
 
-        this.addMember(pit);
-        this.addMember(pitProbeRecord);
+        vp.addMember(pit);
+        vp.addMember(pitProbeRecord);
 
         Label blower = new Label("Blower: ");
-        final ConfigurationListGrid blowerProbe = new ConfigurationListGrid("blower");
+        blowerProbe = new ConfigurationListGrid("blower");
 
         blowerProbe.setShowHeader(false);
+        blowerProbe.setHeight(40);
         
         blowerProbe.addDropHandler(new DropHandler() {
             @Override
@@ -74,25 +91,40 @@ public class ConfigurationTabPane extends VLayout
             
         });
         
-        this.addMember(blower);
-        this.addMember(blowerProbe);
+        Label food = new Label("Food Probes: ");
+        tempProbes = new ConfigurationListGrid("temp");
+
+        tempProbes.setShowHeader(false);
         
         
-        /*
-         * TextItem usernameItem = new TextItem();
-         * usernameItem.setTitle("Username"); usernameItem.setRequired(true);
-         * usernameItem.setDefaultValue("bob");
-         * 
-         * TextItem emailItem = new TextItem(); emailItem.setTitle("Email");
-         * emailItem.setRequired(true);
-         * emailItem.setDefaultValue("bob@isomorphic.com");
-         * 
-         * PasswordItem passwordItem = new PasswordItem();
-         * passwordItem.setTitle("Password"); passwordItem.setRequired(true);
-         * 
-         * PasswordItem password2Item = new PasswordItem();
-         * password2Item.setTitle("Password again");
-         * password2Item.setRequired(true); password2Item.setType("password");
-         */
+        vp.addMember(blower);
+        vp.addMember(blowerProbe);
+        
+        vp.addMember(food);
+        vp.addMember( tempProbes );
+        
+        this.addMember( vp );
     }
+    
+    public ArrayList<String> onPaneClose()
+    {
+        ArrayList<String> discardList = new ArrayList<String>();
+        
+        if ( pitProbeRecord.getTotalRows() > 0)
+        {
+           ListGridRecord lg = pitProbeRecord.getRecord(0);
+           discardList.add(lg.getAttribute("probeID"));
+        }
+        
+        if ( blowerProbe.getTotalRows() > 0 )
+        {
+            ListGridRecord lg = pitProbeRecord.getRecord(0);
+            discardList.add(lg.getAttribute("probeID"));
+        }
+        
+        
+        return discardList;
+    }
+    
+    
 }
