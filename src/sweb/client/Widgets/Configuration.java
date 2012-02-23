@@ -11,6 +11,7 @@ import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerProbe;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.Composite;
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.Alignment;
@@ -28,6 +29,8 @@ import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.layout.VStack;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
+import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
+import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 import com.smartgwt.client.widgets.tree.Tree;
 import com.smartgwt.client.widgets.tree.TreeGrid;
 import com.smartgwt.client.widgets.tree.TreeGridField;
@@ -46,25 +49,31 @@ public class Configuration extends VLayout
     private ArrayList<SDevice> stokerConf = null;
     private TabSet tabSet = null;
     
+    
     public Configuration(ArrayList<SDevice> arsd)
     {
         Log.debug("Configuration constructor");
         stokerConf = arsd;
         
-        HLayout hStack = new HLayout();
+        HLayout hStack = new HLayout(20);
        // hStack.setHeight(400); 
         hStack.setHeight100();
         hStack.setWidth100();
         hStack.setAlign(Alignment.CENTER);
+        hStack.setMargin(10);
   
-        VLayout sourceProbes = new VLayout();
+        VLayout sourceProbes = new VLayout(10);
         
         final ConfigurationListGrid tempProbeList = new ConfigurationListGrid("temp");  
         tempProbeList.setCanDragRecordsOut(true);  
         tempProbeList.setCanAcceptDroppedRecords(true);  
         tempProbeList.setCanReorderFields(true);  
         tempProbeList.setDragDataAction(DragDataAction.MOVE); 
+        
+      //  tempProbeList.setMargin(10);  // crushes the box and enables the scroll
+        
 
+        
         
        tempProbeList.setData(getData("temp"));  
           
@@ -87,6 +96,7 @@ public class Configuration extends VLayout
         tabSet.setTabBarPosition(Side.TOP);  
         tabSet.setWidth(400);  
         tabSet.setHeight(350);   
+  
         
         HLayout buttonLayout = new HLayout();
      //   buttons.setMembersMargin(15);
@@ -96,10 +106,12 @@ public class Configuration extends VLayout
             public void onClick(ClickEvent event) 
             {  
                 
+                
                 if (tabSet.getTabs().length == 0) {  
                     tabSet.selectTab(0);  
                 }  
-                Tab tTab = new Tab("Cooker1");  
+                Tab tTab = new Tab("Cooker");  
+                
                 tTab.setCanClose(true);  
                 tTab.setPane(new ConfigurationTabPane());  
                 tabSet.addTab(tTab);  
@@ -133,6 +145,26 @@ public class Configuration extends VLayout
         Log.debug("Configuration: adding members");
        
        // hStack.addMember(myList2);  
+        tabSet.addCloseClickHandler(new CloseClickHandler() {
+
+            @Override
+            public void onCloseClick(TabCloseClickEvent event)
+            {
+                ConfigurationTabPane ctp = (ConfigurationTabPane) event.getTab().getPane();
+                for ( ProbeRecord pr : ctp.onPaneClose())
+                {
+                    if( pr.getAttribute("probeType").compareToIgnoreCase("temp") == 0)
+                    {
+                        tempProbeList.addData( pr );
+                    }
+                    else
+                    {
+                        blowerProbeList.addData( pr );
+                    }
+                }
+            }
+            
+        });
   
         hStack.addMember( tabSet );
         hStack.addMember( buttonLayout );

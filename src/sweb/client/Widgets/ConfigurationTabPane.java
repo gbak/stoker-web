@@ -2,6 +2,7 @@ package sweb.client.widgets;
 
 import java.util.ArrayList;
 
+import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.VerticalAlignment;
 import com.smartgwt.client.widgets.Label;
 import com.smartgwt.client.widgets.events.DropEvent;
@@ -10,6 +11,10 @@ import com.smartgwt.client.widgets.events.DropMoveEvent;
 import com.smartgwt.client.widgets.events.DropMoveHandler;
 import com.smartgwt.client.widgets.events.MouseOutEvent;
 import com.smartgwt.client.widgets.events.MouseOutHandler;
+import com.smartgwt.client.widgets.form.DynamicForm;
+import com.smartgwt.client.widgets.form.fields.TextItem;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.grid.ListGridRecord;
 import com.smartgwt.client.widgets.layout.VLayout;
 import com.smartgwt.client.widgets.layout.VStack;
@@ -30,7 +35,19 @@ public class ConfigurationTabPane extends VLayout
         vp.setLayoutMargin(5);
         vp.setMembersMargin(5);
         
+        DynamicForm profileForm = new DynamicForm();  
+        TextItem nameTextItem = new TextItem();  
+        nameTextItem.setTitle("Cooker Name");  
+        nameTextItem.addChangedHandler(new ChangedHandler() {  
+            public void onChanged(ChangedEvent event) {  
+           //     String newTitle = (event.getValue() == null ? "" : event.getValue() + "'s ") + "Preferences";  
+          //      topTabSet.setTabTitle(preferencesTab, newTitle);  
+            }  
+        });  
+        
         Label pit = new Label("Pit Probe");
+        pit.setHeight(25);
+        pit.setWidth100();
         pitProbeRecord = new ConfigurationListGrid("temp");
 
         pitProbeRecord.setShowHeader(false);
@@ -63,6 +80,8 @@ public class ConfigurationTabPane extends VLayout
         vp.addMember(pitProbeRecord);
 
         Label blower = new Label("Blower: ");
+        blower.setHeight(25);
+        blower.setWidth100();
         blowerProbe = new ConfigurationListGrid("blower");
 
         blowerProbe.setShowHeader(false);
@@ -92,9 +111,12 @@ public class ConfigurationTabPane extends VLayout
         });
         
         Label food = new Label("Food Probes: ");
+        food.setHeight(25);
+        food.setWidth100();
         tempProbes = new ConfigurationListGrid("temp");
 
         tempProbes.setShowHeader(false);
+        tempProbes.setHeight(120);
         
         
         vp.addMember(blower);
@@ -106,20 +128,31 @@ public class ConfigurationTabPane extends VLayout
         this.addMember( vp );
     }
     
-    public ArrayList<String> onPaneClose()
+    public ArrayList<ProbeRecord> onPaneClose()
     {
-        ArrayList<String> discardList = new ArrayList<String>();
+        ArrayList<ProbeRecord> discardList = new ArrayList<ProbeRecord>();
         
         if ( pitProbeRecord.getTotalRows() > 0)
         {
-           ListGridRecord lg = pitProbeRecord.getRecord(0);
-           discardList.add(lg.getAttribute("probeID"));
+           ProbeRecord lg = (ProbeRecord)pitProbeRecord.getRecord(0);
+           discardList.add(lg);
         }
         
         if ( blowerProbe.getTotalRows() > 0 )
         {
-            ListGridRecord lg = pitProbeRecord.getRecord(0);
-            discardList.add(lg.getAttribute("probeID"));
+            //ListGridRecord lg = pitProbeRecord.getRecord(0);
+           // discardList.add(lg.getAttribute("probeID"));
+            ProbeRecord lg = (ProbeRecord)blowerProbe.getRecord(0);
+             discardList.add(lg);
+        }
+        
+        if ( tempProbes.getTotalRows() > 0 )
+        {
+            for ( int i = 0; i < tempProbes.getTotalRows(); i++ )
+            {
+                ProbeRecord lg = (ProbeRecord)tempProbes.getRecord(i);
+                discardList.add(lg);
+            }
         }
         
         
