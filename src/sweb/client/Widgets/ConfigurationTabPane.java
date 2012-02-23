@@ -27,7 +27,7 @@ public class ConfigurationTabPane extends VLayout
     private final ConfigurationListGrid blowerProbe;
     private final ConfigurationListGrid tempProbes;
     
-    ConfigurationTabPane()
+    ConfigurationTabPane(ChangedHandler tabChangedHandler )
     {
         vp.setAlign(VerticalAlignment.TOP);
         vp.setHeight100();
@@ -35,15 +35,11 @@ public class ConfigurationTabPane extends VLayout
         vp.setLayoutMargin(5);
         vp.setMembersMargin(5);
         
-        DynamicForm profileForm = new DynamicForm();  
+        DynamicForm tabNameForm = new DynamicForm();  
         TextItem nameTextItem = new TextItem();  
         nameTextItem.setTitle("Cooker Name");  
-        nameTextItem.addChangedHandler(new ChangedHandler() {  
-            public void onChanged(ChangedEvent event) {  
-           //     String newTitle = (event.getValue() == null ? "" : event.getValue() + "'s ") + "Preferences";  
-          //      topTabSet.setTabTitle(preferencesTab, newTitle);  
-            }  
-        });  
+        nameTextItem.addChangedHandler(tabChangedHandler);  
+        tabNameForm.setFields( nameTextItem );
         
         Label pit = new Label("Pit Probe");
         pit.setHeight(25);
@@ -76,6 +72,7 @@ public class ConfigurationTabPane extends VLayout
             
         });
 
+        vp.addMember( tabNameForm );
         vp.addMember(pit);
         vp.addMember(pitProbeRecord);
 
@@ -116,7 +113,7 @@ public class ConfigurationTabPane extends VLayout
         tempProbes = new ConfigurationListGrid("temp");
 
         tempProbes.setShowHeader(false);
-        tempProbes.setHeight(120);
+        tempProbes.setHeight(115);
         
         
         vp.addMember(blower);

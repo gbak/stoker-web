@@ -83,7 +83,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 
-
+import com.smartgwt.client.types.HeaderControls;
 
 public class StokerWeb implements EntryPoint
 {
@@ -339,21 +339,33 @@ public class StokerWeb implements EntryPoint
                                     Log.info("Opening configuration window");
                                     ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
                                     final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
-                                    window.setTitle("Dragging a window");
+                                    window.setTitle("Cooker Configuration");
+                                   // window.setHeaderControls(HeaderControls.CLOSE_BUTTON );
                                     window.setWidth(900);
                                     window.setHeight(420);
                                     window.setCanDragReposition(true);
                                     window.setCanDragResize(true);
                                     window.addItem(new sweb.client.widgets.Configuration(arsd));
                                     window.centerInPage();
+                                  //  window.setShowMinimizeButton(false);
+                                   
                                     window.addCloseClickHandler(new CloseClickHandler() {  
 
                                         @Override
                                         public void onCloseClick(
                                                 CloseClickEvent event)
                                         {
-                                            
-                                            window.destroy(); 
+                                           
+                                           // window.destroy(); 
+                                            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+
+                                                @Override
+                                                public void execute() {
+                                                window.destroy();
+
+                                                }
+                                                });
+
                                         }  
                                     });  
                                     com.smartgwt.client.widgets.Canvas canvasMain = new com.smartgwt.client.widgets.Canvas();

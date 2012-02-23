@@ -1,47 +1,26 @@
 package sweb.client.widgets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import sweb.server.controller.StokerConfiguration;
-import sweb.server.controller.StokerWebConfiguration;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.stoker.StokerFan;
-import sweb.shared.model.stoker.StokerProbe;
 
 import com.allen_sauer.gwt.log.client.Log;
-import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.user.client.ui.Composite;
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.DragDataAction;
-import com.smartgwt.client.types.GroupStartOpen;
 import com.smartgwt.client.types.Side;
-import com.smartgwt.client.types.TreeModelType;
-import com.smartgwt.client.util.SC;
 import com.smartgwt.client.widgets.IButton;
-import com.smartgwt.client.widgets.grid.ListGrid;
-import com.smartgwt.client.widgets.grid.ListGridField;
+import com.smartgwt.client.widgets.events.ClickEvent;
+import com.smartgwt.client.widgets.events.ClickHandler;
+import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
+import com.smartgwt.client.widgets.form.fields.events.ChangedHandler;
 import com.smartgwt.client.widgets.layout.HLayout;
-import com.smartgwt.client.widgets.layout.HStack;
 import com.smartgwt.client.widgets.layout.VLayout;
-import com.smartgwt.client.widgets.layout.VStack;
 import com.smartgwt.client.widgets.tab.Tab;
 import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
-import com.smartgwt.client.widgets.tree.Tree;
-import com.smartgwt.client.widgets.tree.TreeGrid;
-import com.smartgwt.client.widgets.tree.TreeGridField;
-import com.smartgwt.client.widgets.tree.TreeNode;
-import com.smartgwt.client.widgets.tree.events.NodeClickEvent;
-import com.smartgwt.client.widgets.tree.events.NodeClickHandler;
-
-import com.smartgwt.client.widgets.events.ClickEvent;  
-import com.smartgwt.client.widgets.events.ClickHandler;
-import com.smartgwt.client.widgets.events.DropEvent;
-import com.smartgwt.client.widgets.events.DropHandler;
 
 public class Configuration extends VLayout
 {
@@ -95,7 +74,7 @@ public class Configuration extends VLayout
         tabSet = new TabSet();
         tabSet.setTabBarPosition(Side.TOP);  
         tabSet.setWidth(400);  
-        tabSet.setHeight(350);   
+        tabSet.setHeight100();   
   
         
         HLayout buttonLayout = new HLayout();
@@ -110,10 +89,19 @@ public class Configuration extends VLayout
                 if (tabSet.getTabs().length == 0) {  
                     tabSet.selectTab(0);  
                 }  
-                Tab tTab = new Tab("Cooker");  
+                final Tab tTab = new Tab("Cooker");  
                 
                 tTab.setCanClose(true);  
-                tTab.setPane(new ConfigurationTabPane());  
+                
+                ChangedHandler tabTitleChangeHandler = new ChangedHandler() {  
+                    public void onChanged(ChangedEvent event) {  
+                        String newTitle = (event.getValue() == null ? "" : (String)event.getValue());  
+                       tabSet.setTabTitle(tTab, newTitle);  
+                        
+                    }  
+                };
+                
+                tTab.setPane(new ConfigurationTabPane(tabTitleChangeHandler));  
                 tabSet.addTab(tTab);  
                 
             }  
