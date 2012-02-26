@@ -301,22 +301,10 @@ public class MainPage
                                         public void onCloseClick(
                                                 CloseClickEvent event)
                                         {
-                                           
-                                           // window.destroy(); 
-                                            Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-                                                @Override
-                                                public void execute() {
-                                                window.destroy();
-
-                                                }
-                                                });
-
+                                           window.destroy(); 
                                         }  
                                     });  
-                                    com.smartgwt.client.widgets.Canvas canvasMain = new com.smartgwt.client.widgets.Canvas();
-                                    canvasMain.addChild(window);
-                                    canvasMain.draw();
+                                    window.draw();
                                 }
 
                             });
