@@ -18,14 +18,12 @@ public class ConfigurationListGrid extends ListGrid
     {
         setWidth(310);
         setCellHeight(25);
-       // setImageSize(16);
         setShowEdges(true);
         setEdgeSize(3);
         setBorder("0px");
         setBodyStyleName("normal");
         setShowHeader(true);
         setLeaveScrollbarGap(true);
-       // setEmptyMessage("<br><br>Drag &amp; drop probes here");
         setCanReorderRecords(true);  
         setCanAcceptDroppedRecords(true);  
         setCanDragRecordsOut(true);  
@@ -36,29 +34,15 @@ public class ConfigurationListGrid extends ListGrid
       
        // setAutoFitData(Autofit.BOTH);   
         setAutoFitWidthApproach(AutoFitWidthApproach. BOTH);
-        
-      /*  addNodeClickHandler(new NodeClickHandler() {           
-                 @Override
-                 public void onNodeClick(NodeClickEvent event) {
-                        String name = event.getNode().getName();
-                        SC.say("Node Clicked: " + name);
-                 }
-             });
-
-*/
-                
+            
         addDropHandler(new DropHandler() {
 
             @Override
             public void onDrop(DropEvent event)
-            
             {
-             
                 Log.debug(event.getSource().getClass().toString());
                 
             }} );
-        
-        
         
         addDropMoveHandler(new DropMoveHandler() {
 
@@ -76,9 +60,9 @@ public class ConfigurationListGrid extends ListGrid
         ListGridField probeNameField = new ListGridField("probeName", 120);
         probeNameField.setCanEdit( true );
 
-        setFields( probeNameField, probeTypeField, probeIDField );
-
-      //  setTrackerImage(new ImgProperties("pieces/24/cubes_all.png", 24, 24));
+        ListGridField[] lgf = new ListGridField[] { probeNameField, probeTypeField, probeIDField };
+        setDefaultFields( lgf );
+        
     }
     
 }

@@ -77,7 +77,7 @@ public class Configuration extends VLayout
         tabSet.setHeight100();   
   
         
-        HLayout buttonLayout = new HLayout();
+        VLayout buttonLayout = new VLayout(10);
      //   buttons.setMembersMargin(15);
         
         IButton addButton = new IButton("Add Cooker");
@@ -108,28 +108,35 @@ public class Configuration extends VLayout
         });  
 
         buttonLayout.addMember(addButton);
+        
+        IButton updateButton = new IButton("Update");
+        addButton.addClickHandler(new ClickHandler() {  
+            public void onClick(ClickEvent event) 
+            {  
+                
+                  
+                
+            }  
+        });  
+        
+        buttonLayout.addMember(updateButton);
+
+        IButton cancelButton = new IButton("Cancel");
+        addButton.addClickHandler(new ClickHandler() {  
+            public void onClick(ClickEvent event) 
+            {  
+                
+
+            }  
+        });  
+        
+        buttonLayout.addMember(cancelButton);
+
+        
         VLayout tabPane = new VLayout();
         tabPane.addMember( tabSet );
     // tabPane.addMember( buttonLayout );
-        
 
-        
-       /* TransferImgButton rightImg = new TransferImgButton(TransferImgButton.RIGHT);  
-        rightImg.addClickHandler(new ClickHandler() {  
-            public void onClick(ClickEvent event) {  
-                myList2.transferSelectedData(myList1);  
-            }  
-        });  
-        vStack.addMember(rightImg);  
-  
-        TransferImgButton leftImg = new TransferImgButton(TransferImgButton.LEFT);  
-        leftImg.addClickHandler(new ClickHandler() {  
-            public void onClick(ClickEvent event) {  
-                myList1.transferSelectedData(myList2);  
-            }  
-        });  
-        vStack.addMember(leftImg);  
-  */
         Log.debug("Configuration: adding members");
        
        // hStack.addMember(myList2);  
