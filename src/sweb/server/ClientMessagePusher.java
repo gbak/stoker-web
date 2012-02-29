@@ -7,10 +7,11 @@ import java.util.concurrent.ConcurrentMap;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
-
 import net.zschech.gwt.comet.server.CometServlet;
 import net.zschech.gwt.comet.server.CometSession;
+
+import org.apache.log4j.Logger;
+
 import sweb.server.controller.Controller;
 
 public class ClientMessagePusher
@@ -99,4 +100,5 @@ public class ClientMessagePusher
         cometSession.enqueue(message);
         
     }
+   
 }

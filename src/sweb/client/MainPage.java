@@ -503,8 +503,9 @@ public class MainPage
                     public void onSuccess(Void result) {
                             Log.info("setupCallBacked returned Success");
                             CometSerializer serializer = GWT.create(StokerCometSerializer.class);
-                            CometClient client = new CometClient(GWT.getModuleBaseURL() + "comet",serializer, new CometListener() {
-
+                            //CometClient client = new CometClient(GWT.getModuleBaseURL() + "comet",serializer, new CometListener() {
+                             CometClient client = new CometClient (GWT.getModuleBaseURL() + "comet" + "/" + Math.random (), serializer, new CometListener() {
+          
                               public void onConnected(int heartbeat)
                               {
                                  Log.info("Connected, heartbeat: " + heartbeat );

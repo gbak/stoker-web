@@ -18,12 +18,19 @@
 
 package sweb.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Timer;
 
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -69,14 +76,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
  * The server side implementation of the RPC service.
  */
-/**
- * @author gary.bak
- *
- */
-/**
- * @author gary.bak
- *
- */
 @SuppressWarnings("serial")
 public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         StokerCoreService, HttpSessionListener 
@@ -107,6 +106,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public void setupCallBack()
     {
        HttpSession httpSession = getThreadLocalRequest().getSession();
+      // CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
 
        ClientMessagePusher.getInstance().addSession( httpSession );
        
@@ -442,6 +442,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     {
         logger.info("Http Session Destroyed");
         HttpSession hs = arg0.getSession();
+      //  CustomSession httpSession = (CustomSession)arg0.getSession();
+        
         ClientMessagePusher.getInstance().removeSession(hs);
       //  removeControllerEvents();  // Is this correct?  gbak
 
@@ -467,7 +469,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private void getStatus()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
-
+      //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         Status s = null;
         if ( Controller.getInstance().isDataControllerReady() )
             s = Status.CONNECTED;
@@ -484,6 +486,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private void forceLatestDataPush()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
+      //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         
         for ( SDataPoint sdp : DataOrchestrator.getInstance().getLastDPs())
            ClientMessagePusher.getInstance().sessionPush( httpSession, sdp);
@@ -514,6 +517,72 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         
         return StokerWebProperties.getInstance().getClientProperties();
     }
+    
+    
+    
+    
+    private static class CustomSession extends SessionWrapper {
+        public CustomSession (HttpSession delegate, String prefix) {
+            super (delegate);
+            this.prefix = prefix;
+        }
+            
+        @Override
+        public Object getAttribute (String name) {
+            return super.getAttribute (this.prefix + "_" + name);
+        }
+            
+        @Override
+        public Enumeration<String> getAttributeNames () {
+            List<String> names = new ArrayList<String> ();
+            for (@SuppressWarnings("unchecked")
+            Enumeration<String> e = super.getAttributeNames (); e.hasMoreElements (); ) {
+                String name = e.nextElement ();
+                if (name.startsWith (this.prefix)) {
+                    names.add (name);
+                }
+            }
+                
+            final Iterator<String> i = names.iterator ();
+            return new Enumeration<String> () {
+                @Override
+                public boolean hasMoreElements () {
+                    return i.hasNext ();
+                }
 
+                @Override
+                public String nextElement () {
+                    return i.next ();
+                }
+            };
+        }
+            
+        @Override
+        public void removeAttribute (String name) {
+            super.removeAttribute (this.prefix + "_" + name);
+        }
+            
+        private String prefix;
+    }
+        
+    private class CustomSessionRequest extends HttpServletRequestWrapper {
+        public CustomSessionRequest (HttpServletRequest delegate) {
+            super (delegate);
+        }
+            
+        @Override
+        public HttpSession getSession (boolean create) {
+            HttpSession session = super.getSession (create);
+            if (null == session && !create) {
+                return null;
+            }
+            return new CustomSession (session, this.getPathInfo ());
+        }
+    }
+        
+    @Override
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doGet (new CustomSessionRequest (request), response);
+    }
     
 }

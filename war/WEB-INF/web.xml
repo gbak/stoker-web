@@ -40,6 +40,7 @@
   <servlet-mapping>
     <servlet-name>stokerComet</servlet-name>
     <url-pattern>/stokerweb/comet</url-pattern>
+    <url-pattern>/stokerweb/comet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>reportServlet</servlet-name>
@@ -52,6 +53,8 @@
      <servlet-class>sweb.server.StokerInit</servlet-class>
      <load-on-startup>1</load-on-startup>
   </servlet>
+  
+  
   
   <!-- Default page to serve -->
   <welcome-file-list>
