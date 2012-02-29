@@ -75,8 +75,7 @@ public class MainPage
             + "connection and try again.";
 
 
-    private final StokerCoreServiceAsync stokerService = GWT
-            .create(StokerCoreService.class);
+    private final StokerCoreServiceAsync stokerService = GWT.create(StokerCoreService.class);
 
     private static enum LoadedPage { NONE, CONNECTED_PAGE, NOT_CONNECTED_PAGE };
 
@@ -504,7 +503,7 @@ public class MainPage
                             Log.info("setupCallBacked returned Success");
                             CometSerializer serializer = GWT.create(StokerCometSerializer.class);
                             //CometClient client = new CometClient(GWT.getModuleBaseURL() + "comet",serializer, new CometListener() {
-                             CometClient client = new CometClient (GWT.getModuleBaseURL() + "comet" + "/" + Math.random (), serializer, new CometListener() {
+                             final CometClient client = new CometClient (GWT.getModuleBaseURL() + "comet" + "/" + Math.random (), serializer, new CometListener() {
           
                               public void onConnected(int heartbeat)
                               {
@@ -514,6 +513,7 @@ public class MainPage
                               public void onDisconnected()
                               {
                                  Log.info("Disconnected");
+                                 
                               }
 
                               public void onError(Throwable exception, boolean connected)

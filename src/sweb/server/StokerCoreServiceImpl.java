@@ -585,4 +585,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         super.doGet (new CustomSessionRequest (request), response);
     }
     
+   /* @Override
+    public void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doPost (new CustomSessionRequest (request), response);
+    }
+*/
+    
 }
