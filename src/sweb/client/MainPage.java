@@ -24,6 +24,7 @@ import sweb.client.dialog.handlers.LogFileChooserHandler;
 import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.weather.WeatherComponent;
+import sweb.client.widgets.Configuration;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.CallBackRequestType.RequestType;
@@ -283,18 +284,19 @@ public class MainPage
                                 {
                                     Log.info("Opening configuration window");
                                     ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
-                                    final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
+                                  /*  final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
                                     window.setTitle("Cooker Configuration");
                                    // window.setHeaderControls(HeaderControls.CLOSE_BUTTON );
                                     window.setWidth(900);
                                     window.setHeight(420);
                                     window.setCanDragReposition(true);
                                     window.setCanDragResize(true);
-                                    window.addItem(new sweb.client.widgets.Configuration(arsd));
+                                    sweb.client.widgets.Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
+                                    window.addItem( ccfg );
                                     window.centerInPage();
                                   //  window.setShowMinimizeButton(false);
                                    
-                                    window.addCloseClickHandler(new CloseClickHandler() {  
+                                    CloseClickHandler ccl = new CloseClickHandler() {  
 
                                         @Override
                                         public void onCloseClick(
@@ -302,8 +304,22 @@ public class MainPage
                                         {
                                            window.destroy(); 
                                         }  
-                                    });  
-                                    window.draw();
+                                    };  
+                                    
+                                    ccfg.addCloseHandler( ccl );
+                                    window.addCloseClickHandler( ccl );
+                                    window.draw();*/
+                                    Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
+                                    
+                                    ccfg.setTitle("Cooker Configuration");
+                                    
+                                    ccfg.setWidth(920);
+                                    ccfg.setHeight(500);
+                                    ccfg.setCanDragReposition(true);
+                                    ccfg.setCanDragResize(true);
+                                    
+                                    ccfg.draw();
+                                    
                                 }
 
                             });

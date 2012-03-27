@@ -6,11 +6,14 @@ import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.google.gwt.user.client.ui.Widget;
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.DragDataAction;
 import com.smartgwt.client.types.Side;
+import com.smartgwt.client.widgets.Dialog;
 import com.smartgwt.client.widgets.IButton;
+import com.smartgwt.client.widgets.Window;
 import com.smartgwt.client.widgets.events.ClickEvent;
 import com.smartgwt.client.widgets.events.ClickHandler;
 import com.smartgwt.client.widgets.form.fields.events.ChangedEvent;
@@ -22,12 +25,13 @@ import com.smartgwt.client.widgets.tab.TabSet;
 import com.smartgwt.client.widgets.tab.events.CloseClickHandler;
 import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 
-public class Configuration extends VLayout
+public class Configuration extends Dialog
 {
 
     private ArrayList<SDevice> stokerConf = null;
     private TabSet tabSet = null;
     
+    private com.smartgwt.client.widgets.events.CloseClickHandler ccl;
     
     public Configuration(ArrayList<SDevice> arsd)
     {
@@ -110,7 +114,7 @@ public class Configuration extends VLayout
         buttonLayout.addMember(addButton);
         
         IButton updateButton = new IButton("Update");
-        addButton.addClickHandler(new ClickHandler() {  
+        updateButton.addClickHandler(new ClickHandler() {  
             public void onClick(ClickEvent event) 
             {  
                 
@@ -121,12 +125,15 @@ public class Configuration extends VLayout
         
         buttonLayout.addMember(updateButton);
 
+        final com.smartgwt.client.widgets.events.CloseClickHandler here = ccl;
+        
         IButton cancelButton = new IButton("Cancel");
-        addButton.addClickHandler(new ClickHandler() {  
+        cancelButton.addClickHandler( new ClickHandler() {  
             public void onClick(ClickEvent event) 
             {  
+               
                 
-
+                
             }  
         });  
         
@@ -163,13 +170,18 @@ public class Configuration extends VLayout
   
         hStack.addMember( tabSet );
         hStack.addMember( buttonLayout );
-        this.addMember( hStack );
+       // this.addMember( hStack );
+        this.addItem( hStack );
         //this.addMember( buttonLayout );
         this.setAlign(Alignment.CENTER);
         hStack.draw();  
     
     }
     
+    public void addCloseHandler( com.smartgwt.client.widgets.events.CloseClickHandler ccl2 )
+    {
+        this.ccl = ccl2;
+    }
     private void getStokerConfiguration()
     {
         
