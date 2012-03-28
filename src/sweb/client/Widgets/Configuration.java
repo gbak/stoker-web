@@ -2,6 +2,10 @@ package sweb.client.widgets;
 
 import java.util.ArrayList;
 
+import javax.lang.model.type.TypeVisitor;
+
+import sweb.client.widgets.handlers.ConfigUpdateHandler;
+import sweb.shared.model.Cooker;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
@@ -30,8 +34,9 @@ public class Configuration extends Dialog
 
     private ArrayList<SDevice> stokerConf = null;
     private TabSet tabSet = null;
+    ArrayList<Cooker> cookerList = null;
     
-    private com.smartgwt.client.widgets.events.CloseClickHandler ccl;
+    private ConfigUpdateHandler configHandler;
     
     public Configuration(ArrayList<SDevice> arsd)
     {
@@ -54,12 +59,8 @@ public class Configuration extends Dialog
         tempProbeList.setDragDataAction(DragDataAction.MOVE); 
         
       //  tempProbeList.setMargin(10);  // crushes the box and enables the scroll
-        
-
-        
-        
+       
        tempProbeList.setData(getData("temp"));  
-          
   
         final ConfigurationListGrid blowerProbeList = new ConfigurationListGrid("blower");  
         blowerProbeList.setCanDragRecordsOut(true);  
@@ -113,26 +114,24 @@ public class Configuration extends Dialog
 
         buttonLayout.addMember(addButton);
         
+        final Dialog dialog = this;
         IButton updateButton = new IButton("Update");
         updateButton.addClickHandler(new ClickHandler() {  
             public void onClick(ClickEvent event) 
             {  
-                
-                  
+                buildCooker();
+                configHandler.onUpdate( cookerList );
                 
             }  
         });  
         
         buttonLayout.addMember(updateButton);
-
-        final com.smartgwt.client.widgets.events.CloseClickHandler here = ccl;
-        
+ 
         IButton cancelButton = new IButton("Cancel");
         cancelButton.addClickHandler( new ClickHandler() {  
             public void onClick(ClickEvent event) 
             {  
-               
-                
+                dialog.cancelClick();
                 
             }  
         });  
@@ -178,10 +177,22 @@ public class Configuration extends Dialog
     
     }
     
-    public void addCloseHandler( com.smartgwt.client.widgets.events.CloseClickHandler ccl2 )
+    private void buildCooker()
     {
-        this.ccl = ccl2;
+        cookerList = new ArrayList<Cooker>();
+        
+        Tab[] ta = tabSet.getTabs();
+        for ( int t = 0; t < ta.length; t++)
+        {
+            Tab tab = ta[t];
+            
+            ConfigurationTabPane ct = (ConfigurationTabPane) tab.getPane();
+            Cooker c = ct.getCooker( stokerConf );
+            cookerList.add( c );
+        }
+
     }
+
     private void getStokerConfiguration()
     {
         
@@ -209,6 +220,11 @@ public class Configuration extends Dialog
         }
         return rl;
     }
+    
+     public void addUpdateHandler( ConfigUpdateHandler configUpdateHandler )
+     {
+         configHandler = configUpdateHandler;
+     }
     /*
     private Tree getData()
     {

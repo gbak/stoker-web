@@ -25,6 +25,7 @@ import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.weather.WeatherComponent;
 import sweb.client.widgets.Configuration;
+import sweb.client.widgets.handlers.ConfigUpdateHandler;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.CallBackRequestType.RequestType;
@@ -42,6 +43,7 @@ import sweb.shared.model.logfile.LogDir;
 import sweb.shared.model.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.weather.WeatherData;
+import sweb.shared.model.Cooker;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
@@ -311,12 +313,28 @@ public class MainPage
                                     window.draw();*/
                                     Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
                                     
+                                    ArrayList<Cooker> cookerList = new ArrayList<Cooker>();
+                                    
                                     ccfg.setTitle("Cooker Configuration");
                                     
                                     ccfg.setWidth(920);
                                     ccfg.setHeight(500);
                                     ccfg.setCanDragReposition(true);
                                     ccfg.setCanDragResize(true);
+                                    ccfg.addUpdateHandler( new ConfigUpdateHandler() {
+
+                                        @Override
+                                        public void onUpdate( ArrayList<Cooker> cookerList)
+                                        {
+                                           // TODO: Save config to ini
+                                            //      Update Stoker
+                                            //      Restart stoker server
+                                            //      Refresh Browser
+                                            Log.debug("Config update fired");
+                                            
+                                        }
+                                        
+                                    });
                                     
                                     ccfg.draw();
                                     

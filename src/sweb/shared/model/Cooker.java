@@ -9,7 +9,7 @@ public class Cooker
 {
     String strCookerName;
     StokerPitSensor pitSensor;
-    ArrayList<StokerProbe> probeList;
+    ArrayList<StokerProbe> probeList = new ArrayList<StokerProbe>();
     
     // TODO: local Alerts will need to be configured here
     

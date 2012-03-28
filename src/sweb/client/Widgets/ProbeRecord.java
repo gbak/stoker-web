@@ -45,4 +45,19 @@ public class ProbeRecord extends ListGridRecord
     {
         setAttribute("probeType", type );
     }
+    
+    public String getID()
+    {
+        return getAttribute("probeId");
+    }
+    
+    public String getName()
+    {
+        return getAttribute("probeName");
+    }
+    
+    public String getType()
+    {
+        return getAttribute("probeType");
+    }
 }

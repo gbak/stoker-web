@@ -35,11 +35,17 @@ public class StokerPitSensor extends StokerProbe implements Serializable
     public StokerPitSensor(String id, String name)
     {
         super(id, name);
+        sfan = null;
     }
     public StokerPitSensor( StokerProbe sp, StokerFan f)
     {
         super( sp );
         sfan = f;
+    }
+    public StokerPitSensor( StokerProbe sp )
+    {
+        super( sp );
+        sfan = null;
     }
 
     public void setFanDevice( StokerFan f)
@@ -56,7 +62,12 @@ public class StokerPitSensor extends StokerProbe implements Serializable
     {
         StringBuilder sb = new StringBuilder();
         sb.append( super.debugString());
-        sb.append( "Fan: " + sfan.debugString() );
+        if ( sfan == null )
+        {
+           sb.append("no fan attached"); 
+        }
+        else
+           sb.append( "Fan: " + sfan.debugString() );
         return sb.toString();
     }
 

@@ -1,6 +1,13 @@
 package sweb.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import sweb.shared.model.Cooker;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.stoker.StokerProbe;
 
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -26,6 +33,7 @@ public class ConfigurationTabPane extends VLayout
     private final ConfigurationListGrid pitProbeRecord;
     private final ConfigurationListGrid blowerProbe;
     private final ConfigurationListGrid tempProbes;
+    private TextItem nameTextItem;
     
     ConfigurationTabPane(ChangedHandler tabChangedHandler )
     {
@@ -36,7 +44,7 @@ public class ConfigurationTabPane extends VLayout
         vp.setMembersMargin(5);
         
         DynamicForm tabNameForm = new DynamicForm();  
-        TextItem nameTextItem = new TextItem();  
+        nameTextItem = new TextItem();  
         nameTextItem.setTitle("Cooker Name");  
         nameTextItem.addChangedHandler(tabChangedHandler);  
         tabNameForm.setFields( nameTextItem );
@@ -156,5 +164,55 @@ public class ConfigurationTabPane extends VLayout
         return discardList;
     }
     
+    public Cooker getCooker(ArrayList<SDevice> stokerConf )
+    {
+        HashMap<String,SDevice> deviceMap = new HashMap<String,SDevice>();
+    
+        Cooker cooker = new Cooker(nameTextItem.getTitle());
+        String pidID = null;
+        String blowerID = null;
+        StokerFan stokerFan = null;
+        StokerPitSensor stokerPitSensor = null;
+    
+        for ( SDevice sd : stokerConf )
+        {
+            deviceMap.put(sd.getID(), sd);
+        }
+        
+        RecordList blowerList = blowerProbe.getDataAsRecordList();
+        if ( blowerList.getLength() > 0)
+        {
+           ProbeRecord blowerRecord = (ProbeRecord) blowerList.get(0);
+           blowerID = blowerRecord.getID();
+           SDevice sd = deviceMap.get( blowerID );
+           stokerFan = new StokerFan( sd.getID(), sd.getName());
+        }
+        
+        RecordList rl = pitProbeRecord.getDataAsRecordList();
+        if( rl.getLength() > 0 )
+        {
+           ProbeRecord pitRecord = (ProbeRecord) rl.get(0);
+           SDevice sd = deviceMap.get(pitRecord.getID());
+           StokerProbe sp = new StokerProbe(sd.getID(), sd.getName() );
+           
+           stokerPitSensor = new StokerPitSensor(sp, stokerFan );
+           
+        }
+
+        if ( stokerPitSensor != null )
+           cooker.addStokerProbe(stokerPitSensor);
+        
+        RecordList probeList = tempProbes.getDataAsRecordList();
+        for ( int i = 0; i < probeList.getLength(); i++ )
+        {
+            ProbeRecord tempRecord = (ProbeRecord) probeList.get(i);
+            String probeID = tempRecord.getID();
+            SDevice sd = deviceMap.get( probeID );
+            cooker.addStokerProbe((StokerProbe) sd );
+            
+        }
+        return cooker;
+        
+    }
     
 }
