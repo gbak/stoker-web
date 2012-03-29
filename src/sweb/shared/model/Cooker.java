@@ -1,11 +1,12 @@
 package sweb.shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import sweb.shared.model.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerProbe;
 
-public class Cooker
+public class Cooker implements Serializable
 {
     String strCookerName;
     StokerPitSensor pitSensor;
