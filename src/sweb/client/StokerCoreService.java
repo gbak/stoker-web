@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.data.SDataPoint;
@@ -42,6 +44,8 @@ public interface StokerCoreService extends RemoteService
     HashMap<String,SDevice> getConfiguration() throws IllegalArgumentException;
     Integer updateConfiguration( ArrayList<SDevice> asd) throws IllegalArgumentException;
 
+    Integer updateStokerWebConfig( CookerList cookerList ) throws IllegalArgumentException;
+    
     Long countDownServer() throws  IllegalArgumentException;
 
     String login(String user, String pass) throws IllegalArgumentException;

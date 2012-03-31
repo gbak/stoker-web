@@ -37,13 +37,23 @@ import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.StokerConfiguration;
 import sweb.server.controller.config.ConfigurationController;
+import sweb.server.controller.config.json.Blower;
+import sweb.server.controller.config.json.Sensor;
+import sweb.server.controller.config.json.Stoker;
+import sweb.server.controller.config.json.StokerOuter;
 import sweb.server.controller.events.ConfigControllerEvent;
 
 import sweb.shared.model.devices.SDevice;
@@ -117,10 +127,12 @@ public class StokerWebConfigurationController extends ConfigurationController
        if ( prefix.compareTo("n1") == 0)
        {
            sc.addDevice(new StokerProbe( deviceID, strValue ));
+           logger.debug("Found probe with ID: " + deviceID + " and value: " + strValue );
        }
        else if ( prefix.compareTo("n2") == 0)
        {
            sc.addDevice(new StokerFan( deviceID, strValue ));
+           logger.debug("Found fan with ID: " + deviceID + " and value: " + strValue);
        }
        else if ( prefix.compareTo("sw") == 0)
        {
@@ -186,6 +198,102 @@ public class StokerWebConfigurationController extends ConfigurationController
        sc.setUpdatedStaus(true);
    }
 
+    public synchronized void pullJSonConfig()
+    {
+        boolean bSuccess = false;
+        int iTry = 0;
+
+        sc.clear();
+        do
+        {
+            HttpClient httpclient = new DefaultHttpClient();
+            try
+            {
+                String strStokerIP = StokerWebProperties.getInstance()
+                        .getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+                String s = new String("http://" + strStokerIP + "/stoker.json");
+                
+                HttpGet httpget = new HttpGet(s);
+                logger.debug("executing JSON request " + httpget.getURI());
+                ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                
+                String responseBody = httpclient.execute(httpget, responseHandler);
+                logger.debug("after execute");
+                logger.debug("----------------------------------------");
+                logger.debug(responseBody);
+                logger.debug("----------------------------------------");
+
+                ObjectMapper mapper = new ObjectMapper();
+                StokerOuter stokerOuter = mapper.readValue(responseBody, StokerOuter.class);
+                
+                Stoker stoke = stokerOuter.getStoker();
+                ArrayList<Blower> stokerBlowers = stoke.getBlowers();
+                for ( Blower b : stokerBlowers )
+                {
+                    logger.debug("Adding fan device: " + b.getId().toLowerCase() + " with name: " + b.getName());
+                    sc.addDevice( new StokerFan(b.getId().toLowerCase(), b.getName()));
+                }
+                
+                for ( Sensor sensor : stoke.getSensors())
+                {
+                    if ( sensor.getBlower() == null )
+                    {
+                        logger.debug("Adding sensor device: " + sensor.getId().toLowerCase()+ " with name: " + sensor.getName());
+                        StokerProbe sp = new StokerProbe( sensor.getId().toLowerCase(), sensor.getName());
+                        sp.setCurrentTemp((float)sensor.getTc());
+                        sp.setLowerTempAlarm(sensor.getTl());
+                        sp.setTargetTemp(sensor.getTa());
+                        sp.setUpperTempAlarm(sensor.getTh());
+                        sc.addDevice( sp );
+                        
+                    }
+                    else
+                    {
+                        logger.debug("Adding pit sensor device: " + sensor.getId().toLowerCase()+ " with name: " + sensor.getName());
+                        StokerPitSensor sp = new StokerPitSensor( sensor.getId().toLowerCase(), sensor.getName());
+                        sp.setCurrentTemp((float)sensor.getTc());
+                        sp.setLowerTempAlarm(sensor.getTl());
+                        sp.setTargetTemp(sensor.getTa());
+                        sp.setUpperTempAlarm(sensor.getTh());
+                        sp.setFanDevice((StokerFan)sc.getDevice(sensor.getBlower().toLowerCase()));
+                        sc.addDevice( sp );
+                    }
+                }
+                bSuccess = true;
+                
+                
+            }
+            catch (java.net.ConnectException ce)
+            {
+                logger.error("Caught connection exception while scraping webpage");
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            if (bSuccess == false)
+            {
+                try
+                {
+                    Thread.sleep(2000);
+                }
+                catch (InterruptedException e)
+                {
+                    logger.error(e.getStackTrace());
+                }
+            }
+
+        } while (bSuccess == false && iTry++ < 5);
+
+        assignCookerNames();
+
+        sc.setUpdatedStaus(true);
+        logger.debug("Config: " + sc.debugString());
+        super.fireActionPerformed(new ConfigControllerEvent(this,
+                ConfigControllerEvent.EventType.CONFIG_UPDATE));
+
+    }
    public synchronized void scrapeWebPage()
    {
        boolean bSuccess = false;
@@ -309,7 +417,8 @@ public class StokerWebConfigurationController extends ConfigurationController
 
    public static void main(String[] args)
    {
-      new StokerWebConfigurationController().scrapeWebPage();
+      //new StokerWebConfigurationController().scrapeWebPage();
+      new StokerWebConfigurationController().pullJSonConfig();
    }
 
    public void setConfiguration(StokerConfiguration sc)
@@ -525,7 +634,8 @@ public class StokerWebConfigurationController extends ConfigurationController
     public void setNow()
     {
         sc.setUpdatedStaus(false);
-        scrapeWebPage();
+       //scrapeWebPage();
+        pullJSonConfig();
 
     }
 

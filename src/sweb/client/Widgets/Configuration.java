@@ -6,6 +6,7 @@ import javax.lang.model.type.TypeVisitor;
 
 import sweb.client.widgets.handlers.ConfigUpdateHandler;
 import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
@@ -34,7 +35,7 @@ public class Configuration extends Dialog
 
     private ArrayList<SDevice> stokerConf = null;
     private TabSet tabSet = null;
-    ArrayList<Cooker> cookerList = null;
+    CookerList cookerList = new CookerList();
     
     private ConfigUpdateHandler configHandler;
     
@@ -179,7 +180,7 @@ public class Configuration extends Dialog
     
     private void buildCooker()
     {
-        cookerList = new ArrayList<Cooker>();
+        ArrayList<Cooker> clist = new ArrayList<Cooker>();
         
         Tab[] ta = tabSet.getTabs();
         for ( int t = 0; t < ta.length; t++)
@@ -188,8 +189,9 @@ public class Configuration extends Dialog
             
             ConfigurationTabPane ct = (ConfigurationTabPane) tab.getPane();
             Cooker c = ct.getCooker( stokerConf );
-            cookerList.add( c );
+            clist.add( c );
         }
+        cookerList.setCookerList(clist);
 
     }
 

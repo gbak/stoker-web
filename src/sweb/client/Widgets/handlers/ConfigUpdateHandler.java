@@ -1,11 +1,9 @@
 package sweb.client.widgets.handlers;
 
-import java.util.ArrayList;
-
-import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerList;
 
 public interface ConfigUpdateHandler
 {
 
-    public void onUpdate( ArrayList<Cooker> cookerList );
+    public void onUpdate( CookerList cookerList );
 }

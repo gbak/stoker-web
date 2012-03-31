@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-net-3.0.1.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-net-3.0.1.jar" sourcepath="C:/Users/gary.bak/.m2/repository/commons-net/commons-net/3.0.1/commons-net-3.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/dygraphs-gwt-2011.04.18.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ezmorph-1.0.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-comet-1.2.3.jar"/>
@@ -39,5 +39,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/gwt-log-3.1.8.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/smartgwt-skins.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/smartgwt.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jackson-all-1.9.5.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

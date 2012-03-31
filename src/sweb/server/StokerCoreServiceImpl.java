@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import sweb.client.StokerCoreService;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.config.json.CookerConfig;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
@@ -56,6 +57,8 @@ import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerList;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
 import sweb.shared.model.LogItem;
@@ -584,11 +587,19 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet (new CustomSessionRequest (request), response);
     }
-    
-   /* @Override
-    public void doPost (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        super.doPost (new CustomSessionRequest (request), response);
+
+    @Override
+    public Integer updateStokerWebConfig(CookerList cookerList )
+    {
+        // TODO Auto-generated method stub
+        
+        // Save Cooker to property file as JSON
+        CookerConfig.saveConfig(cookerList);
+        // Update Stoker
+        // Restart necessary Server objects to reflect updated config
+        // send refresh over comet stream to refresh clients.
+        return new Integer(1);
     }
-*/
+    
     
 }

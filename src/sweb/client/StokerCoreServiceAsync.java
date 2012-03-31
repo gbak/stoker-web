@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.data.SDataPoint;
@@ -39,7 +41,10 @@ public interface StokerCoreServiceAsync
             throws IllegalArgumentException;
 
     void updateConfiguration( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)
-             throws IllegalArgumentException;
+           throws IllegalArgumentException;
+    
+    void updateStokerWebConfig( CookerList cookerList, AsyncCallback<Integer> callback )
+            throws IllegalArgumentException;
 
     void countDownServer(AsyncCallback<Long> asyncCallback);
 

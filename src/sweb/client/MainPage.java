@@ -66,7 +66,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
-
+import sweb.shared.model.CookerList;
 public class MainPage
 {
     /**
@@ -324,8 +324,29 @@ public class MainPage
                                     ccfg.addUpdateHandler( new ConfigUpdateHandler() {
 
                                         @Override
-                                        public void onUpdate( ArrayList<Cooker> cookerList)
+                                        public void onUpdate( CookerList cookerList)
                                         {
+                                           stokerService.updateStokerWebConfig(cookerList, new AsyncCallback<Integer>() {
+
+                                            @Override
+                                            public void onFailure(
+                                                    Throwable caught)
+                                            {
+                                                Log.error("unable to update StokerWebConfig");
+                                                
+                                                
+                                            }
+
+                                            @Override
+                                            public void onSuccess(Integer result)
+                                            {
+                                                Log.info("Successfully called samve ");
+                                                
+                                            } 
+                                               
+                                               // updateStokerWebConfig( CookerList cookerList, new AsyncCallback<Integer>() ) {
+                                               
+                                           });
                                            // TODO: Save config to ini
                                             //      Update Stoker
                                             //      Restart stoker server
