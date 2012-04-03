@@ -244,6 +244,15 @@ public class StokerWebConfigurationController extends ConfigurationController
                         sp.setLowerTempAlarm(sensor.getTl());
                         sp.setTargetTemp(sensor.getTa());
                         sp.setUpperTempAlarm(sensor.getTh());
+                        try
+                        {
+                           sp.setAlarmEnabled(getAlarmType(new Integer( sensor.getAl() ).intValue()));
+                        }
+                        catch ( NumberFormatException nfe)
+                        {
+                            logger.warn("Invalid number in al: " + sensor.getAl() );
+                            sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
+                        }
                         sc.addDevice( sp );
                         
                     }
@@ -255,6 +264,15 @@ public class StokerWebConfigurationController extends ConfigurationController
                         sp.setLowerTempAlarm(sensor.getTl());
                         sp.setTargetTemp(sensor.getTa());
                         sp.setUpperTempAlarm(sensor.getTh());
+                        try
+                        {
+                           sp.setAlarmEnabled(getAlarmType(new Integer( sensor.getAl() ).intValue()));
+                        }
+                        catch ( NumberFormatException nfe)
+                        {
+                            logger.warn("Invalid number in al: " + sensor.getAl() );
+                            sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
+                        }
                         sp.setFanDevice((StokerFan)sc.getDevice(sensor.getBlower().toLowerCase()));
                         sc.addDevice( sp );
                     }

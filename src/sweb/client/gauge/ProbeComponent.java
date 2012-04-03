@@ -559,7 +559,8 @@ public class ProbeComponent extends Composite
           stokerProbe.setCurrentTemp(((SProbeDataPoint)dp).getTempF());
           if ( ist != null )
           {
-             ist.setAlarmRange(stokerProbe);
+            // ist.setAlarmRange(stokerProbe);
+              ist.checkAlarms((int)stokerProbe.getCurrentTemp());
              ist.setTemp(stokerProbe.getCurrentTemp());
           }
 
