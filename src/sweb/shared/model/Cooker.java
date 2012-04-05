@@ -8,11 +8,17 @@ import sweb.shared.model.stoker.StokerProbe;
 
 public class Cooker implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2387713458606878320L;
     String strCookerName;
     StokerPitSensor pitSensor;
     ArrayList<StokerProbe> probeList = new ArrayList<StokerProbe>();
     
     // TODO: local Alerts will need to be configured here
+    
+    public Cooker() { }
     
     public Cooker( String cookerName )
     {

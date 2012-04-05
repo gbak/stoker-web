@@ -112,7 +112,7 @@ public class MainPage
 
     @SerialTypes(
     { SDataPoint.class, SProbeDataPoint.class, SBlowerDataPoint.class, ControllerEventLight.class, WeatherData.class, CallBackRequestType.class,
-        HardwareDeviceStatus.class, LogEvent.class, AlertModel.class, BrowserAlarmModel.class })
+        HardwareDeviceStatus.class, LogEvent.class, AlertModel.class, BrowserAlarmModel.class, CookerList.class, Cooker.class })
 
     public static abstract class StokerCometSerializer extends CometSerializer {
     }
@@ -340,7 +340,7 @@ public class MainPage
                                             @Override
                                             public void onSuccess(Integer result)
                                             {
-                                                Log.info("Successfully called samve ");
+                                                Log.info("Successfully called save ");
                                                 
                                             } 
                                                

@@ -168,7 +168,7 @@ public class ConfigurationTabPane extends VLayout
     {
         HashMap<String,SDevice> deviceMap = new HashMap<String,SDevice>();
     
-        Cooker cooker = new Cooker(nameTextItem.getTitle());
+        Cooker cooker = new Cooker(nameTextItem.getEnteredValue());
         String pidID = null;
         String blowerID = null;
         StokerFan stokerFan = null;
@@ -200,7 +200,10 @@ public class ConfigurationTabPane extends VLayout
         }
 
         if ( stokerPitSensor != null )
-           cooker.addStokerProbe(stokerPitSensor);
+        {
+           //cooker.addStokerProbe(stokerPitSensor);
+           cooker.setPitSensor(stokerPitSensor);
+        }
         
         RecordList probeList = tempProbes.getDataAsRecordList();
         for ( int i = 0; i < probeList.getLength(); i++ )
