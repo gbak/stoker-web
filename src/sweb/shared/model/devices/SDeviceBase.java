@@ -28,8 +28,7 @@ public class SDeviceBase extends SDevice implements Serializable
 public SDeviceBase( String strCookerNum, String strCookerName )
    {
        super( "0", "none");
-       setCookerName( strCookerName );
-       setCookerNum(new Integer(strCookerNum));
+
        // TODO: probably should catch the InvalidNumberException here
 
    }

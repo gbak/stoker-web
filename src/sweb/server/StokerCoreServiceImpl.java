@@ -447,7 +447,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         HttpSession hs = arg0.getSession();
       //  CustomSession httpSession = (CustomSession)arg0.getSession();
         
-        ClientMessagePusher.getInstance().removeSession(hs);
+   //     ClientMessagePusher.getInstance().removeSession(hs); // This was causing a stack overflow error
+                                         // cleanup work should be done in removeSession.
+                                                            
       //  removeControllerEvents();  // Is this correct?  gbak
 
     }

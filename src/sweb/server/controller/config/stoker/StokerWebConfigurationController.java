@@ -409,7 +409,7 @@ public class StokerWebConfigurationController extends ConfigurationController
       super.fireActionPerformed(new ConfigControllerEvent( this, ConfigControllerEvent.EventType.CONFIG_UPDATE ));
 
    }
-
+/*
    private void assignCookerNames()
    {
        HashMap<Integer,String> hm = new HashMap<Integer,String>();
@@ -432,7 +432,7 @@ public class StokerWebConfigurationController extends ConfigurationController
       }
 
    }
-
+*/
    public static void main(String[] args)
    {
       //new StokerWebConfigurationController().scrapeWebPage();

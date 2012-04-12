@@ -23,7 +23,9 @@ import javax.servlet.http.HttpServlet;
 import org.apache.log4j.Logger;
 
 import sweb.server.controller.Controller;
+import sweb.server.controller.config.json.CookerConfig;
 import sweb.server.controller.data.DataOrchestrator;
+import sweb.server.controller.events.CookerConfigChangeListener;
 import sweb.server.controller.events.DataControllerEvent;
 import sweb.server.controller.events.DataControllerEventListener;
 import sweb.server.security.LoginProperties;
@@ -33,10 +35,25 @@ public class StokerInit extends HttpServlet
 
     private static final long serialVersionUID = 4958759438289484633L;
     private Controller m_Controller = null;
+    private CookerConfig m_CookerConfig = null;
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
     public StokerInit()
     {
+        if ( m_CookerConfig == null )
+        {
+            m_CookerConfig = CookerConfig.getInstance();
+            m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
+
+                @Override
+                public void actionPerformed()
+                {
+                    m_Controller.resetAll();
+                    
+                }
+                
+            });
+        }
         // m_Controller is a singleton and the variable is not required, but instead used to
         // know if it has been initialized already, this is called on browser refresh
         // and we only want this to be executed once and only once

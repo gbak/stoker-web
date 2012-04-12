@@ -78,29 +78,32 @@ public class WeatherController
           //resultString = httpRequest("http://where.yahooapis.com/geocode?country=USA&flags=J&postal=30024");
           resultString = httpRequest(strGetWoeidUrl + strGetZipCode);
 
-          logger.debug("Result String: [" + resultString +"]");
-           JSONObject json = (JSONObject) JSONSerializer.toJSON( resultString );
-           JSONObject resultSet = json.getJSONObject("ResultSet");
-           JSONArray jsa =  (JSONArray)resultSet.getJSONArray( "Results" );
-
-           String woeid = null;
-           for ( Object o : jsa )
-           {
-              JSONObject jo = (JSONObject) o;
-              woeid = jo.getString("woeid");
-              logger.debug("woeid: " + woeid);
-           }
-
-           //JSONObject results = json.getJSONObject("Results");
-
-           if ( woeid != null)
-           {
-              resultString = httpRequest(strWeatherURL + woeid );
-              json = (JSONObject) JSONSerializer.toJSON( resultString );
-
-              logger.debug("weather: " + resultString);
-           }
-           wd = YahooWeatherJsonServerHelper.parseYahooWeatherData( resultString );
+          if ( resultString != null)
+          {
+              logger.debug("Result String: [" + resultString +"]");
+               JSONObject json = (JSONObject) JSONSerializer.toJSON( resultString );
+               JSONObject resultSet = json.getJSONObject("ResultSet");
+               JSONArray jsa =  (JSONArray)resultSet.getJSONArray( "Results" );
+    
+               String woeid = null;
+               for ( Object o : jsa )
+               {
+                  JSONObject jo = (JSONObject) o;
+                  woeid = jo.getString("woeid");
+                  logger.debug("woeid: " + woeid);
+               }
+    
+               //JSONObject results = json.getJSONObject("Results");
+    
+               if ( woeid != null)
+               {
+                  resultString = httpRequest(strWeatherURL + woeid );
+                  json = (JSONObject) JSONSerializer.toJSON( resultString );
+    
+                  logger.debug("weather: " + resultString);
+               }
+               wd = YahooWeatherJsonServerHelper.parseYahooWeatherData( resultString );
+          }
        }
        catch (IllegalStateException ise )
        {

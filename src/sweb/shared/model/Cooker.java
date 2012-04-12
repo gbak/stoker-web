@@ -12,7 +12,7 @@ public class Cooker implements Serializable
      * 
      */
     private static final long serialVersionUID = 2387713458606878320L;
-    String strCookerName;
+    String cookerName;
     StokerPitSensor pitSensor;
     ArrayList<StokerProbe> probeList = new ArrayList<StokerProbe>();
     
@@ -22,7 +22,7 @@ public class Cooker implements Serializable
     
     public Cooker( String cookerName )
     {
-        this.strCookerName = cookerName;
+        this.cookerName = cookerName;
         
     }
     
@@ -56,7 +56,7 @@ public class Cooker implements Serializable
     
     public String getCookerName()
     {
-        return this.strCookerName;
+        return this.cookerName;
     }
     
     public StokerPitSensor getStokerPitSensor()

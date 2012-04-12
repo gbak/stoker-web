@@ -28,23 +28,23 @@ public class SDevice  implements Serializable
     private static final long serialVersionUID = -2040954508382938760L;
     private String strID;
     private String strName;
-    private int iCookerNum;
-    private String strCookerName;
-    private String strDeviceLogNum;  // This is the number of the device as used in the log file.
+//    private int iCookerNum;
+//    private String strCookerName;
+//    private String strDeviceLogNum;  // This is the number of the device as used in the log file.
 
 
    protected SDevice( String id, String name )
    {
       strID = id;
       strName = name;
-      iCookerNum = 1;
-      strDeviceLogNum = "";
+   //   iCookerNum = 1;
+   //   strDeviceLogNum = "";
       
-      if (( strName.length() > 2 ) &&  (strName.charAt(1) == '_' ))
+   /*   if (( strName.length() > 2 ) &&  (strName.charAt(1) == '_' ))
       {
           try { iCookerNum = new Integer( strName.substring(0,1)).intValue(); }
           catch ( NumberFormatException nfe ) {}
-      }
+      }*/
    }
 
    public boolean equals( SDevice sd )
@@ -77,7 +77,7 @@ public class SDevice  implements Serializable
    {
        return "\nID: [" + strID + "] Name: [" + strName + "] ";
    }
-
+/*
    public int getCookerNum()
    {
        return iCookerNum;
@@ -94,13 +94,7 @@ public class SDevice  implements Serializable
    {
        return strCookerName;
    }
-
-   public DeviceType getProbeType()
-   {
-      return DeviceType.UNKNOWN;
-   }
-   
-   public void setDeviceLogNum(String s)
+     public void setDeviceLogNum(String s)
    {
        strDeviceLogNum = s;
    }
@@ -108,5 +102,12 @@ public class SDevice  implements Serializable
    public String getDeviceLogNum()
    {
        return strDeviceLogNum;
+   }*/
+
+   public DeviceType getProbeType()
+   {
+      return DeviceType.UNKNOWN;
    }
+   
+ 
 }

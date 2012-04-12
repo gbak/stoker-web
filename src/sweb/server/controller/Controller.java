@@ -110,6 +110,19 @@ public class Controller
        m_WeatherController.start();
     }
 
+    public void resetAll()
+    {
+        // this gets called when the stoker configuration has changed from the client side.
+        // A full flush needs to be done on the server and restart\
+        
+        m_DataController= new StokerTelnetController();
+        m_ConfigurationController = new StokerWebConfigurationController();
+        m_WeatherController = new WeatherController();
+        m_AlertsController = null;
+
+        init();
+        
+    }
     private void setupDefaultLog()
     {
         for( String s : StokerConfiguration.getInstance().getAllBlowerIDs() )

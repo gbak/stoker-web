@@ -1,24 +1,54 @@
 package sweb.server.controller.config.json;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
+import sweb.server.ClientMessagePusher;
+import sweb.server.controller.Controller;
+import sweb.server.controller.events.CookerConfigChangeListener;
+import sweb.server.controller.events.DataControllerEvent;
+import sweb.server.controller.events.DataControllerEventListener;
 import sweb.shared.model.CookerList;
 
 public class CookerConfig
 {
     private static final Logger logger = Logger.getLogger(CookerConfig.class.getName());
-    public CookerConfig()
+    
+    private volatile static CookerConfig cookerConfig = null;
+    
+    private static CookerList cookerList;
+    
+    private static ArrayList<CookerConfigChangeListener> arListener = new ArrayList<CookerConfigChangeListener>();
+    
+    public static CookerConfig getInstance()
     {
-        
+        if ( cookerConfig == null)
+        {
+            synchronized ( Controller.class)
+            {
+                if ( cookerConfig == null )
+                {
+                    cookerConfig = new CookerConfig();
+                }
+            }
+        }
+        return cookerConfig;
     }
     
-    public static void saveConfig(CookerList cookerList)
+    public CookerConfig() { loadConfig(); }
+    
+    public void saveConfig(CookerList cookerList)
     {
         try 
         {
@@ -34,10 +64,67 @@ public class CookerConfig
         }
     }
     
-    public static CookerList loadConfig()
+    public void loadConfig()
     {
-        CookerList cookerList = new CookerList();
-        
+        ObjectMapper mapper = new ObjectMapper();
+        try
+        {
+            BufferedReader in = new BufferedReader(new FileReader("CookerConfig.json"));
+            cookerList = mapper.readValue(in, CookerList.class);
+            in.close();
+        }
+        catch (FileNotFoundException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch (JsonParseException e)
+        {
+            logger.error("Error parsing CookerConfig.json in loadConfig");
+            
+        }
+        catch (JsonMappingException e)
+        {
+            logger.error("Error mapping CookerConfig.json in loadConfig");
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    
+    public CookerList getCookerList()
+    {
         return cookerList;
+    }
+    
+    
+    public void addChangeListener( CookerConfigChangeListener listener )
+    {
+        synchronized( this )
+        {
+           arListener.add( listener );
+        }
+    }
+
+    public void removeChangeListener( CookerConfigChangeListener listener )
+    {
+        synchronized( this )
+        {
+            arListener.remove(listener);
+
+        }
+    }
+
+    protected void fireActionPerformed()
+    {
+        synchronized( this )
+        {
+            for ( CookerConfigChangeListener listener : arListener )
+            {
+                listener.actionPerformed();
+            }
+        }
     }
 }
