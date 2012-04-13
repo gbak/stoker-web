@@ -39,8 +39,8 @@ import org.apache.log4j.Logger;
 
 import sweb.client.StokerCoreService;
 import sweb.server.controller.Controller;
+import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.StokerConfiguration;
-import sweb.server.controller.config.json.CookerConfig;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
@@ -596,7 +596,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         // TODO Auto-generated method stub
         
         // Save Cooker to property file as JSON
-        CookerConfig.getInstance().saveConfig(cookerList);
+        StokerWebConfiguration.getInstance().saveConfig(cookerList);
         
         // Update Stoker
         // Restart necessary Server objects to reflect updated config

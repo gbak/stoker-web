@@ -304,7 +304,7 @@ public class StokerWebConfigurationController extends ConfigurationController
 
         } while (bSuccess == false && iTry++ < 5);
 
-        assignCookerNames();
+    //    assignCookerNames();
 
         sc.setUpdatedStaus(true);
         logger.debug("Config: " + sc.debugString());
@@ -402,7 +402,7 @@ public class StokerWebConfigurationController extends ConfigurationController
 
        } while ( bSuccess == false && iTry++ < 5  );
 
-      assignCookerNames();
+   //   assignCookerNames();
 
       sc.setUpdatedStaus(true);
       logger.debug("Config: " + sc.debugString());

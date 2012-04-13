@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServlet;
 import org.apache.log4j.Logger;
 
 import sweb.server.controller.Controller;
-import sweb.server.controller.config.json.CookerConfig;
+import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.CookerConfigChangeListener;
 import sweb.server.controller.events.DataControllerEvent;
@@ -35,14 +35,14 @@ public class StokerInit extends HttpServlet
 
     private static final long serialVersionUID = 4958759438289484633L;
     private Controller m_Controller = null;
-    private CookerConfig m_CookerConfig = null;
+    private StokerWebConfiguration m_CookerConfig = null;
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
     public StokerInit()
     {
         if ( m_CookerConfig == null )
         {
-            m_CookerConfig = CookerConfig.getInstance();
+            m_CookerConfig = StokerWebConfiguration.getInstance();
             m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
 
                 @Override
