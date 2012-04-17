@@ -56,7 +56,7 @@ public class Controller
     
  //   private ControllerEventListener m_ControllerListener = null;
 
-/*
+
     public static Controller getInstance()
     {
         if ( m_Controller == null)
@@ -70,7 +70,7 @@ public class Controller
             }
         }
         return m_Controller;
-    }*/
+    }
 
     private Controller()
     {

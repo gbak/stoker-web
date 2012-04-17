@@ -39,13 +39,13 @@ import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 public class StokerConfiguration
 {
 
-    private volatile static StokerConfiguration stc;
+   // private volatile static StokerConfiguration stc;
     HashMap<String,SDevice> htStokConfig = new HashMap<String,SDevice>();
     private volatile boolean bisUpToDate = false;
 
     private static final Logger logger = Logger.getLogger(StokerConfiguration.class.getName());
     
-    public static StokerConfiguration getInstance()
+   /* public static StokerConfiguration getInstance()
     {
         if ( stc == null)
         {
@@ -58,7 +58,7 @@ public class StokerConfiguration
             }
         }
         return stc;
-    }
+    }*/
 
     public HashMap<String,SDevice> data()
     {

@@ -14,7 +14,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
-import sweb.server.ClientMessagePusher;
+import sweb.server.CometMessagePusher;
 import sweb.server.controller.events.CookerConfigChangeListener;
 import sweb.server.controller.events.DataControllerEvent;
 import sweb.server.controller.events.DataControllerEventListener;
