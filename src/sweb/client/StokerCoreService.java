@@ -41,7 +41,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface StokerCoreService extends RemoteService
 {
     ArrayList<SDataPoint> getNewGraphDataPoints(String name) throws IllegalArgumentException;
-    HashMap<String,SDevice> getConfiguration() throws IllegalArgumentException;
+    HashMap<String,SDevice> getDeviceConfiguration() throws IllegalArgumentException;
     Integer updateConfiguration( ArrayList<SDevice> asd) throws IllegalArgumentException;
 
     Integer updateStokerWebConfig( CookerList cookerList ) throws IllegalArgumentException;

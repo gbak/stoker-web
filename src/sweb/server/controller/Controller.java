@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import sweb.server.ClientMessenger;
+import sweb.server.CometMessenger;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
@@ -48,15 +50,22 @@ public class Controller
 {
     private volatile static Controller m_Controller = null;
     private DataController m_DataController = null;
+    private DataOrchestrator m_DataOrchestrator = null;
     private ConfigurationController m_ConfigurationController = null;
     private WeatherController m_WeatherController = null;
     private AlertsController m_AlertsController = null;
+    private ClientMessenger m_ClientMessenger = null;
 
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
     
  //   private ControllerEventListener m_ControllerListener = null;
 
 
+    public static boolean isNull()
+    {
+        return m_Controller == null;
+    }
+    
     public static Controller getInstance()
     {
         if ( m_Controller == null)
@@ -77,6 +86,8 @@ public class Controller
         m_DataController= new StokerTelnetController();
         m_ConfigurationController = new StokerWebConfigurationController();
         m_WeatherController = new WeatherController();
+        m_DataOrchestrator = new DataOrchestrator();
+        m_ClientMessenger = new CometMessenger();
         
     }
 
@@ -84,7 +95,7 @@ public class Controller
     {
         logger.info("Controller init called");
        m_AlertsController = new AlertsController();
-       m_DataController.setDataStore(DataOrchestrator.getInstance());
+       m_DataController.setDataStore(m_DataOrchestrator);
        m_ConfigurationController.setConfiguration(StokerConfiguration.getInstance());
 
        m_DataController.addEventListener(new DataControllerEventListener()
@@ -119,10 +130,17 @@ public class Controller
         m_ConfigurationController = new StokerWebConfigurationController();
         m_WeatherController = new WeatherController();
         m_AlertsController = null;
+        m_ClientMessenger = new CometMessenger();
 
         init();
         
     }
+    
+    public DataOrchestrator getDataOrchestrator()
+    {
+        return m_DataOrchestrator;
+    }
+    
     private void setupDefaultLog()
     {
         for( String s : StokerConfiguration.getInstance().getAllBlowerIDs() )
@@ -135,16 +153,16 @@ public class Controller
         //    while ( bTryAgain )
         //    {
             String strDefaultName = "Default_" + strCookerName;
-                if ( ! DataOrchestrator.getInstance().isLogRunning(strDefaultName ))
+                if ( ! m_DataOrchestrator.isLogRunning(strDefaultName ))
                 {
                     try
                     {
-                        DataOrchestrator.getInstance().startLog(strCookerName, strDefaultName);
+                        m_DataOrchestrator.startLog(strCookerName, strDefaultName);
                         bTryAgain = false;
                     }
                     catch (LogExistsException e)
                     {
-                        try { DataOrchestrator.getInstance().stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
+                        try { m_DataOrchestrator.stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
                     }
                 }
 

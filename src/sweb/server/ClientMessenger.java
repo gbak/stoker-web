@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.servlet.http.HttpSession;
 
-public interface ClientMessagePusher
+public interface ClientMessenger
 {
     public void addSession(HttpSession httpSession);
    

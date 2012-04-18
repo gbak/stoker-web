@@ -65,6 +65,7 @@ import sweb.shared.model.stoker.StokerProbe.AlarmType;
 
 import net.htmlparser.jericho.*;
 
+// This name is confusing.
 public class StokerWebConfigurationController extends ConfigurationController
 {
     StokerConfiguration sc = null;

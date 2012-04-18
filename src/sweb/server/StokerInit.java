@@ -34,7 +34,7 @@ public class StokerInit extends HttpServlet
 {
 
     private static final long serialVersionUID = 4958759438289484633L;
-    private Controller m_Controller = null;
+  //  private Controller m_Controller = null;
     private StokerWebConfiguration m_CookerConfig = null;
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
@@ -48,7 +48,7 @@ public class StokerInit extends HttpServlet
                 @Override
                 public void actionPerformed()
                 {
-                    m_Controller.resetAll();
+                    Controller.getInstance().resetAll();
                     
                 }
                 
@@ -57,17 +57,16 @@ public class StokerInit extends HttpServlet
         // m_Controller is a singleton and the variable is not required, but instead used to
         // know if it has been initialized already, this is called on browser refresh
         // and we only want this to be executed once and only once
-        if ( m_Controller == null)
+        if ( Controller.isNull() )
         {         
-            m_Controller = Controller.getInstance();
 
-            m_Controller.addDataEventListener( new DataControllerEventListener() {
+            Controller.getInstance().addDataEventListener( new DataControllerEventListener() {
 
                 public void actionPerformed(DataControllerEvent ce)
                 {
                    if ( ce.getEventType() == DataControllerEvent.EventType.EXTENDED_CONNECTION_LOSS )
                    {
-                       DataOrchestrator.getInstance().stopAllLogs();
+                       Controller.getInstance().getDataOrchestrator().stopAllLogs();
                    }
 
                 }
@@ -78,7 +77,7 @@ public class StokerInit extends HttpServlet
             // Once the config listener completes it will fire the event
             // and the default log file will start recording.
 
-            m_Controller.init();
+            Controller.getInstance().init();
 
         }
     }

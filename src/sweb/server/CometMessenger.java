@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
 
 import sweb.server.controller.Controller;
 
-public class CometMessagePusher implements ClientMessagePusher
+public class CometMessenger implements ClientMessenger
 {
 
   //  private volatile static CometMessagePusher m_ClientMessagePusher = null;
     private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
     
-    private static final Logger logger = Logger.getLogger(CometMessagePusher.class.getName());
+    private static final Logger logger = Logger.getLogger(CometMessenger.class.getName());
     
    /* public static ClientMessagePusher getInstance()
     {

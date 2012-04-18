@@ -55,7 +55,7 @@ import sweb.shared.model.logfile.LogNote;
 
 public class DataOrchestrator
 {
-    private volatile static DataOrchestrator sds = null;
+  //  private volatile static DataOrchestrator sds = null;
     ConcurrentHashMap<String,SDataPoint> hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
 
     HashMap<String,StokerFile> fileLogList = new HashMap<String,StokerFile>();
@@ -66,13 +66,13 @@ public class DataOrchestrator
 
     private static final Logger logger = Logger.getLogger(DataOrchestrator.class.getName());
     
-    private DataOrchestrator()
+    public DataOrchestrator()
     {
         RunTimer _runTimer = new RunTimer();
         updateTimer.schedule( _runTimer, 10000 );
     }
 
-    public static DataOrchestrator getInstance()
+   /* public static DataOrchestrator getInstance()
     {
         if ( sds == null)
         {
@@ -85,7 +85,7 @@ public class DataOrchestrator
             }
         }
         return sds;
-    }
+    }*/
 
     private class RunTimer extends TimerTask
     {

@@ -14,7 +14,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
-import sweb.server.CometMessagePusher;
+import sweb.server.CometMessenger;
 import sweb.server.controller.events.CookerConfigChangeListener;
 import sweb.server.controller.events.DataControllerEvent;
 import sweb.server.controller.events.DataControllerEventListener;
@@ -24,13 +24,13 @@ public class StokerWebConfiguration
 {
     private static final Logger logger = Logger.getLogger(StokerWebConfiguration.class.getName());
     
-    private volatile static StokerWebConfiguration stokerWebConfiguration = null;
+  //  private volatile static StokerWebConfiguration stokerWebConfiguration = null;
     
     private static CookerList cookerList;
     
     private static ArrayList<CookerConfigChangeListener> arListener = new ArrayList<CookerConfigChangeListener>();
     
-    public static StokerWebConfiguration getInstance()
+   /* public static StokerWebConfiguration getInstance()
     {
         if ( stokerWebConfiguration == null)
         {
@@ -44,7 +44,7 @@ public class StokerWebConfiguration
         }
         return stokerWebConfiguration;
     }
-    
+    */
     public StokerWebConfiguration() { loadConfig(); }
     
     public void saveConfig(CookerList cookerList)

@@ -273,7 +273,7 @@ public class MainPage
 
                     Log.debug("Configuration button clicked");
                     stokerService
-                            .getConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
+                            .getDeviceConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
 
                                 public void onFailure(Throwable caught)
                                 {
@@ -799,7 +799,7 @@ public class MainPage
     private void getStokerConfiguration()
     {
         Log.debug("getStokerConfiguration()");
-        stokerService.getConfiguration(new AsyncCallback<HashMap<String,SDevice>>() {
+        stokerService.getDeviceConfiguration(new AsyncCallback<HashMap<String,SDevice>>() {
 
             public void onFailure(Throwable caught)
             {

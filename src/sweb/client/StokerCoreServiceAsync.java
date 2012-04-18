@@ -37,7 +37,7 @@ public interface StokerCoreServiceAsync
     void getNewGraphDataPoints(String input, AsyncCallback<ArrayList<SDataPoint>> callback)
             throws IllegalArgumentException;
 
-    void getConfiguration(AsyncCallback<HashMap<String,SDevice>> callback)
+    void getDeviceConfiguration(AsyncCallback<HashMap<String,SDevice>> callback)
             throws IllegalArgumentException;
 
     void updateConfiguration( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)

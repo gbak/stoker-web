@@ -100,7 +100,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
-    public HashMap<String,SDevice> getConfiguration()
+    public HashMap<String,SDevice> getDeviceConfiguration()
             throws IllegalArgumentException
     {
         return StokerConfiguration.getInstance().data();
@@ -111,7 +111,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        HttpSession httpSession = getThreadLocalRequest().getSession();
       // CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
 
-       CometMessagePusher.getInstance().addSession( httpSession );
+       CometMessenger.getInstance().addSession( httpSession );
        
        handleControllerEvents();
 
@@ -127,7 +127,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    {
                        for ( SProbeDataPoint sdp : aldp)
                        {
-                           CometMessagePusher.getInstance().push(sdp);
+                           CometMessenger.getInstance().push(sdp);
                        }
                    }
 
@@ -136,19 +136,19 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
                    if ( bdp != null  )
                    {
-                      CometMessagePusher.getInstance().push(bdp);
+                      CometMessenger.getInstance().push(bdp);
                    }
 
                 }
 
            };
-           DataOrchestrator.getInstance().addListener( m_DPEL );
+           Controller.getInstance().getDataOrchestrator().addListener( m_DPEL );
        }
     }
 
     public ArrayList<SDataPoint> getNewGraphDataPoints(String input) throws IllegalArgumentException
     {
-        return DataOrchestrator.getInstance().getLastDPs();
+        return Controller.getInstance().getDataOrchestrator().getLastDPs();
 
     }
 
@@ -172,7 +172,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                     switch (ce.getEventType())
                     {
                         case CONNECTION_ESTABLISHED:
-                            CometMessagePusher
+                            CometMessenger
                                     .getInstance()
                                     .push(new ControllerEventLight(
                                             EventTypeLight.CONNECTION_ESTABLISHED));
@@ -180,7 +180,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                         case NONE:
                             break;
                         case LOST_CONNECTION:
-                            CometMessagePusher.getInstance().push(
+                            CometMessenger.getInstance().push(
                                     new ControllerEventLight(
                                             EventTypeLight.LOST_CONNECTION));
                             break;
@@ -210,7 +210,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                         case NONE:
                             break;
                         case CONFIG_UPDATE:
-                            CometMessagePusher.getInstance().push(
+                            CometMessenger.getInstance().push(
                                     new ControllerEventLight(
                                             EventTypeLight.CONFIG_UPDATE));
                             break;
@@ -231,7 +231,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 {
                     WeatherData wd = wce.getWeatherData();
                     if ( wd != null )
-                       CometMessagePusher.getInstance().push(wd);
+                       CometMessenger.getInstance().push(wd);
                 }
 
             };
@@ -342,12 +342,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             throws IllegalArgumentException
     {
 
-        return DataOrchestrator.getInstance().getAllDataPoints( logName );
+        return Controller.getInstance().getDataOrchestrator().getAllDataPoints( logName );
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
     {
-        return DataOrchestrator.getInstance().getLogList();
+        return Controller.getInstance().getDataOrchestrator().getLogList();
     }
 
     public Integer startLog(String strCookerName, String strLogName, ArrayList<SDevice> arSD ) throws IllegalArgumentException
@@ -356,20 +356,20 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
           return -1;
        
         Integer ret = new Integer(0);
-        if ( ! DataOrchestrator.getInstance().isLogRunning(strLogName))
+        if ( ! Controller.getInstance().getDataOrchestrator().isLogRunning(strLogName))
         {
             try
             {
                 LogItem li = new LogItem(strCookerName, strLogName, arSD);
-                DataOrchestrator.getInstance().startLog( li );
+                Controller.getInstance().getDataOrchestrator().startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
-                CometMessagePusher.getInstance().push( le );
+                CometMessenger.getInstance().push( le );
 
             }
             catch (LogExistsException e)
             {
-                try { DataOrchestrator.getInstance().stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
+                try { Controller.getInstance().getDataOrchestrator().stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
 
             }
         }
@@ -385,11 +385,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         Integer ret = new Integer(0);
         try
         {
-            DataOrchestrator.getInstance().stopLog(strLogName);
+            Controller.getInstance().getDataOrchestrator().stopLog(strLogName);
             ret = new Integer(1);
             // Create LogEvent and pass it back via comet stream
             LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
-            CometMessagePusher.getInstance().push( le );
+            CometMessenger.getInstance().push( le );
         }
         catch (LogNotFoundException e)
         {
@@ -431,7 +431,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        if ( ! loginGuard() )
           return -1;
        
-        return DataOrchestrator.getInstance().attachToExistingLog(cookerName, selectedLog, fileName);
+        return Controller.getInstance().getDataOrchestrator().attachToExistingLog(cookerName, selectedLog, fileName);
 
     }
 
@@ -481,7 +481,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         else
             s = Status.DISCONNECTED;
 
-        CometMessagePusher.getInstance().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
+        CometMessenger.getInstance().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
     }
 
     /**
@@ -493,12 +493,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         HttpSession httpSession = getThreadLocalRequest().getSession();
       //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         
-        for ( SDataPoint sdp : DataOrchestrator.getInstance().getLastDPs())
-           CometMessagePusher.getInstance().sessionPush( httpSession, sdp);
+        for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
+           CometMessenger.getInstance().sessionPush( httpSession, sdp);
 
         WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
         if ( wd != null )
-                CometMessagePusher.getInstance().sessionPush( httpSession, wd );
+                CometMessenger.getInstance().sessionPush( httpSession, wd );
     }
 
     
@@ -511,7 +511,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         if ( ! loginGuard() )
             return -1;
         
-        DataOrchestrator.getInstance().addNoteToLog(note, logList);
+        Controller.getInstance().getDataOrchestrator().addNoteToLog(note, logList);
         return 0;
     }
 

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import sweb.server.controller.data.DataOrchestrator;
+import sweb.server.controller.Controller;
 import sweb.server.controller.events.BlowerEvent;
 import sweb.server.controller.events.BlowerEventListener;
 import sweb.shared.model.data.SBlowerDataPoint;
@@ -50,7 +50,7 @@ public class ClientDataTracker
     public ClientDataTracker()
     {
 
-       DataOrchestrator.getInstance().addListener( new BlowerEventListener() {
+       Controller.getInstance().getDataOrchestrator().addListener( new BlowerEventListener() {
 
         public void stateChange(BlowerEvent be)
         {
@@ -76,7 +76,7 @@ public class ClientDataTracker
             arBlowerHistory.clear();
 
         }
-        for ( Entry<String, SDataPoint> entrySD : DataOrchestrator.getInstance().getData())
+        for ( Entry<String, SDataPoint> entrySD : Controller.getInstance().getDataOrchestrator().getData())
         {
             SDataPoint lastClientDP = hmLastChecked.get(entrySD.getKey());
 
