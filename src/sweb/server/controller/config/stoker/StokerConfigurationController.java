@@ -66,11 +66,11 @@ import sweb.shared.model.stoker.StokerProbe.AlarmType;
 import net.htmlparser.jericho.*;
 
 // This name is confusing.
-public class StokerWebConfigurationController extends ConfigurationController
+public class StokerConfigurationController extends ConfigurationController
 {
     StokerConfiguration sc = null;
 
-    private static final Logger logger = Logger.getLogger(StokerWebConfigurationController.class.getName());
+    private static final Logger logger = Logger.getLogger(StokerConfigurationController.class.getName());
 
    private String convert( InputStream is)
    {
@@ -437,7 +437,7 @@ public class StokerWebConfigurationController extends ConfigurationController
    public static void main(String[] args)
    {
       //new StokerWebConfigurationController().scrapeWebPage();
-      new StokerWebConfigurationController().pullJSonConfig();
+      new StokerConfigurationController().pullJSonConfig();
    }
 
    public void setConfiguration(StokerConfiguration sc)

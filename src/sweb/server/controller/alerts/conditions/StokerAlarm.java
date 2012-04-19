@@ -65,7 +65,7 @@ public class StokerAlarm extends AlertCondition
          }
       };
       
-      DataOrchestrator.getInstance().addListener(m_dl);
+      Controller.getInstance().getDataOrchestrator().addListener(m_dl);
 
        ConfigControllerEventListener m_ccel = new ConfigControllerEventListener() {
 

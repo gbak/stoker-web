@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import sweb.server.controller.Controller;
 import sweb.server.controller.StokerConfiguration;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
@@ -96,7 +97,7 @@ public class SDataPointHelper
 
           if ( bHasFan )
           {
-              String strBlowerID = StokerConfiguration.getInstance().getBlowerID(deviceID);
+              String strBlowerID = Controller.getInstance().getStokerConfiguration().getBlowerID(deviceID);
               SBlowerDataPoint sdp = new SBlowerDataPoint( strBlowerID, Calendar.getInstance().getTime(), bFanOn );
               arDP.add( sdp );
           }

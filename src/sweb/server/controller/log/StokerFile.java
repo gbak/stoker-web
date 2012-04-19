@@ -276,7 +276,7 @@ public class StokerFile
             
         };
         
-        DataOrchestrator.getInstance().addListener(m_dl);
+        Controller.getInstance().getDataOrchestrator().addListener(m_dl);
         
         Controller.getInstance().addConfigEventListener(
                 getConfigEventListener());
@@ -288,7 +288,7 @@ public class StokerFile
     public void stop()
     {
         //logTimer.cancel();
-        DataOrchestrator.getInstance().removeListener(m_dl);
+        Controller.getInstance().getDataOrchestrator().removeListener(m_dl);
 
     }
 

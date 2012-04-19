@@ -28,7 +28,7 @@ import sweb.server.CometMessenger;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.config.stoker.StokerWebConfigurationController;
+import sweb.server.controller.config.stoker.StokerConfigurationController;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.data.telnet.StokerTelnetController;
@@ -55,6 +55,7 @@ public class Controller
     private WeatherController m_WeatherController = null;
     private AlertsController m_AlertsController = null;
     private ClientMessenger m_ClientMessenger = null;
+    private StokerConfiguration m_StokerConfiguration = null;
 
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
     
@@ -84,10 +85,11 @@ public class Controller
     private Controller()
     {
         m_DataController= new StokerTelnetController();
-        m_ConfigurationController = new StokerWebConfigurationController();
+        m_ConfigurationController = new StokerConfigurationController();
         m_WeatherController = new WeatherController();
         m_DataOrchestrator = new DataOrchestrator();
         m_ClientMessenger = new CometMessenger();
+        m_StokerConfiguration = new StokerConfiguration();
         
     }
 
@@ -96,7 +98,7 @@ public class Controller
         logger.info("Controller init called");
        m_AlertsController = new AlertsController();
        m_DataController.setDataStore(m_DataOrchestrator);
-       m_ConfigurationController.setConfiguration(StokerConfiguration.getInstance());
+       m_ConfigurationController.setConfiguration(m_StokerConfiguration);
 
        m_DataController.addEventListener(new DataControllerEventListener()
        {
@@ -127,7 +129,9 @@ public class Controller
         // A full flush needs to be done on the server and restart\
         
         m_DataController= new StokerTelnetController();
-        m_ConfigurationController = new StokerWebConfigurationController();
+        m_StokerConfiguration = new StokerConfiguration();
+        m_ConfigurationController = new StokerConfigurationController();
+        m_ConfigurationController.setConfiguration( m_StokerConfiguration );
         m_WeatherController = new WeatherController();
         m_AlertsController = null;
         m_ClientMessenger = new CometMessenger();
@@ -141,9 +145,18 @@ public class Controller
         return m_DataOrchestrator;
     }
     
+    public ClientMessenger getClientMessenger()
+    {
+       return m_ClientMessenger;    
+    }
+    public StokerConfiguration getStokerConfiguration()
+    {
+        return m_StokerConfiguration;
+    }
+    
     private void setupDefaultLog()
     {
-        for( String s : StokerConfiguration.getInstance().getAllBlowerIDs() )
+        for( String s : m_StokerConfiguration.getAllBlowerIDs() )
         {
             String strCookerName = StokerWebProperties.getInstance().getProperty( s );
 
@@ -169,7 +182,7 @@ public class Controller
          //   }  // end while try again
 
         } // end for String
-        if (StokerConfiguration.getInstance().getAllBlowerIDs().size() == 0 )
+        if (m_StokerConfiguration.getAllBlowerIDs().size() == 0 )
         {
             logger.error("No Blowers configured!");
         }
@@ -186,7 +199,7 @@ public class Controller
 
     public void updateConfiguration()
     {
-        m_ConfigurationController.setConfiguration(StokerConfiguration.getInstance());
+        m_ConfigurationController.setConfiguration(m_StokerConfiguration);
     }
 
     public void addDataEventListener( DataControllerEventListener cl)

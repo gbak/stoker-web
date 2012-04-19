@@ -111,7 +111,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        HttpSession httpSession = getThreadLocalRequest().getSession();
       // CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
 
-       CometMessenger.getInstance().addSession( httpSession );
+       Controller.getInstance().getClientMessenger().addSession( httpSession );
        
        handleControllerEvents();
 
@@ -127,7 +127,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    {
                        for ( SProbeDataPoint sdp : aldp)
                        {
-                           CometMessenger.getInstance().push(sdp);
+                           Controller.getInstance().getClientMessenger().push(sdp);
                        }
                    }
 
@@ -136,7 +136,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
                    if ( bdp != null  )
                    {
-                      CometMessenger.getInstance().push(bdp);
+                      Controller.getInstance().getClientMessenger().push(bdp);
                    }
 
                 }
@@ -172,15 +172,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                     switch (ce.getEventType())
                     {
                         case CONNECTION_ESTABLISHED:
-                            CometMessenger
-                                    .getInstance()
+                            Controller.getInstance().getClientMessenger()
                                     .push(new ControllerEventLight(
                                             EventTypeLight.CONNECTION_ESTABLISHED));
                             break;
                         case NONE:
                             break;
                         case LOST_CONNECTION:
-                            CometMessenger.getInstance().push(
+                            Controller.getInstance().getClientMessenger().push(
                                     new ControllerEventLight(
                                             EventTypeLight.LOST_CONNECTION));
                             break;
@@ -210,7 +209,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                         case NONE:
                             break;
                         case CONFIG_UPDATE:
-                            CometMessenger.getInstance().push(
+                            Controller.getInstance().getClientMessenger().push(
                                     new ControllerEventLight(
                                             EventTypeLight.CONFIG_UPDATE));
                             break;
@@ -231,7 +230,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 {
                     WeatherData wd = wce.getWeatherData();
                     if ( wd != null )
-                       CometMessenger.getInstance().push(wd);
+                       Controller.getInstance().getClientMessenger().push(wd);
                 }
 
             };
@@ -364,7 +363,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 Controller.getInstance().getDataOrchestrator().startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
-                CometMessenger.getInstance().push( le );
+                Controller.getInstance().getClientMessenger().push( le );
 
             }
             catch (LogExistsException e)
@@ -389,7 +388,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             ret = new Integer(1);
             // Create LogEvent and pass it back via comet stream
             LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
-            CometMessenger.getInstance().push( le );
+            Controller.getInstance().getClientMessenger().push( le );
         }
         catch (LogNotFoundException e)
         {
@@ -481,7 +480,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         else
             s = Status.DISCONNECTED;
 
-        CometMessenger.getInstance().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
+        Controller.getInstance().getClientMessenger().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
     }
 
     /**
@@ -494,11 +493,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
       //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         
         for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
-           CometMessenger.getInstance().sessionPush( httpSession, sdp);
+           Controller.getInstance().getClientMessenger().sessionPush( httpSession, sdp);
 
         WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
         if ( wd != null )
-                CometMessenger.getInstance().sessionPush( httpSession, wd );
+                Controller.getInstance().getClientMessenger().sessionPush( httpSession, wd );
     }
 
     

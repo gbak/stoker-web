@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.controller.config.stoker.StokerWebConfigurationController;
+import sweb.server.controller.config.stoker.StokerConfigurationController;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerPitSensor;
@@ -184,7 +184,7 @@ public class StokerConfiguration
 
     public Integer update( ArrayList<SDevice> asd )
     {
-        StokerWebConfigurationController.postUpdate(asd);
+        StokerConfigurationController.postUpdate(asd);
 
         return new Integer(1);
     }

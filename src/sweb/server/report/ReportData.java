@@ -18,6 +18,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
+import sweb.server.controller.Controller;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.LogFileFormatter;
@@ -69,8 +70,8 @@ public class ReportData
         else
         {
             logger.debug("Log file does not end in .log");
-           strLogFilePath = DataOrchestrator.getInstance().getLogFilePath(name);
-           strLogNameShort = DataOrchestrator.getInstance().getLogFileName(name);
+           strLogFilePath = Controller.getInstance().getDataOrchestrator().getLogFilePath(name);
+           strLogNameShort = Controller.getInstance().getDataOrchestrator().getLogFileName(name);
         }
         logger.debug("Full path is: " + strLogFilePath );
         logger.debug("Short log name: " + strLogNameShort );
