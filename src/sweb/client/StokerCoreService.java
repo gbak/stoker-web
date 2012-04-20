@@ -42,6 +42,8 @@ public interface StokerCoreService extends RemoteService
 {
     ArrayList<SDataPoint> getNewGraphDataPoints(String name) throws IllegalArgumentException;
     HashMap<String,SDevice> getDeviceConfiguration() throws IllegalArgumentException;
+    CookerList getStokerWebConfiguration() throws IllegalArgumentException;
+    
     Integer updateConfiguration( ArrayList<SDevice> asd) throws IllegalArgumentException;
 
     Integer updateStokerWebConfig( CookerList cookerList ) throws IllegalArgumentException;

@@ -15,6 +15,7 @@ import net.zschech.gwt.comet.client.CometSerializer;
 import net.zschech.gwt.comet.client.SerialTypes;
 //import sweb.client.StokerWeb.LoadedPage;
 //import sweb.client.StokerWeb.StokerCometSerializer;
+import sun.security.krb5.internal.ccache.CCacheInputStream;
 import sweb.client.dialog.AlertDialog;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.client.dialog.LogFileChooser;
@@ -795,7 +796,7 @@ public class MainPage
         else
             return "Sign in";
     }
-
+/*
     private void getStokerConfiguration()
     {
         Log.debug("getStokerConfiguration()");
@@ -809,6 +810,36 @@ public class MainPage
             }
 
             public void onSuccess(HashMap<String,SDevice> result)
+            {
+                System.out.println("getConfiguration complete.");
+
+                Log.info("Successfully retreived stoker configuration from server");
+                createCookers( result, alCookers );
+
+                for ( CookerComponent cc : alCookers)
+                {
+                    Log.trace("Calling draw for cooker: " + cc.getName());
+                   cc.draw();
+                }
+
+            }
+
+        });
+    }
+    */
+    private void getStokerConfiguration()
+    {
+        Log.debug("getStokerConfiguration()");
+        stokerService.getStokerWebConfiguration(new AsyncCallback<CookerList>() {
+
+            public void onFailure(Throwable caught)
+            {
+                caught.printStackTrace();
+                Log.error("Client configuration failure");
+
+            }
+
+            public void onSuccess(CookerList result)
             {
                 System.out.println("getConfiguration complete.");
 
@@ -855,9 +886,10 @@ public class MainPage
 
 
 
-    private void createCookers(HashMap<String,SDevice> result, ArrayList<CookerComponent> cooker )
+    private void createCookers(CookerList result, ArrayList<CookerComponent> cooker )
     {
         Log.debug("createCookers()");
+        /*
        ArrayList<SDevice> alDevices = new ArrayList<SDevice>(result.values());
 
        Collections.sort(alDevices, new Comparator<SDevice>() {
@@ -916,9 +948,28 @@ public class MainPage
            cc.init();
            cooker.add( cc );
        }
+       */
+        for ( Cooker c : result.getCookerList() )
+        {
+            CookerComponent cc = new CookerComponent(stokerService, properties);
+            
+            vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
 
+            vpCookers.setWidth("100%");
+
+            int numProbes = c.getProbeCount();
+            // Debug ***
+            Log.debug("numProbes is [" + numProbes + "]");
+            if ( numProbes > 3 )
+               cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
+            cc.init( c );
+            cooker.add(cc);
+        }
+        
     }
 
+    /*
+    @Deprecated
     private int getNumProbesForCooker( int cookerNum,  ArrayList<SDevice> alDevices )
     {
         int i = 0;
@@ -933,7 +984,7 @@ public class MainPage
         }
         return i;
     }
-    
+    */
     private int getNumCookers( ArrayList<SDevice> sda )
     {
         int iMax = 1;

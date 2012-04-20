@@ -35,6 +35,7 @@ import sweb.client.gauge.ProbeComponent;
 import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
+import sweb.shared.model.Cooker;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.data.SBlowerDataPoint;
@@ -85,7 +86,7 @@ public class CookerComponent extends Composite
 
 
     private HashMap<String,ProbeComponent> mapGuages = new HashMap<String,ProbeComponent>();
-    private HashMap<String,SDevice> mapDeviceList = new HashMap<String,SDevice>();
+  //  private HashMap<String,SDevice> mapDeviceList = new HashMap<String,SDevice>();
 
     // List of logs that are currently active on the server.
     //private ArrayList<LogItem> arLogItems = null;
@@ -124,7 +125,7 @@ public class CookerComponent extends Composite
     private Image StatusImage = new Image(strConnectedImageURL);
     private HTML  StatusText = new HTML(strConnectedText);
 
-    private String strCookerName = null;
+    private Cooker cooker = null;
     private String m_PitID = null;
 
     private int gaugePanelWidth = 0;
@@ -361,7 +362,7 @@ public class CookerComponent extends Composite
                                    final int iSelectedIndex = logListBox.getSelectedIndex();
                                    final String strLogName = logListBox.getItemText(iSelectedIndex);
 
-                                   stokerService.attachToExistingLog( strCookerName, strLogName, st, new AsyncCallback<Integer>() {
+                                   stokerService.attachToExistingLog( cooker.getCookerName(), strLogName, st, new AsyncCallback<Integer>() {
 
                                     public void onFailure(Throwable caught)
                                     {
@@ -494,7 +495,7 @@ public class CookerComponent extends Composite
             {
                 return;
             }
-            stokerService.stopLog(strCookerName, strLogName, new AsyncCallback<Integer>() {
+            stokerService.stopLog(cooker.getCookerName(), strLogName, new AsyncCallback<Integer>() {
 
                 public void onFailure(Throwable caught)
                 {
@@ -514,6 +515,20 @@ public class CookerComponent extends Composite
        return cl;
     }
 
+
+    public void addComponents( Cooker c )
+    {
+    
+        StokerProbe pit = (StokerProbe) c.getStokerPitSensor();
+        ProbeComponent gc = new ProbeComponent( pit, alignment, properties );
+        mapGuages.put( pit.getID(), gc );
+        gc.addStyleName("sweb-gaugeFlowPanel");
+        hpStokerElements.add( gc );
+        gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
+        
+        
+        
+    }
     public void addDevice( SDevice sd1 )
     {
         if ( sd1.isProbe())
@@ -532,7 +547,6 @@ public class CookerComponent extends Composite
            if ( sd1.getProbeType() == DeviceType.PIT )
            {
                m_PitID = sd1.getID();
-               strCookerName = sd1.getCookerName();
            }
         }
         else
@@ -549,15 +563,17 @@ public class CookerComponent extends Composite
     
     public String getName()
     {
-       return strCookerName;
+       return cooker.getCookerName();
     }
     
-    public void init()
+    public void init(Cooker c)
     {
         System.out.println("Height is: " + hpStokerElements.getOffsetHeight());
         System.out.println("Width is: " + hpStokerElements.getOffsetWidth());
 
-        cookerNameLabel.setText(strCookerName);
+        cooker = c;
+        
+        cookerNameLabel.setText(cooker.getCookerName());
 
     //    sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
         DecoratorPanel dpGraph = new DecoratorPanel();
@@ -625,7 +641,7 @@ public class CookerComponent extends Composite
     {
         final String strFinalLogName = newLogName;
 
-        stokerService.startLog( strCookerName, newLogName, arSD, new AsyncCallback<Integer>() {
+        stokerService.startLog( cooker.getCookerName(), newLogName, arSD, new AsyncCallback<Integer>() {
 
             public void onFailure(Throwable caught)
             {
@@ -705,12 +721,12 @@ public class CookerComponent extends Composite
         logListBox.clear();
         for ( LogItem l : li )
         {
-            if ( l.getCookerName() == null || strCookerName == null )
+            if ( l.getCookerName() == null || cooker.getCookerName() == null )
             {
                 // TODO: show cooker missing error
                 return;
             }
-            if ( l.getCookerName().compareTo(strCookerName) == 0)
+            if ( l.getCookerName().compareTo(cooker.getCookerName()) == 0)
             {
                hmLogItems.put( l.getLogName(), l );
                logListBox.addItem(l.getLogName());

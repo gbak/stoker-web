@@ -40,6 +40,9 @@ public interface StokerCoreServiceAsync
     void getDeviceConfiguration(AsyncCallback<HashMap<String,SDevice>> callback)
             throws IllegalArgumentException;
 
+    void getStokerWebConfiguration(AsyncCallback<CookerList> callback )
+            throws IllegalArgumentException;
+    
     void updateConfiguration( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)
            throws IllegalArgumentException;
     

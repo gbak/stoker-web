@@ -125,7 +125,7 @@ public class StokerFile
         // if no devices were set to be logged, log everything
         if ( asd == null)
         {
-           asd = StokerConfiguration.getInstance().getAllDevices();
+           asd = Controller.getInstance().getStokerConfiguration().getAllDevices();
         }
 
         int x = 1;
@@ -559,7 +559,7 @@ public class StokerFile
             // Configuration Update
             
             // Need to popuate new config data!
-            HashMap<String,SDevice> hm = StokerConfiguration.getInstance().data();
+            HashMap<String,SDevice> hm = Controller.getInstance().getStokerConfiguration().data();
             
             for ( String s : m_hmSD.keySet() )
             {
