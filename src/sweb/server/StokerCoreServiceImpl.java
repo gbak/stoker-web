@@ -103,7 +103,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public HashMap<String,SDevice> getDeviceConfiguration()
             throws IllegalArgumentException
     {
-        return StokerConfiguration.getInstance().data();
+        return Controller.getInstance().getStokerConfiguration().data();
     }
 
     public void setupCallBack()
@@ -414,7 +414,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        if ( ! loginGuard() )
           return -1;
        
-        StokerConfiguration.getInstance().update( asd );
+       Controller.getInstance().getStokerConfiguration().update( asd );
         Controller.getInstance().loadConfiguration();
         return new Integer(1);
     }

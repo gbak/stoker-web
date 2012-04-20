@@ -126,7 +126,7 @@ public class CookerComponent extends Composite
     private HTML  StatusText = new HTML(strConnectedText);
 
     private Cooker cooker = null;
-    private String m_PitID = null;
+  //  private String m_PitID = null;
 
     private int gaugePanelWidth = 0;
     private int gaugePanelHeight = 0;

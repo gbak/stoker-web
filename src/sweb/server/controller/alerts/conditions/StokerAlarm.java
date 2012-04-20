@@ -50,7 +50,7 @@ public class StokerAlarm extends AlertCondition
    
    private void setConfig()
    {
-      m_hmConfig = StokerConfiguration.getInstance().data();   
+      m_hmConfig = Controller.getInstance().getStokerConfiguration().data();   
    }
    
    private void handleControllerEvents()
