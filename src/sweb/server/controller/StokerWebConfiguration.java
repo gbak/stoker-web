@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
@@ -18,7 +19,10 @@ import sweb.server.CometMessenger;
 import sweb.server.controller.events.CookerConfigChangeListener;
 import sweb.server.controller.events.DataControllerEvent;
 import sweb.server.controller.events.DataControllerEventListener;
+import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 public class StokerWebConfiguration
 {
@@ -45,7 +49,38 @@ public class StokerWebConfiguration
         return stokerWebConfiguration;
     }
     */
-    public StokerWebConfiguration() { loadConfig(); }
+    public StokerWebConfiguration(StokerConfiguration stokerConfig) 
+    { 
+        loadConfig(); 
+        reconcile( stokerConfig );
+    }
+    
+    private void reconcile( StokerConfiguration stokerConfig )
+    {
+        logger.debug("reconcile");
+        
+        HashMap<String,SDevice> hmStoker = new HashMap<String,SDevice>(); 
+        for ( SDevice sd : stokerConfig.getAllDevices() )
+        {
+            hmStoker.put( sd.getID(),sd);
+        }
+       
+        stokerConfig.getAllDevices();
+       
+       for ( Cooker cooker : cookerList.getCookerList() )
+       {
+           for ( SDevice sdCooker : cooker.getDeviceList() )
+           {
+               SDevice sdStoker = hmStoker.get( sdCooker.getID() );
+               
+               if ( sdStoker == null )
+               {
+                   logger.warn("device: [" + sdCooker.getName() + "] with id [" + sdCooker.getID() + "] does not exist in stoker");
+               }
+               sdStoker.getProbeType() DeviceType.PIT
+           }
+       }
+    }
     
     public void saveConfig(CookerList cookerList)
     {

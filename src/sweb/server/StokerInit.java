@@ -42,7 +42,7 @@ public class StokerInit extends HttpServlet
     {
         if ( m_CookerConfig == null )
         {
-            m_CookerConfig = StokerWebConfiguration.getInstance();
+            m_CookerConfig = Controller.getInstance().get;
             m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
 
                 @Override

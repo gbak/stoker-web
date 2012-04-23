@@ -56,6 +56,7 @@ public class Controller
     private AlertsController m_AlertsController = null;
     private ClientMessenger m_ClientMessenger = null;
     private StokerConfiguration m_StokerConfiguration = null;
+    private StokerWebConfiguration m_StokerWebConfiguration = null;
 
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
     
@@ -84,13 +85,16 @@ public class Controller
 
     private Controller()
     {
-        m_DataController= new StokerTelnetController();
-        m_ConfigurationController = new StokerConfigurationController();
-        m_WeatherController = new WeatherController();
-        m_DataOrchestrator = new DataOrchestrator();
-        m_ClientMessenger = new CometMessenger();
-        m_StokerConfiguration = new StokerConfiguration();
-        
+        synchronized ( Controller.class)
+        {
+            m_DataController= new StokerTelnetController();
+            m_ConfigurationController = new StokerConfigurationController();
+            m_WeatherController = new WeatherController();
+            m_DataOrchestrator = new DataOrchestrator();
+            m_ClientMessenger = new CometMessenger();
+            m_StokerConfiguration = new StokerConfiguration();
+            m_StokerWebConfiguration = new StokerWebConfiguration(m_StokerConfiguration);
+        }
     }
 
     public void init()
@@ -125,18 +129,21 @@ public class Controller
 
     public void resetAll()
     {
-        // this gets called when the stoker configuration has changed from the client side.
-        // A full flush needs to be done on the server and restart\
-        
-        m_DataController= new StokerTelnetController();
-        m_StokerConfiguration = new StokerConfiguration();
-        m_ConfigurationController = new StokerConfigurationController();
-        m_ConfigurationController.setConfiguration( m_StokerConfiguration );
-        m_WeatherController = new WeatherController();
-        m_AlertsController = null;
-        m_ClientMessenger = new CometMessenger();
-
-        init();
+        synchronized ( Controller.class)
+        {
+            // this gets called when the stoker configuration has changed from the client side.
+            // A full flush needs to be done on the server and restart\
+            
+            m_DataController= new StokerTelnetController();
+            m_StokerConfiguration = new StokerConfiguration();
+            m_ConfigurationController = new StokerConfigurationController();
+            m_ConfigurationController.setConfiguration( m_StokerConfiguration );
+            m_WeatherController = new WeatherController();
+            m_AlertsController = null;
+            m_ClientMessenger = new CometMessenger();
+    
+            init();
+        }
         
     }
     
