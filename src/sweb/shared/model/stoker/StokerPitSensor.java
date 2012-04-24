@@ -107,4 +107,13 @@ public class StokerPitSensor extends StokerProbe implements Serializable
        return DeviceType.PIT;
     }
 
+    public boolean equals( StokerPitSensor sp )
+    {
+        if ( super.equals(sp ) == true )
+            if ( this.getFanDevice() != null && sp.getFanDevice() != null )
+               return this.getFanDevice().equals(sp.getFanDevice());
+        
+        return false;
+        
+    }
 }

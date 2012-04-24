@@ -84,6 +84,18 @@ public class Cooker implements Serializable
         return count;
     }
     
+    public void removeStokerProbe( String probeID )
+    {
+        for ( StokerProbe sp : probeList )
+        {
+            if ( sp.getID().equalsIgnoreCase(probeID));
+            {
+                probeList.remove(sp);
+                break;
+            }
+        }
+    }
+    
     public ArrayList<SDevice> getDeviceList()
     {
         ArrayList<SDevice> sd = new ArrayList<SDevice>();
@@ -97,6 +109,6 @@ public class Cooker implements Serializable
                
            }
         }
-        
+        return sd;
     }
 }

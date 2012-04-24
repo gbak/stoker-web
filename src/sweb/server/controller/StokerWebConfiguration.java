@@ -23,6 +23,8 @@ import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
+import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.stoker.StokerPitSensor;
 
 public class StokerWebConfiguration
 {
@@ -57,6 +59,12 @@ public class StokerWebConfiguration
     
     private void reconcile( StokerConfiguration stokerConfig )
     {
+        /* This method checks to see if the devices listed in the saved stoker-web
+         * configuration exist on the stoker hardware.  If the device does not
+         * exist, it is removed from the cooker.
+         * 
+         * 
+         */
         logger.debug("reconcile");
         
         HashMap<String,SDevice> hmStoker = new HashMap<String,SDevice>(); 
@@ -67,17 +75,66 @@ public class StokerWebConfiguration
        
         stokerConfig.getAllDevices();
        
+        logger.debug("Looping over cookers");
        for ( Cooker cooker : cookerList.getCookerList() )
        {
-           for ( SDevice sdCooker : cooker.getDeviceList() )
+           if ( logger.isDebugEnabled() && cooker.getCookerName() != null )
+              logger.debug("Found cooker: " + cooker.getCookerName());
+           
+           StokerPitSensor cookerPitSensor = cooker.getStokerPitSensor();
+           
+           if ( cookerPitSensor != null )
            {
-               SDevice sdStoker = hmStoker.get( sdCooker.getID() );
+              SDevice sdStoker = hmStoker.get( cookerPitSensor.getID());
+              if ( sdStoker != null )
+              {
+                 if ( sdStoker.getProbeType() == DeviceType.PIT )
+                 {
+                     if ( ! cookerPitSensor.equals((StokerPitSensor) sdStoker))
+                     {
+                         cooker.setPitSensor(null );
+                     }
+                 }
+                  /*
+                  switch (sdStoker.getProbeType())
+                  {
+                      case PIT:
+                          StokerPitSensor sps = (StokerPitSensor)sdStoker;
+                          StokerFan sf =  sps.getFanDevice();
+                          if ( sf != null )
+                          {
+                              if ( sf.getID().compareTo(cookerPitSensor.getFanDevice().getID()) != 0)
+                              {
+                                  logger.warn("Fan device does not match StokerWeb and stoker configuration for pit sensor: " + cookerPitSensor.getName());
+                                  
+                              }
+                          }
+                          break;
+                      case BLOWER:
+                          
+                      case FOOD:
+                          
+                      default:
+                  }
+                  */
+                  
+              }
+              else
+              {
+                  logger.warn("StokerWeb cookerPitSensor not found on stoker device");
+                  cooker.setPitSensor(null);
+              }
+           }
+           
+           for ( SDevice cookerProbe : cooker.getStokerProbeList() )
+           {
+               SDevice sdStoker = hmStoker.get( cookerProbe.getID() );
                
                if ( sdStoker == null )
                {
-                   logger.warn("device: [" + sdCooker.getName() + "] with id [" + sdCooker.getID() + "] does not exist in stoker");
+                   logger.warn("device: [" + cookerProbe.getName() + "] with id [" + cookerProbe.getID() + "] does not exist in stoker");
                }
-               sdStoker.getProbeType() DeviceType.PIT
+               cooker.removeStokerProbe(cookerProbe.getID());
            }
        }
     }
