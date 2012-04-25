@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.controller.config.stoker.StokerConfigurationController;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
@@ -75,6 +77,7 @@ public class StokerConfiguration
     }
 
 
+    @Inject
     protected StokerConfiguration()
     {
 

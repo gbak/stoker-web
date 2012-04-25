@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.data.DataOrchestrator;
@@ -38,11 +40,12 @@ public class StokerInit extends HttpServlet
     private StokerWebConfiguration m_CookerConfig = null;
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
-    public StokerInit()
+    @Inject
+    public StokerInit(StokerWebConfiguration stokerWebConfiguration)
     {
         if ( m_CookerConfig == null )
         {
-            m_CookerConfig = Controller.getInstance().get;
+            m_CookerConfig = stokerWebConfiguration;
             m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
 
                 @Override

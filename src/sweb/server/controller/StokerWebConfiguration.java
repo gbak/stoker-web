@@ -14,6 +14,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.google.inject.Inject;
+
 
 import sweb.server.CometMessenger;
 import sweb.server.controller.events.CookerConfigChangeListener;
@@ -51,9 +53,15 @@ public class StokerWebConfiguration
         return stokerWebConfiguration;
     }
     */
+    
+    @Inject
     public StokerWebConfiguration(StokerConfiguration stokerConfig) 
     { 
         loadConfig(); 
+
+        if ( cookerList == null )
+            cookerList = new CookerList();
+        
         reconcile( stokerConfig );
     }
     

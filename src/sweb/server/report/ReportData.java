@@ -259,7 +259,7 @@ public class ReportData
                     
                     case CONFIG:
                         SDevice sd = LogFileFormatter.parseLogConfigLine( str );
-                        hmByLogDevNumAndDeviceID.put(sd.getDeviceLogNum(), sd.getID() );
+                        hmByLogDevNumAndDeviceID.put("1", sd.getID() );
                         hmByDeviceIDAndSDevice.put(sd.getID(), sd );
                         break;
                 

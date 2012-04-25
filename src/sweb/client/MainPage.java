@@ -985,7 +985,7 @@ public class MainPage
         return i;
     }
     */
-    private int getNumCookers( ArrayList<SDevice> sda )
+   /* private int getNumCookers( ArrayList<SDevice> sda )
     {
         int iMax = 1;
         Iterator<SDevice> deviceIter = sda.iterator();
@@ -996,7 +996,7 @@ public class MainPage
                 iMax = sd.getCookerNum();
         }
         return iMax;
-    }
+    }*/
 
     private void userLoggedIn( boolean b )
     {

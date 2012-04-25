@@ -1,6 +1,9 @@
 package sweb.server;
 
 import com.google.inject.servlet.ServletModule;
+import sweb.server.StokerInit;
+import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.StokerWebConfiguration;
 
 public class DispatchServletModule extends ServletModule
 {
@@ -8,6 +11,10 @@ public class DispatchServletModule extends ServletModule
     public void configureServlets() {
     //  serve("/" + ActionImpl.DEFAULT_SERVICE_NAME + "*").with(
     //      DispatchServiceImpl.class);
+      
+      bind(sweb.server.StokerInit.class).asEagerSingleton();
+      bind(StokerConfiguration.class).asEagerSingleton();
+      bind(StokerWebConfiguration.class).asEagerSingleton();
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       

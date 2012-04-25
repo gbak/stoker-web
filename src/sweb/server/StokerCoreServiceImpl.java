@@ -75,6 +75,7 @@ import sweb.shared.model.logfile.LogDir;
 import sweb.shared.model.weather.WeatherData;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
 
 /**
  * The server side implementation of the RPC service.
@@ -97,8 +98,15 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     DataControllerEventListener m_dcel = null;
     ConfigControllerEventListener m_ccel = null;
     WeatherChangeEventListener m_wcel = null;
-
+    StokerWebConfiguration stokerWebConfiguration = null;
+    
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
+    
+    @Inject
+    public void StokerCoreServiceImpl( StokerWebConfiguration config )
+    {
+        this.stokerWebConfiguration = config;
+    }
     
     public HashMap<String,SDevice> getDeviceConfiguration()
             throws IllegalArgumentException
@@ -106,6 +114,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         return Controller.getInstance().getStokerConfiguration().data();
     }
 
+    
+    
     public void setupCallBack()
     {
        HttpSession httpSession = getThreadLocalRequest().getSession();
@@ -595,12 +605,20 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         // TODO Auto-generated method stub
         
         // Save Cooker to property file as JSON
-        StokerWebConfiguration.getInstance().saveConfig(cookerList);
+        stokerWebConfiguration.saveConfig(cookerList);
         
-        // Update Stoker
+        // TODO:  Update Stoker
         // Restart necessary Server objects to reflect updated config
         // send refresh over comet stream to refresh clients.
         return new Integer(1);
+    }
+
+    @Override
+    public CookerList getStokerWebConfiguration()
+            throws IllegalArgumentException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
     
     

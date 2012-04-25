@@ -409,8 +409,7 @@ public class CookerComponent extends Composite
 
             public void onClick(ClickEvent event)
             {
-
-                new NewLogDialog( new ArrayList<SDevice>(mapDeviceList.values()), new NewLogDialogHandler() {
+                new NewLogDialog( cooker.getDeviceList(), new NewLogDialogHandler() {
 
                     public void onReturn(String sLogName,
                             ArrayList<SDevice> arSD)
@@ -543,15 +542,15 @@ public class CookerComponent extends Composite
               gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
 
            
-           mapDeviceList.put( sd1.getID(), sd1);
-           if ( sd1.getProbeType() == DeviceType.PIT )
-           {
-               m_PitID = sd1.getID();
-           }
+     //      mapDeviceList.put( sd1.getID(), sd1);
+     //      if ( sd1.getProbeType() == DeviceType.PIT )
+     //      {
+     //          m_PitID = sd1.getID();
+     //      }
         }
         else
         {
-            mapDeviceList.put( sd1.getID(), sd1);
+    //        mapDeviceList.put( sd1.getID(), sd1);
 
         }
     }
@@ -747,7 +746,7 @@ public class CookerComponent extends Composite
             {
                 if ( sdp instanceof SBlowerDataPoint )
                 {
-                    ProbeComponent pc = mapGuages.get(m_PitID);
+                    ProbeComponent pc = mapGuages.get(cooker.getStokerPitSensor().getID());
                     if ( pc != null )
                        pc.updateData(sdp);
                 }

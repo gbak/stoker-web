@@ -117,12 +117,10 @@ public class LogFileFormatter
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);
         // write c lines  ( cookers)
-        ArrayList<Integer> cookers = getUniqueCookers(arSD);
-        for ( Integer i : cookers )
-        {
-            formatter.format(strCookerFormat,i.intValue(),strCookerName);  //TODO: get Cooker Name
+  //      ArrayList<Integer> cookers = getUniqueCookers(arSD);
 
-        }
+        formatter.format(strCookerFormat,1,strCookerName);  //TODO: get Cooker Name
+
 
         for ( SDevice sd : arSD )
         {
@@ -266,7 +264,7 @@ public class LogFileFormatter
     }
     
     
-    private static ArrayList<Integer> getUniqueCookers(ArrayList<SDevice> arSD)
+ /*   private static ArrayList<Integer> getUniqueCookers(ArrayList<SDevice> arSD)
     {
         ArrayList<Integer> alcn = new ArrayList<Integer>();
 
@@ -280,7 +278,7 @@ public class LogFileFormatter
 
         return alcn;
     }
-
+*/
 
     public static StringBuilder parseLogDataSection(String s, ArrayList<ArrayList<SDataPoint>> arDP )
     {

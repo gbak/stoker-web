@@ -37,7 +37,7 @@
 		filter(String).through(Class<? extends Filter)
 	-->
 	<listener>
-		<listener-class>sweb.server.SWebServerContextListener
+		<listener-class>sweb.server.StokerWebServletConfig
 		</listener-class>
 	</listener>
 	
@@ -70,13 +70,14 @@
     <url-pattern>/stokerweb/report/*</url-pattern>
   </servlet-mapping>
   
-  <servlet>
+      <servlet>
      <servlet-name>stokeInitServlet</servlet-name>
      <servlet-class>sweb.server.StokerInit</servlet-class>
      <load-on-startup>1</load-on-startup>
   </servlet>
+
   -->
-  
+
   
   <!-- Default page to serve -->
   <welcome-file-list>
