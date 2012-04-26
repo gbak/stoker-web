@@ -48,7 +48,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.config.json.Blower;
 import sweb.server.controller.config.json.Sensor;
@@ -68,7 +68,7 @@ import net.htmlparser.jericho.*;
 // This name is confusing.
 public class StokerConfigurationController extends ConfigurationController
 {
-    StokerConfiguration sc = null;
+    HardwareDeviceConfiguration sc = null;
 
     private static final Logger logger = Logger.getLogger(StokerConfigurationController.class.getName());
 
@@ -440,7 +440,7 @@ public class StokerConfigurationController extends ConfigurationController
       new StokerConfigurationController().pullJSonConfig();
    }
 
-   public void setConfiguration(StokerConfiguration sc)
+   public void setConfiguration(HardwareDeviceConfiguration sc)
    {
       this.sc = sc;
 
@@ -650,7 +650,7 @@ public class StokerConfigurationController extends ConfigurationController
     }
 
     @Override
-    public void setNow()
+    public void loadNow()
     {
         sc.setUpdatedStaus(false);
        //scrapeWebPage();

@@ -51,11 +51,11 @@ public class Controller
     private volatile static Controller m_Controller = null;
     private DataController m_DataController = null;
     private DataOrchestrator m_DataOrchestrator = null;
-    private ConfigurationController m_ConfigurationController = null;
-    private WeatherController m_WeatherController = null;
+  //  private ConfigurationController m_ConfigurationController = null;
+ //   private WeatherController m_WeatherController = null;
     private AlertsController m_AlertsController = null;
     private ClientMessenger m_ClientMessenger = null;
-    private StokerConfiguration m_StokerConfiguration = null;
+    private HardwareDeviceConfiguration m_HardwareConfiguration = null;
     private StokerWebConfiguration m_StokerWebConfiguration = null;
 
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
@@ -83,17 +83,22 @@ public class Controller
         return m_Controller;
     }
 
+    // TODO:
+    // THink about injecting StokerTelnetController
+    // Figure out how to reset or reinit everything.  If we are going the way
+    // of singleton injection, they can't be reset as we do now.
+    
     private Controller()
     {
         synchronized ( Controller.class)
         {
             m_DataController= new StokerTelnetController();
-            m_ConfigurationController = new StokerConfigurationController();
-            m_WeatherController = new WeatherController();
+        //    m_ConfigurationController = new StokerConfigurationController();
+        //    m_WeatherController = new WeatherController();
             m_DataOrchestrator = new DataOrchestrator();
             m_ClientMessenger = new CometMessenger();
-            m_StokerConfiguration = new StokerConfiguration();
-            m_StokerWebConfiguration = new StokerWebConfiguration(m_StokerConfiguration);
+        //    m_HardwareConfiguration = new HardwareDeviceConfiguration();
+            m_StokerWebConfiguration = new StokerWebConfiguration(m_HardwareConfiguration);
         }
     }
 
@@ -102,7 +107,7 @@ public class Controller
         logger.info("Controller init called");
        m_AlertsController = new AlertsController();
        m_DataController.setDataStore(m_DataOrchestrator);
-       m_ConfigurationController.setConfiguration(m_StokerConfiguration);
+     //  m_ConfigurationController.setConfiguration(m_StokerConfiguration);
 
        m_DataController.addEventListener(new DataControllerEventListener()
        {
@@ -124,8 +129,9 @@ public class Controller
 
 
        m_DataController.start();
-       m_WeatherController.start();
+    //   m_WeatherController.start();
     }
+
 
     public void resetAll()
     {
@@ -135,10 +141,10 @@ public class Controller
             // A full flush needs to be done on the server and restart\
             
             m_DataController= new StokerTelnetController();
-            m_StokerConfiguration = new StokerConfiguration();
-            m_ConfigurationController = new StokerConfigurationController();
-            m_ConfigurationController.setConfiguration( m_StokerConfiguration );
-            m_WeatherController = new WeatherController();
+       //     m_HardwareConfiguration = new HardwareDeviceConfiguration();
+        //    m_ConfigurationController = new StokerConfigurationController();
+       //     m_ConfigurationController.setConfiguration( m_StokerConfiguration );
+         //   m_WeatherController = new WeatherController();
             m_AlertsController = null;
             m_ClientMessenger = new CometMessenger();
     
@@ -156,14 +162,14 @@ public class Controller
     {
        return m_ClientMessenger;    
     }
-    public StokerConfiguration getStokerConfiguration()
+    public HardwareDeviceConfiguration getStokerConfiguration()
     {
-        return m_StokerConfiguration;
+        return m_HardwareConfiguration;
     }
     
     private void setupDefaultLog()
     {
-        for( String s : m_StokerConfiguration.getAllBlowerIDs() )
+        for( String s : m_HardwareConfiguration.getAllBlowerIDs() )
         {
             String strCookerName = StokerWebProperties.getInstance().getProperty( s );
 
@@ -189,7 +195,7 @@ public class Controller
          //   }  // end while try again
 
         } // end for String
-        if (m_StokerConfiguration.getAllBlowerIDs().size() == 0 )
+        if (m_HardwareConfiguration.getAllBlowerIDs().size() == 0 )
         {
             logger.error("No Blowers configured!");
         }
@@ -201,13 +207,13 @@ public class Controller
      */
     public void loadConfiguration()
     {
-        m_ConfigurationController.setNow();
+        m_HardwareConfiguration.loadNow();
     }
 
-    public void updateConfiguration()
+/*    public void updateConfiguration()
     {
         m_ConfigurationController.setConfiguration(m_StokerConfiguration);
-    }
+    }*/
 
     public void addDataEventListener( DataControllerEventListener cl)
     {
@@ -219,22 +225,22 @@ public class Controller
         m_DataController.removeEventListener(cl);
     }
 
-    public void addConfigEventListener( ConfigControllerEventListener configControllerEventListener)
+  /*  public void addConfigEventListener( ConfigControllerEventListener configControllerEventListener)
     {
         m_ConfigurationController.addEventListener(configControllerEventListener);
-    }
+    }*/
 
-    public void removeConfigEventListener( ConfigControllerEventListener configControllerEventListener)
+    /*public void removeConfigEventListener( ConfigControllerEventListener configControllerEventListener)
     {
         m_ConfigurationController.removeEventListener(configControllerEventListener);
     }
-
+*/
     public boolean isDataControllerReady()
     {
        return m_DataController.isReady();
     }
 
-   public void addWeatherChangeEventListener( WeatherChangeEventListener wcel )
+ /*  public void addWeatherChangeEventListener( WeatherChangeEventListener wcel )
    {
        m_WeatherController.addEventListener(wcel );
    }
@@ -242,12 +248,12 @@ public class Controller
    public void removeWeatherChangeEventListener( WeatherChangeEventListener wcel )
    {
        m_WeatherController.removeEventListener(wcel );
-   }
+   }*/
 
-   public WeatherController getWeatherController()
+   /*public WeatherController getWeatherController()
    {
        return m_WeatherController;
-   }
+   }*/
 
    public DataController getDataController()
    {

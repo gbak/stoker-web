@@ -9,9 +9,12 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.controller.Controller;
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.alerts.delivery.Messenger;
+import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
@@ -30,14 +33,22 @@ public class StokerAlarm extends AlertCondition
    public static enum TempAlertType { NONE, LOW, HIGH, FOOD };
    Date lastAlertDate = null;
    private HashMap<String,SDevice> m_hmConfig = null;
-   StokerAlarmAlertModel saa = null;
+   private StokerAlarmAlertModel saa = null;
          
+   private ConfigurationController configurationController;
+   
    public StokerAlarm() { super(); init(); }
    public  StokerAlarm( boolean b ) { super(b); init(); }
-   
+  
    private ExecutorService executor = null;
    
    private static final Logger logger = Logger.getLogger(StokerAlarm.class.getName());
+   
+   @Inject
+   public StokerAlarm( ConfigurationController cc)
+   {
+       configurationController = cc;
+   }
    
    private void init()
    {
@@ -87,7 +98,7 @@ public class StokerAlarm extends AlertCondition
 
           };
 
-       Controller.getInstance().addConfigEventListener(m_ccel);
+       configurationController.addEventListener(m_ccel);
    }
    
    private void soundTempAlert( TempAlertType t, StokerProbe sp, float data )

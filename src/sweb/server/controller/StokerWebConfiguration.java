@@ -34,9 +34,9 @@ public class StokerWebConfiguration
     
   //  private volatile static StokerWebConfiguration stokerWebConfiguration = null;
     
-    private static CookerList cookerList;
+    private CookerList cookerList;
     
-    private static ArrayList<CookerConfigChangeListener> arListener = new ArrayList<CookerConfigChangeListener>();
+    private ArrayList<CookerConfigChangeListener> arListener = new ArrayList<CookerConfigChangeListener>();
     
    /* public static StokerWebConfiguration getInstance()
     {
@@ -55,7 +55,7 @@ public class StokerWebConfiguration
     */
     
     @Inject
-    public StokerWebConfiguration(StokerConfiguration stokerConfig) 
+    public StokerWebConfiguration(HardwareDeviceConfiguration stokerConfig) 
     { 
         loadConfig(); 
 
@@ -65,7 +65,7 @@ public class StokerWebConfiguration
         reconcile( stokerConfig );
     }
     
-    private void reconcile( StokerConfiguration stokerConfig )
+    private void reconcile( HardwareDeviceConfiguration stokerConfig )
     {
         /* This method checks to see if the devices listed in the saved stoker-web
          * configuration exist on the stoker hardware.  If the device does not
@@ -156,6 +156,7 @@ public class StokerWebConfiguration
             mapper.writeValue(out, cookerList);
             
             out.close();
+            this.cookerList = cookerList;
         } 
         catch (IOException e) 
         {

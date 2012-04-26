@@ -1,9 +1,13 @@
 package sweb.server;
 
+import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import sweb.server.StokerInit;
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.StokerWebConfiguration;
+import sweb.server.controller.config.ConfigurationController;
+import sweb.server.controller.config.stoker.StokerConfigurationController;
+import sweb.server.controller.weather.WeatherController;
 
 public class DispatchServletModule extends ServletModule
 {
@@ -13,8 +17,12 @@ public class DispatchServletModule extends ServletModule
     //      DispatchServiceImpl.class);
       
       bind(sweb.server.StokerInit.class).asEagerSingleton();
-      bind(StokerConfiguration.class).asEagerSingleton();
+      bind(ConfigurationController.class).to(StokerConfigurationController.class).in(Singleton.class);;
+      
+      bind(HardwareDeviceConfiguration.class).asEagerSingleton();
       bind(StokerWebConfiguration.class).asEagerSingleton();
+      
+      bind(WeatherController.class).asEagerSingleton();
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       

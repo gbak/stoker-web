@@ -41,6 +41,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
@@ -53,6 +55,12 @@ public class WeatherController
     WeatherData wd = null;
 
     private static final Logger logger = Logger.getLogger(WeatherController.class.getName());
+    
+    @Inject
+    public WeatherController()
+    {
+        start();
+    }
     
     public WeatherData getWeather()
     {

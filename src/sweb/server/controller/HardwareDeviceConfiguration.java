@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
+import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.config.stoker.StokerConfigurationController;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
@@ -38,14 +39,16 @@ import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
  * @author gary.bak
  *
  */
-public class StokerConfiguration
+public class HardwareDeviceConfiguration
 {
 
    // private volatile static StokerConfiguration stc;
-    HashMap<String,SDevice> htStokConfig = new HashMap<String,SDevice>();
+    ConfigurationController configurationController;
+    
+    HashMap<String,SDevice> m_HWConfig = new HashMap<String,SDevice>();
     private volatile boolean bisUpToDate = false;
 
-    private static final Logger logger = Logger.getLogger(StokerConfiguration.class.getName());
+    private static final Logger logger = Logger.getLogger(HardwareDeviceConfiguration.class.getName());
     
    /* public static StokerConfiguration getInstance()
     {
@@ -62,9 +65,22 @@ public class StokerConfiguration
         return stc;
     }*/
 
+    @Inject
+    public HardwareDeviceConfiguration( ConfigurationController cc )
+    {
+        logger.debug("HardwareDeviceConfiguration()");
+        configurationController = cc;
+        configurationController.setConfiguration(this);
+    }
+    
+    public void loadNow()
+    {
+       configurationController.loadNow() ;   
+    }
+    
     public HashMap<String,SDevice> data()
     {
-        return htStokConfig;
+        return m_HWConfig;
     }
 
     public boolean isUpToDate()
@@ -74,13 +90,6 @@ public class StokerConfiguration
     public void setUpdatedStaus( boolean b)
     {
         bisUpToDate = b;
-    }
-
-
-    @Inject
-    protected StokerConfiguration()
-    {
-
     }
 
 
@@ -94,7 +103,7 @@ public class StokerConfiguration
      */
     public synchronized void clear()
     {
-        htStokConfig.clear();
+        m_HWConfig.clear();
     }
 
     /**
@@ -104,12 +113,12 @@ public class StokerConfiguration
      */
     public synchronized void addDevice( SDevice d )
     {
-           htStokConfig.put( d.getID(), d);
+           m_HWConfig.put( d.getID(), d);
     }
 
     public synchronized SDevice getDevice( String ID)
     {
-        SDevice sd = htStokConfig.get(ID);
+        SDevice sd = m_HWConfig.get(ID);
         return sd;
     }
 
@@ -120,13 +129,13 @@ public class StokerConfiguration
      */
     public synchronized boolean hasDevice( String ID)
     {
-        return htStokConfig.containsKey(ID);
+        return m_HWConfig.containsKey(ID);
 
     }
     public synchronized void replaceDevice( SDevice d )
     {
-       htStokConfig.remove(d.getID());
-       htStokConfig.put( d.getID(), d );
+       m_HWConfig.remove(d.getID());
+       m_HWConfig.put( d.getID(), d );
 
     }
     /*
@@ -137,7 +146,7 @@ public class StokerConfiguration
     */
     public Set<Entry<String,SDevice>> getEntrySet()
     {
-        return htStokConfig.entrySet();
+        return m_HWConfig.entrySet();
     }
 
     /**
@@ -147,7 +156,7 @@ public class StokerConfiguration
      */
     public synchronized ArrayList<SDevice> getAllDevices()
     {
-        return ( new ArrayList<SDevice>(Collections.unmodifiableCollection( htStokConfig.values())));
+        return ( new ArrayList<SDevice>(Collections.unmodifiableCollection( m_HWConfig.values())));
     }
 
 
@@ -158,7 +167,7 @@ public class StokerConfiguration
      */
     public String getBlowerID( String strProbeID )
     {
-        SDevice sd =  htStokConfig.get( strProbeID );
+        SDevice sd =  m_HWConfig.get( strProbeID );
         if ( sd != null)
         {
             if ( sd.getProbeType() == DeviceType.PIT )
@@ -174,7 +183,7 @@ public class StokerConfiguration
     {
        ArrayList<String> arBlowers = new ArrayList<String>();
 
-       for ( SDevice sd : htStokConfig.values())
+       for ( SDevice sd : m_HWConfig.values())
        {
            if ( sd.getProbeType() == DeviceType.PIT )
            {
@@ -195,7 +204,7 @@ public class StokerConfiguration
     public String debugString()
     {
         StringBuilder sb = new StringBuilder();
-        Set<Entry<String, SDevice>> configSet = htStokConfig.entrySet();
+        Set<Entry<String, SDevice>> configSet = m_HWConfig.entrySet();
         Iterator<Entry<String,SDevice>> iter = configSet.iterator();
         while ( iter.hasNext() )
         {

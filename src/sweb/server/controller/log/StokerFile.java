@@ -38,10 +38,13 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.text.StrLookup;
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.StokerConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
@@ -50,6 +53,7 @@ import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
+import sweb.server.controller.weather.WeatherController;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
@@ -71,6 +75,8 @@ public class StokerFile
     HashMap<String,SDevice> m_hmSD = new HashMap<String,SDevice>();
     HashMap<String,String> m_hmSDIndex = new HashMap<String,String>();
     int m_iLastMinute = -1;
+    private ConfigurationController configurationController;
+    private WeatherController weatherController;
 
     private EventType m_eventType = EventType.NONE;
 
@@ -141,6 +147,13 @@ public class StokerFile
 
     }
 
+    @Inject
+    public void addControllers(ConfigurationController cc, WeatherController weatherController )
+    {
+        configurationController = cc;
+        this.weatherController = weatherController;
+    }
+    
     private void writeHeader()
     {
        Writer outputHeader = null;
@@ -278,10 +291,9 @@ public class StokerFile
         
         Controller.getInstance().getDataOrchestrator().addListener(m_dl);
         
-        Controller.getInstance().addConfigEventListener(
-                getConfigEventListener());
+        configurationController.addEventListener(getConfigEventListener());
         
-        Controller.getInstance().getWeatherController().addEventListener(wce);
+        weatherController.addEventListener(wce);
 
     }
 

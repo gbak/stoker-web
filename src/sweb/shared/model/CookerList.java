@@ -10,7 +10,7 @@ public class CookerList  implements Serializable
     
     ArrayList<Cooker> cookerList;
     
-    public CookerList() { }
+    public CookerList() { cookerList = new ArrayList<Cooker>(); }
     
     public ArrayList<Cooker> getCookerList()
     {

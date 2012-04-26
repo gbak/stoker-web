@@ -27,7 +27,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 import sweb.server.controller.Controller;
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;

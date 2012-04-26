@@ -20,7 +20,7 @@ package sweb.server.controller.config;
 
 import java.util.ArrayList;
 
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
 
@@ -29,12 +29,12 @@ public abstract class ConfigurationController
 {
     ArrayList<ConfigControllerEventListener> arListener = new ArrayList<ConfigControllerEventListener>();
 
-   public abstract void setConfiguration( StokerConfiguration sc );
+   public abstract void setConfiguration( HardwareDeviceConfiguration sc );
 
    public abstract void start();
    public abstract void stop();
 
-   public abstract void setNow();
+   public abstract void loadNow();
 
    public void addEventListener( ConfigControllerEventListener listener )
    {

@@ -40,7 +40,8 @@ import org.apache.log4j.Logger;
 import sweb.client.StokerCoreService;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerWebConfiguration;
-import sweb.server.controller.StokerConfiguration;
+import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigControllerEvent;
 import sweb.server.controller.events.ConfigControllerEventListener;
@@ -54,6 +55,7 @@ import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
+import sweb.server.controller.weather.WeatherController;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
@@ -99,13 +101,19 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     ConfigControllerEventListener m_ccel = null;
     WeatherChangeEventListener m_wcel = null;
     StokerWebConfiguration stokerWebConfiguration = null;
+    ConfigurationController m_ConfigurationController = null;
+    WeatherController m_WeatherController = null;
     
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
     @Inject
-    public void StokerCoreServiceImpl( StokerWebConfiguration config )
+    public StokerCoreServiceImpl( StokerWebConfiguration config, 
+                                  ConfigurationController cc,
+                                  WeatherController wc)
     {
         this.stokerWebConfiguration = config;
+        this.m_ConfigurationController = cc;
+        this.m_WeatherController = wc;
     }
     
     public HashMap<String,SDevice> getDeviceConfiguration()
@@ -166,8 +174,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     {
         logger.info("Removing event listeners!");
         Controller.getInstance().removeDataEventListener( m_dcel );
-        Controller.getInstance().removeConfigEventListener(m_ccel);
-        Controller.getInstance().removeWeatherChangeEventListener(m_wcel);
+        m_ConfigurationController.removeEventListener(m_ccel);
+        m_WeatherController.removeEventListener(m_wcel);
     }
 
     private void handleControllerEvents()
@@ -229,7 +237,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
             };
 
-            Controller.getInstance().addConfigEventListener(m_ccel);
+            m_ConfigurationController.addEventListener(m_ccel);
         }
 
         if (m_wcel == null)
@@ -245,7 +253,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
             };
 
-            Controller.getInstance().addWeatherChangeEventListener(m_wcel);
+            m_WeatherController.addEventListener(m_wcel);
         }
     }
     
@@ -425,7 +433,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
           return -1;
        
        Controller.getInstance().getStokerConfiguration().update( asd );
-        Controller.getInstance().loadConfiguration();
+        //Controller.getInstance().loadConfiguration();
         return new Integer(1);
     }
 
@@ -505,7 +513,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
            Controller.getInstance().getClientMessenger().sessionPush( httpSession, sdp);
 
-        WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
+        WeatherData wd = m_WeatherController.getWeather();
         if ( wd != null )
                 Controller.getInstance().getClientMessenger().sessionPush( httpSession, wd );
     }
