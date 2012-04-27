@@ -2,13 +2,25 @@ package sweb.server.controller.alerts.delivery;
 
 import java.io.Serializable;
 
+import com.google.inject.Inject;
+
+import sweb.server.ClientMessenger;
 import sweb.server.controller.Controller;
 
 public class BrowserDelivery
 {
 
+    private static ClientMessenger clientMessenger;
+    
+    @Inject
+    private BrowserDelivery( ClientMessenger cm )
+    {
+        clientMessenger = cm;
+    }
+    
     public static void send( Serializable message )
     {
-        Controller.getInstance().getClientMessenger().push( message );
+        
+        clientMessenger.push( message );
     }
 }

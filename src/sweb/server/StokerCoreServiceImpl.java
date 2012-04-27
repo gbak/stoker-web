@@ -103,16 +103,19 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     StokerWebConfiguration stokerWebConfiguration = null;
     ConfigurationController m_ConfigurationController = null;
     WeatherController m_WeatherController = null;
+    ClientMessenger m_ClientMessenger = null;
     
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
     @Inject
     public StokerCoreServiceImpl( StokerWebConfiguration config, 
                                   ConfigurationController cc,
+                                  ClientMessenger cm,
                                   WeatherController wc)
     {
         this.stokerWebConfiguration = config;
         this.m_ConfigurationController = cc;
+        this.m_ClientMessenger = cm;
         this.m_WeatherController = wc;
     }
     
@@ -129,7 +132,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        HttpSession httpSession = getThreadLocalRequest().getSession();
       // CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
 
-       Controller.getInstance().getClientMessenger().addSession( httpSession );
+       m_ClientMessenger.addSession( httpSession );
        
        handleControllerEvents();
 
@@ -145,7 +148,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    {
                        for ( SProbeDataPoint sdp : aldp)
                        {
-                           Controller.getInstance().getClientMessenger().push(sdp);
+                           m_ClientMessenger.push(sdp);
                        }
                    }
 
@@ -154,7 +157,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                    SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
                    if ( bdp != null  )
                    {
-                      Controller.getInstance().getClientMessenger().push(bdp);
+                       m_ClientMessenger.push(bdp);
                    }
 
                 }
@@ -190,14 +193,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                     switch (ce.getEventType())
                     {
                         case CONNECTION_ESTABLISHED:
-                            Controller.getInstance().getClientMessenger()
+                            m_ClientMessenger
                                     .push(new ControllerEventLight(
                                             EventTypeLight.CONNECTION_ESTABLISHED));
                             break;
                         case NONE:
                             break;
                         case LOST_CONNECTION:
-                            Controller.getInstance().getClientMessenger().push(
+                            m_ClientMessenger.push(
                                     new ControllerEventLight(
                                             EventTypeLight.LOST_CONNECTION));
                             break;
@@ -227,7 +230,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                         case NONE:
                             break;
                         case CONFIG_UPDATE:
-                            Controller.getInstance().getClientMessenger().push(
+                            m_ClientMessenger.push(
                                     new ControllerEventLight(
                                             EventTypeLight.CONFIG_UPDATE));
                             break;
@@ -248,7 +251,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 {
                     WeatherData wd = wce.getWeatherData();
                     if ( wd != null )
-                       Controller.getInstance().getClientMessenger().push(wd);
+                        m_ClientMessenger.push(wd);
                 }
 
             };
@@ -381,7 +384,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 Controller.getInstance().getDataOrchestrator().startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
-                Controller.getInstance().getClientMessenger().push( le );
+                m_ClientMessenger.push( le );
 
             }
             catch (LogExistsException e)
@@ -406,7 +409,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             ret = new Integer(1);
             // Create LogEvent and pass it back via comet stream
             LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
-            Controller.getInstance().getClientMessenger().push( le );
+            m_ClientMessenger.push( le );
         }
         catch (LogNotFoundException e)
         {
@@ -498,7 +501,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         else
             s = Status.DISCONNECTED;
 
-        Controller.getInstance().getClientMessenger().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
+        m_ClientMessenger.sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
     }
 
     /**
@@ -511,11 +514,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
       //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         
         for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
-           Controller.getInstance().getClientMessenger().sessionPush( httpSession, sdp);
+            m_ClientMessenger.sessionPush( httpSession, sdp);
 
         WeatherData wd = m_WeatherController.getWeather();
         if ( wd != null )
-                Controller.getInstance().getClientMessenger().sessionPush( httpSession, wd );
+            m_ClientMessenger.sessionPush( httpSession, wd );
     }
 
     
@@ -587,7 +590,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         private String prefix;
     }
         
-    private class CustomSessionRequest extends HttpServletRequestWrapper {
+   /* private class CustomSessionRequest extends HttpServletRequestWrapper {
         public CustomSessionRequest (HttpServletRequest delegate) {
             super (delegate);
         }
@@ -606,7 +609,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet (new CustomSessionRequest (request), response);
     }
-
+*/
     @Override
     public Integer updateStokerWebConfig(CookerList cookerList )
     {

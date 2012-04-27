@@ -16,13 +16,16 @@ public class DispatchServletModule extends ServletModule
     //  serve("/" + ActionImpl.DEFAULT_SERVICE_NAME + "*").with(
     //      DispatchServiceImpl.class);
       
-      bind(sweb.server.StokerInit.class).asEagerSingleton();
+      
       bind(ConfigurationController.class).to(StokerConfigurationController.class).in(Singleton.class);;
       
       bind(HardwareDeviceConfiguration.class).asEagerSingleton();
       bind(StokerWebConfiguration.class).asEagerSingleton();
       
       bind(WeatherController.class).asEagerSingleton();
+      bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
+      
+      bind(sweb.server.StokerInit.class).asEagerSingleton();
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       

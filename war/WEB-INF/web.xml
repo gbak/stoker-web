@@ -6,18 +6,18 @@
 <web-app>
   
   <!-- Listener for shutting down the comet processor when the ServletContext is destroyed -->
-  <listener>
+ <!--  <listener>
      <listener-class>net.zschech.gwt.comet.server.CometServletContextListener</listener-class>
   </listener>
   
-  <!-- Listener for invalidating CometSessions when HTTPSessions are invalidated -->
+  Listener for invalidating CometSessions when HTTPSessions are invalidated
   <listener>
      <listener-class>net.zschech.gwt.comet.server.CometHttpSessionListener</listener-class>
   </listener>
   
    <listener>
      <listener-class>sweb.server.StokerCoreServiceImpl</listener-class>
-  </listener>
+  </listener> -->
   
     <filter>
 		<filter-name>guiceFilter</filter-name>

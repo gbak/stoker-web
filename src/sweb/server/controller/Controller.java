@@ -54,7 +54,7 @@ public class Controller
   //  private ConfigurationController m_ConfigurationController = null;
  //   private WeatherController m_WeatherController = null;
     private AlertsController m_AlertsController = null;
-    private ClientMessenger m_ClientMessenger = null;
+  //  private ClientMessenger m_ClientMessenger = null;
     private HardwareDeviceConfiguration m_HardwareConfiguration = null;
     private StokerWebConfiguration m_StokerWebConfiguration = null;
 
@@ -96,9 +96,9 @@ public class Controller
         //    m_ConfigurationController = new StokerConfigurationController();
         //    m_WeatherController = new WeatherController();
             m_DataOrchestrator = new DataOrchestrator();
-            m_ClientMessenger = new CometMessenger();
+        //    m_ClientMessenger = new CometMessenger();
         //    m_HardwareConfiguration = new HardwareDeviceConfiguration();
-            m_StokerWebConfiguration = new StokerWebConfiguration(m_HardwareConfiguration);
+         //   m_StokerWebConfiguration = new StokerWebConfiguration(m_HardwareConfiguration);
         }
     }
 
@@ -107,6 +107,8 @@ public class Controller
         logger.info("Controller init called");
        m_AlertsController = new AlertsController();
        m_DataController.setDataStore(m_DataOrchestrator);
+       
+       
      //  m_ConfigurationController.setConfiguration(m_StokerConfiguration);
 
        m_DataController.addEventListener(new DataControllerEventListener()
@@ -118,6 +120,7 @@ public class Controller
                {
                    logger.info("Loading Stoker Configuration");
                    loadConfiguration();
+                   m_StokerWebConfiguration.init();
                    
                    logger.info("Setting default log");
                    setupDefaultLog();
@@ -135,6 +138,8 @@ public class Controller
 
     public void resetAll()
     {
+        // TODO: this is so incomplete!
+        
         synchronized ( Controller.class)
         {
             // this gets called when the stoker configuration has changed from the client side.
@@ -146,7 +151,7 @@ public class Controller
        //     m_ConfigurationController.setConfiguration( m_StokerConfiguration );
          //   m_WeatherController = new WeatherController();
             m_AlertsController = null;
-            m_ClientMessenger = new CometMessenger();
+        //    m_ClientMessenger = new CometMessenger();
     
             init();
         }
@@ -158,10 +163,10 @@ public class Controller
         return m_DataOrchestrator;
     }
     
-    public ClientMessenger getClientMessenger()
+/*    public ClientMessenger getClientMessenger()
     {
        return m_ClientMessenger;    
-    }
+    }*/
     public HardwareDeviceConfiguration getStokerConfiguration()
     {
         return m_HardwareConfiguration;

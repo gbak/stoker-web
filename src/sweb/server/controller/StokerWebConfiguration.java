@@ -34,6 +34,7 @@ public class StokerWebConfiguration
     
   //  private volatile static StokerWebConfiguration stokerWebConfiguration = null;
     
+    private HardwareDeviceConfiguration deviceConfiguration = null;
     private CookerList cookerList;
     
     private ArrayList<CookerConfigChangeListener> arListener = new ArrayList<CookerConfigChangeListener>();
@@ -57,12 +58,20 @@ public class StokerWebConfiguration
     @Inject
     public StokerWebConfiguration(HardwareDeviceConfiguration stokerConfig) 
     { 
+        this.deviceConfiguration = stokerConfig;
+
+    }
+    
+    public void init()
+    {
+        
         loadConfig(); 
 
         if ( cookerList == null )
             cookerList = new CookerList();
         
-        reconcile( stokerConfig );
+        reconcile( deviceConfiguration );
+        
     }
     
     private void reconcile( HardwareDeviceConfiguration stokerConfig )
