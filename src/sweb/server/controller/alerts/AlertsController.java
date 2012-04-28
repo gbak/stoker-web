@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.conditions.ConnectionOrConfigChangeAlert;
 import sweb.server.controller.alerts.conditions.StokerAlarm;
@@ -36,15 +38,17 @@ import sweb.shared.model.alerts.StokerAlarmAlertModel;
 
 public class AlertsController
 {
-   StokerAlarm stokerAlarm = new StokerAlarm(false);
+   StokerAlarm stokerAlarm; // = new StokerAlarm(false);
    ConnectionOrConfigChangeAlert connConfigChangeAlarm = new ConnectionOrConfigChangeAlert(false);
    ArrayList<TempAlert> tempAlert = new ArrayList<TempAlert>();
    ArrayList<TimedAlert> timedAlert = new ArrayList<TimedAlert>();
 
    private static final Logger logger = Logger.getLogger(AlertsController.class.getName());
    
-   public AlertsController()
+   @Inject
+   public AlertsController(StokerAlarm sa)
    {
+       stokerAlarm = sa;
    }
 
    /*
@@ -119,7 +123,7 @@ public class AlertsController
    
    public static void main(String[] args)
    {
-      AlertsController nm = new AlertsController();
+     // AlertsController nm = new AlertsController();
 
      // nm.init();
    }

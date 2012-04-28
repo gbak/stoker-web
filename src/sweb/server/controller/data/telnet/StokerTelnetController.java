@@ -431,8 +431,14 @@ public class StokerTelnetController extends DataController
         }
         catch (Exception e)
         {
-            logger.error("Exception while reading socket:" + e.getStackTrace() );
-                        reconnect();
+            logger.error("Exception while reading socket:" );
+            StackTraceElement [] sta = e.getStackTrace();
+            
+            for ( int i = 0; i < sta.length; i++ )
+            {
+                logger.error(sta[i]);
+            }
+            reconnect();
         }
         logger.error("Reader exiting");
 

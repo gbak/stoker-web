@@ -40,13 +40,13 @@ public class StokerInit extends HttpServlet
     private StokerWebConfiguration m_CookerConfig = null;
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
+
     @Inject
     public StokerInit(StokerWebConfiguration stokerWebConfiguration)
     {
-        if ( m_CookerConfig == null )
-        {
-            m_CookerConfig = stokerWebConfiguration;
-            m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
+        m_CookerConfig = stokerWebConfiguration;
+        logger.debug("StokerInit()");
+        m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
 
                 @Override
                 public void actionPerformed()
@@ -56,7 +56,7 @@ public class StokerInit extends HttpServlet
                 }
                 
             });
-        }
+
         // m_Controller is a singleton and the variable is not required, but instead used to
         // know if it has been initialized already, this is called on browser refresh
         // and we only want this to be executed once and only once
@@ -84,4 +84,5 @@ public class StokerInit extends HttpServlet
 
         }
     }
+
 }

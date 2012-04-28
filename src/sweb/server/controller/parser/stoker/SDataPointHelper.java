@@ -95,7 +95,7 @@ public class SDataPointHelper
              }
           }
 
-          if ( bHasFan )
+          if ( bHasFan )  // TODO: stokerconfiguration( HardwareDeviceConfiguration) is returning null, since we have not scraped the stoker yet.
           {
               String strBlowerID = Controller.getInstance().getStokerConfiguration().getBlowerID(deviceID);
               SBlowerDataPoint sdp = new SBlowerDataPoint( strBlowerID, Calendar.getInstance().getTime(), bFanOn );

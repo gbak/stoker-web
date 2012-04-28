@@ -32,37 +32,46 @@ public class StokerAlarm extends AlertCondition
 
    public static enum TempAlertType { NONE, LOW, HIGH, FOOD };
    Date lastAlertDate = null;
-   private HashMap<String,SDevice> m_hmConfig = null;
    private StokerAlarmAlertModel saa = null;
          
    private ConfigurationController configurationController;
+   private HardwareDeviceConfiguration hardwareDeviceConfiguration;
    
-   public StokerAlarm() { super(); init(); }
-   public  StokerAlarm( boolean b ) { super(b); init(); }
+   @Inject
+   public StokerAlarm(ConfigurationController cc, HardwareDeviceConfiguration hdc) 
+   { 
+       super(); 
+       configurationController = cc;
+       hardwareDeviceConfiguration = hdc;
+       init();
+   }
+  // public  StokerAlarm( boolean b ) { super(b); init(); }
   
    private ExecutorService executor = null;
    
    private static final Logger logger = Logger.getLogger(StokerAlarm.class.getName());
    
-   @Inject
-   public StokerAlarm( ConfigurationController cc)
+/*   @Inject
+   public void setConfiguration( ConfigurationController cc, HardwareDeviceConfiguration hdc)
    {
        configurationController = cc;
-   }
+       hardwareDeviceConfiguration = hdc;
+   }*/
    
    private void init()
    {
-      setConfig();
+    //  setConfig();
       executor = Executors.newFixedThreadPool(2);
       handleControllerEvents();
       saa = new StokerAlarmAlertModel(false);
      // saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
    }
    
-   private void setConfig()
+/*   private void setConfig()
    {
+       //TODO: fix this.
       m_hmConfig = Controller.getInstance().getStokerConfiguration().data();   
-   }
+   }*/
    
    private void handleControllerEvents()
    {
@@ -90,7 +99,7 @@ public class StokerAlarm extends AlertCondition
                    case NONE:
                        break;
                    case CONFIG_UPDATE:
-                       setConfig();
+           //            setConfig();
                        break;
                    default:
                }
@@ -182,7 +191,8 @@ public class StokerAlarm extends AlertCondition
          
          for ( SProbeDataPoint spdp : aldp )
          {
-            SDevice sd = m_hmConfig.get(spdp.getDeviceID());
+             SDevice sd = hardwareDeviceConfiguration.data().get( spdp.getDeviceID());
+           // SDevice sd = m_hmConfig.get(spdp.getDeviceID());  // TODO: remove
             if ( sd == null || ! sd.isProbe() )
                continue;
             

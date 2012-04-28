@@ -5,6 +5,7 @@ import com.google.inject.servlet.ServletModule;
 import sweb.server.StokerInit;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.StokerWebConfiguration;
+import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.config.stoker.StokerConfigurationController;
 import sweb.server.controller.weather.WeatherController;
@@ -24,7 +25,7 @@ public class DispatchServletModule extends ServletModule
       
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
-      
+      bind(AlertsController.class);
       bind(sweb.server.StokerInit.class).asEagerSingleton();
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();

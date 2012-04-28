@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.ClientMessenger;
 import sweb.server.CometMessenger;
 import sweb.server.StokerWebProperties;
@@ -102,10 +104,18 @@ public class Controller
         }
     }
 
+    @Inject
+    private void setConfiguration( HardwareDeviceConfiguration hc,
+                                   AlertsController ac)
+    {
+        m_HardwareConfiguration = hc;
+        m_AlertsController = ac;
+    }
+    
     public void init()
     {
         logger.info("Controller init called");
-       m_AlertsController = new AlertsController();
+     //  m_AlertsController = new AlertsController();
        m_DataController.setDataStore(m_DataOrchestrator);
        
        
