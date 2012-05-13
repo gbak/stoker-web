@@ -1,4 +1,4 @@
-package sweb.server.logging;
+package sweb.server.log;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -20,8 +20,8 @@ package sweb.server.controller.events;
 
 import java.util.EventListener;
 
-public interface ConfigControllerEventListener extends EventListener
+public interface ConfigChangeEventListener extends EventListener
 {
 
-    public void actionPerformed(ConfigControllerEvent ce);
+    public void actionPerformed(ConfigChangeEvent ce);
 }

@@ -27,9 +27,11 @@ import com.google.inject.Inject;
 import sweb.server.controller.Controller;
 import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.data.DataOrchestrator;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.CookerConfigChangeListener;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
+import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.controller.events.StateChangeEventListener;
 import sweb.server.security.LoginProperties;
 
 public class StokerInit extends HttpServlet
@@ -37,22 +39,25 @@ public class StokerInit extends HttpServlet
 
     private static final long serialVersionUID = 4958759438289484633L;
   //  private Controller m_Controller = null;
-    private StokerWebConfiguration m_CookerConfig = null;
+  //  private StokerWebConfiguration m_CookerConfig = null;
+    private Controller m_Controller = null;
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
 
     @Inject
-    public StokerInit(StokerWebConfiguration stokerWebConfiguration)
+    public StokerInit(Controller controller)
     {
-        m_CookerConfig = stokerWebConfiguration;
+        boolean wasNull = m_Controller == null ? true : false;
+        m_Controller = controller;
+        
         logger.debug("StokerInit()");
-        m_CookerConfig.addChangeListener( new CookerConfigChangeListener() {
+        m_Controller.addConfigEventListener(new ConfigChangeEventListener() {
 
                 @Override
-                public void actionPerformed()
+                public void actionPerformed(ConfigChangeEvent ce)
                 {
-                    Controller.getInstance().resetAll();
-                    
+                    // TODO Auto-generated method stub
+                    // Reset all!
                 }
                 
             });
@@ -60,14 +65,15 @@ public class StokerInit extends HttpServlet
         // m_Controller is a singleton and the variable is not required, but instead used to
         // know if it has been initialized already, this is called on browser refresh
         // and we only want this to be executed once and only once
-        if ( Controller.isNull() )
+        if ( wasNull )
         {         
 
-            Controller.getInstance().addDataEventListener( new DataControllerEventListener() {
+            m_Controller.a
+            Controller.getInstance().addDataEventListener( new StateChangeEventListener() {
 
-                public void actionPerformed(DataControllerEvent ce)
+                public void actionPerformed(StateChangeEvent ce)
                 {
-                   if ( ce.getEventType() == DataControllerEvent.EventType.EXTENDED_CONNECTION_LOSS )
+                   if ( ce.getEventType() == StateChangeEvent.EventType.EXTENDED_CONNECTION_LOSS )
                    {
                        Controller.getInstance().getDataOrchestrator().stopAllLogs();
                    }

@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.config.json;
+package sweb.server.monitors.stoker.config.json;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -19,8 +19,8 @@ import com.google.inject.Inject;
 
 import sweb.server.CometMessenger;
 import sweb.server.controller.events.CookerConfigChangeListener;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
+import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.controller.events.StateChangeEventListener;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;

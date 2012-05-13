@@ -40,20 +40,20 @@ import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
-import sweb.server.StokerConstants;
+import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.Controller;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.ConfigControllerEvent;
-import sweb.server.controller.events.ConfigControllerEventListener;
-import sweb.server.controller.events.DataControllerEvent.EventType;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.controller.events.ConfigChangeEventListener;
+import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.weather.WeatherController;
+import sweb.server.log.LogManagerImpl;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
@@ -75,7 +75,7 @@ public class StokerFile
     HashMap<String,SDevice> m_hmSD = new HashMap<String,SDevice>();
     HashMap<String,String> m_hmSDIndex = new HashMap<String,String>();
     int m_iLastMinute = -1;
-    private ConfigurationController configurationController;
+  //  private ConfigurationController configurationController;
     private WeatherController weatherController;
 
     private EventType m_eventType = EventType.NONE;
@@ -85,6 +85,8 @@ public class StokerFile
     private DataPointEventListener m_dl = null;
 
     private static final Logger logger = Logger.getLogger(StokerFile.class.getName());
+    
+    private Controller m_controller;
     
     private StokerFile()
     {
@@ -131,7 +133,7 @@ public class StokerFile
         // if no devices were set to be logged, log everything
         if ( asd == null)
         {
-           asd = Controller.getInstance().getStokerConfiguration().getAllDevices();
+           asd = m_controller.getRawDevices();
         }
 
         int x = 1;
@@ -148,9 +150,9 @@ public class StokerFile
     }
 
     @Inject
-    public void addControllers(ConfigurationController cc, WeatherController weatherController )
+    public void addControllers(Controller controller, WeatherController weatherController )
     {
-        configurationController = cc;
+        this.m_controller = controller;
         this.weatherController = weatherController;
     }
     
@@ -289,10 +291,9 @@ public class StokerFile
             
         };
         
-        Controller.getInstance().getDataOrchestrator().addListener(m_dl);
-        
-        configurationController.addEventListener(getConfigEventListener());
-        
+        m_controller.addTempListener(m_dl);
+        m_controller.addConfigChangeListener(getConfigEventListener());
+   
         weatherController.addEventListener(wce);
 
     }
@@ -300,7 +301,7 @@ public class StokerFile
     public void stop()
     {
         //logTimer.cancel();
-        Controller.getInstance().getDataOrchestrator().removeListener(m_dl);
+        m_controller.removeTempListener(m_dl);
 
     }
 
@@ -333,11 +334,11 @@ public class StokerFile
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append(StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKERWEB_DIR));
+        sb.append(StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKERWEB_DIR));
         sb.append(File.separator);
-        sb.append(StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_LOGS_DIR));  // Error here, null
+        sb.append(StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_LOGS_DIR));  // Error here, null
         sb.append(File.separator);
-        sb.append(StokerConstants.PATH_COOK_LOG);
+        sb.append(StokerWebConstants.PATH_COOK_LOG);
         sb.append(File.separator);
         sb.append(strDirName);
         sb.append(File.separator);
@@ -562,22 +563,24 @@ public class StokerFile
         return m_strLogFileName.substring(m_strLogFileName.lastIndexOf(File.separatorChar) + 1);
     }
     
-    private ConfigControllerEventListener getConfigEventListener()
+    private ConfigChangeEventListener getConfigEventListener()
     {
-       ConfigControllerEventListener ccl = new   ConfigControllerEventListener() {
+       ConfigChangeEventListener ccl = new   ConfigChangeEventListener() {
 
-        public void actionPerformed(ConfigControllerEvent ce)
+        public void actionPerformed(ConfigChangeEvent ce)
         {
             // Configuration Update
             
-            // Need to popuate new config data!
-            HashMap<String,SDevice> hm = Controller.getInstance().getStokerConfiguration().data();
+            // Need to populate new config data!
+         
+       //     HashMap<String,SDevice> hm = Controller.getInstance().getStokerConfiguration().data();
             
             for ( String s : m_hmSD.keySet() )
             {
-                if ( hm.containsKey(s) )
+                SDevice sd = m_controller.getDeviceByID(s);
+                if ( sd != null )
                 {
-                    m_hmSD.put( s, hm.get(s));
+                    m_hmSD.put( s, sd);
                 }
             }
             

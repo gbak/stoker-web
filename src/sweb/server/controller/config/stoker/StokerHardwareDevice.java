@@ -46,15 +46,14 @@ import org.apache.log4j.Logger;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import sweb.server.StokerConstants;
+import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.HardwareDeviceConfiguration;
-import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.config.json.Blower;
-import sweb.server.controller.config.json.Sensor;
-import sweb.server.controller.config.json.Stoker;
-import sweb.server.controller.config.json.StokerOuter;
-import sweb.server.controller.events.ConfigControllerEvent;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.monitors.stoker.config.json.Blower;
+import sweb.server.monitors.stoker.config.json.Sensor;
+import sweb.server.monitors.stoker.config.json.Stoker;
+import sweb.server.monitors.stoker.config.json.StokerOuter;
 
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
@@ -66,12 +65,16 @@ import sweb.shared.model.stoker.StokerProbe.AlarmType;
 import net.htmlparser.jericho.*;
 
 // This name is confusing.
-public class StokerConfigurationController extends ConfigurationController
+public class StokerHardwareDevice extends HardwareDeviceConfiguration
 {
-    HardwareDeviceConfiguration sc = null;
+    private static final Logger logger = Logger.getLogger(StokerHardwareDevice.class.getName());
+    sweb.server.monitors.stoker.StokerPitMonitor.Config config;
 
-    private static final Logger logger = Logger.getLogger(StokerConfigurationController.class.getName());
-
+    public StokerHardwareDevice( sweb.server.monitors.stoker.StokerPitMonitor.Config c )
+    {
+       config = c;
+    }
+    
    private String convert( InputStream is)
    {
       StringBuilder sb = new StringBuilder();
@@ -117,7 +120,7 @@ public class StokerConfigurationController extends ConfigurationController
 
    private synchronized void addConfig( String strInput, String strValue )
    {
-       sc.setUpdatedStaus(false);
+       super.setUpdatedStaus(false);
 
        String prefix = strInput.substring(0,2).toLowerCase();
        String deviceID = strInput.substring( 2 ).toLowerCase();
@@ -127,12 +130,12 @@ public class StokerConfigurationController extends ConfigurationController
 
        if ( prefix.compareTo("n1") == 0)
        {
-           sc.addDevice(new StokerProbe( deviceID, strValue ));
+           super.addDevice(new StokerProbe( deviceID, strValue ));
            logger.debug("Found probe with ID: " + deviceID + " and value: " + strValue );
        }
        else if ( prefix.compareTo("n2") == 0)
        {
-           sc.addDevice(new StokerFan( deviceID, strValue ));
+           super.addDevice(new StokerFan( deviceID, strValue ));
            logger.debug("Found fan with ID: " + deviceID + " and value: " + strValue);
        }
        else if ( prefix.compareTo("sw") == 0)
@@ -141,18 +144,18 @@ public class StokerConfigurationController extends ConfigurationController
            {
                // if there is no sw value, then this is a food probe
 
-               StokerProbe sp = (StokerProbe) sc.getDevice( deviceID );
-               StokerFan dFan = (StokerFan) sc.getDevice(strValue);
+               StokerProbe sp = (StokerProbe) super.getDevice( deviceID );
+               StokerFan dFan = (StokerFan) super.getDevice(strValue);
 
                StokerPitSensor dProbe = new StokerPitSensor(sp, dFan);
 
-               sc.replaceDevice( dProbe );
+               super.replaceDevice( dProbe );
            }
        }
        else if ( prefix.compareTo("ta") == 0)
        {
            // target Temp
-           StokerProbe sp = (StokerProbe) sc.getDevice( deviceID );
+           StokerProbe sp = (StokerProbe) super.getDevice( deviceID );
            try { sp.setTargetTemp(new Integer( strValue ).intValue()); }
            catch ( NumberFormatException nfe )
            {
@@ -163,7 +166,7 @@ public class StokerConfigurationController extends ConfigurationController
        else if ( prefix.compareTo("tl") == 0)
        {
            // Temp Alarm lower
-           StokerProbe sp = (StokerProbe) sc.getDevice( deviceID );
+           StokerProbe sp = (StokerProbe) super.getDevice( deviceID );
            try { sp.setLowerTempAlarm(new Integer( strValue ).intValue()); }
            catch ( NumberFormatException nfe )
            {
@@ -174,7 +177,7 @@ public class StokerConfigurationController extends ConfigurationController
        else if ( prefix.compareTo("th") == 0)
        {
            // Temp Alarm upper
-           StokerProbe sp = (StokerProbe) sc.getDevice( deviceID );
+           StokerProbe sp = (StokerProbe) super.getDevice( deviceID );
            try { sp.setUpperTempAlarm(new Integer( strValue ).intValue()); }
            catch ( NumberFormatException nfe )
            {
@@ -185,7 +188,7 @@ public class StokerConfigurationController extends ConfigurationController
        else if ( prefix.compareTo("al") == 0)
        {
           // Alarm option
-           StokerProbe sp = (StokerProbe) sc.getDevice( deviceID );
+           StokerProbe sp = (StokerProbe) super.getDevice( deviceID );
            try
            {
               sp.setAlarmEnabled(getAlarmType(new Integer( strValue ).intValue()));
@@ -196,7 +199,7 @@ public class StokerConfigurationController extends ConfigurationController
                sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
            }
        }
-       sc.setUpdatedStaus(true);
+       super.setUpdatedStaus(true);
    }
 
     public synchronized void pullJSonConfig()
@@ -204,14 +207,14 @@ public class StokerConfigurationController extends ConfigurationController
         boolean bSuccess = false;
         int iTry = 0;
 
-        sc.clear();
+        super.clear();
         do
         {
             HttpClient httpclient = new DefaultHttpClient();
             try
             {
                 String strStokerIP = StokerWebProperties.getInstance()
-                        .getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+                        .getProperty(StokerWebConstants.PROPS_STOKER_IP_ADDRESS);
                 String s = new String("http://" + strStokerIP + "/stoker.json");
                 
                 HttpGet httpget = new HttpGet(s);
@@ -232,7 +235,7 @@ public class StokerConfigurationController extends ConfigurationController
                 for ( Blower b : stokerBlowers )
                 {
                     logger.debug("Adding fan device: " + b.getId().toLowerCase() + " with name: " + b.getName());
-                    sc.addDevice( new StokerFan(b.getId().toLowerCase(), b.getName()));
+                    super.addDevice( new StokerFan(b.getId().toLowerCase(), b.getName()));
                 }
                 
                 for ( Sensor sensor : stoke.getSensors())
@@ -254,7 +257,7 @@ public class StokerConfigurationController extends ConfigurationController
                             logger.warn("Invalid number in al: " + sensor.getAl() );
                             sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
                         }
-                        sc.addDevice( sp );
+                        super.addDevice( sp );
                         
                     }
                     else
@@ -274,8 +277,8 @@ public class StokerConfigurationController extends ConfigurationController
                             logger.warn("Invalid number in al: " + sensor.getAl() );
                             sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
                         }
-                        sp.setFanDevice((StokerFan)sc.getDevice(sensor.getBlower().toLowerCase()));
-                        sc.addDevice( sp );
+                        sp.setFanDevice((StokerFan)super.getDevice(sensor.getBlower().toLowerCase()));
+                        super.addDevice( sp );
                     }
                 }
                 bSuccess = true;
@@ -307,10 +310,10 @@ public class StokerConfigurationController extends ConfigurationController
 
     //    assignCookerNames();
 
-        sc.setUpdatedStaus(true);
-        logger.debug("Config: " + sc.debugString());
-        super.fireActionPerformed(new ConfigControllerEvent(this,
-                ConfigControllerEvent.EventType.CONFIG_UPDATE));
+        super.setUpdatedStaus(true);
+        logger.debug("Config: " + super.debugString());
+        config.configChange(new ConfigChangeEvent(this,
+                ConfigChangeEvent.EventType.CONFIG_UPDATE));
 
     }
    public synchronized void scrapeWebPage()
@@ -318,12 +321,12 @@ public class StokerConfigurationController extends ConfigurationController
        boolean bSuccess = false;
        int iTry = 0;
 
-       sc.clear();
+       super.clear();
        do
        {
           try
           {
-             String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+             String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKER_IP_ADDRESS);
              Source s = new Source( new URL("http://" + strStokerIP + "/index.html"));
              Queue<String> qDefaults = new LinkedList<String>();
 
@@ -405,9 +408,9 @@ public class StokerConfigurationController extends ConfigurationController
 
    //   assignCookerNames();
 
-      sc.setUpdatedStaus(true);
-      logger.debug("Config: " + sc.debugString());
-      super.fireActionPerformed(new ConfigControllerEvent( this, ConfigControllerEvent.EventType.CONFIG_UPDATE ));
+       super.setUpdatedStaus(true);
+      logger.debug("Config: " + super.debugString());
+      config.configChange(new ConfigChangeEvent( this, ConfigChangeEvent.EventType.CONFIG_UPDATE ));
 
    }
 /*
@@ -434,17 +437,6 @@ public class StokerConfigurationController extends ConfigurationController
 
    }
 */
-   public static void main(String[] args)
-   {
-      //new StokerWebConfigurationController().scrapeWebPage();
-      new StokerConfigurationController().pullJSonConfig();
-   }
-
-   public void setConfiguration(HardwareDeviceConfiguration sc)
-   {
-      this.sc = sc;
-
-   }
 
    private static String alPostData( SDevice sd ) throws UnsupportedEncodingException
    {
@@ -613,7 +605,7 @@ public class StokerConfigurationController extends ConfigurationController
            logger.debug("Posting: " + postData.toString());
 
            // Send data
-           String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
+           String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKER_IP_ADDRESS);
            URL url = new URL("http://" + strStokerIP + "/stoker.Post_Handler");
            URLConnection conn = url.openConnection();
            conn.setDoOutput(true);
@@ -634,25 +626,10 @@ public class StokerConfigurationController extends ConfigurationController
        }
    }
 
-    @Override
-    public void start()
-    {
-        // TODO add threading similar to the telnet controller to
-        // pool for updates
-
-    }
-
-    @Override
-    public void stop()
-    {
-        // TODO stop the above thread
-
-    }
-
-    @Override
+   @Override
     public void loadNow()
     {
-        sc.setUpdatedStaus(false);
+       super.setUpdatedStaus(false);
        //scrapeWebPage();
         pullJSonConfig();
 

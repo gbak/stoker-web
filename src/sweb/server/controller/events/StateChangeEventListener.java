@@ -18,26 +18,10 @@
 
 package sweb.server.controller.events;
 
-import java.util.EventObject;
+import java.util.EventListener;
 
-public class DataControllerEvent extends EventObject
+public interface StateChangeEventListener extends EventListener
 {
 
-    public enum EventType { NONE, LOST_CONNECTION, CONNECTION_ESTABLISHED, EXTENDED_CONNECTION_LOSS }
-
-    private EventType m_EventType = EventType.NONE;
-
-    private static final long serialVersionUID = 1L;
-
-    public DataControllerEvent(Object source, EventType et)
-    {
-        super(source);
-        m_EventType = et;
-    }
-
-    public EventType getEventType()
-    {
-        return m_EventType;  // TODO: implement this
-    }
-
+    public void actionPerformed(StateChangeEvent ce);
 }

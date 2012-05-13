@@ -15,11 +15,11 @@ import sweb.server.controller.Controller;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.alerts.delivery.Messenger;
 import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.ConfigControllerEvent;
-import sweb.server.controller.events.ConfigControllerEventListener;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
+import sweb.server.log.LogManagerImpl;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;
 import sweb.shared.model.data.SProbeDataPoint;
@@ -34,15 +34,13 @@ public class StokerAlarm extends AlertCondition
    Date lastAlertDate = null;
    private StokerAlarmAlertModel saa = null;
          
-   private ConfigurationController configurationController;
-   private HardwareDeviceConfiguration hardwareDeviceConfiguration;
+   private Controller controller;
    
    @Inject
-   public StokerAlarm(ConfigurationController cc, HardwareDeviceConfiguration hdc) 
+   public StokerAlarm(Controller controller) 
    { 
        super(); 
-       configurationController = cc;
-       hardwareDeviceConfiguration = hdc;
+       this.controller = controller;
        init();
    }
   // public  StokerAlarm( boolean b ) { super(b); init(); }
@@ -85,11 +83,11 @@ public class StokerAlarm extends AlertCondition
          }
       };
       
-      Controller.getInstance().getDataOrchestrator().addListener(m_dl);
+      controller.addTempListener(m_dl);
 
-       ConfigControllerEventListener m_ccel = new ConfigControllerEventListener() {
+       ConfigChangeEventListener m_ccel = new ConfigChangeEventListener() {
 
-           public void actionPerformed(ConfigControllerEvent ce)
+           public void actionPerformed(ConfigChangeEvent ce)
            {
               if ( saa == null || saa.getEnabled() == false )
                  return;
@@ -107,7 +105,8 @@ public class StokerAlarm extends AlertCondition
 
           };
 
-       configurationController.addEventListener(m_ccel);
+          controller.addConfigEventListener(m_ccel);
+
    }
    
    private void soundTempAlert( TempAlertType t, StokerProbe sp, float data )
@@ -167,7 +166,7 @@ public class StokerAlarm extends AlertCondition
    {
        // TODO: this is kind of a hack, this does not really belong here but I had
        // problems putting it in the constructors or init methods because of circular dependencies.
-       saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
+       saa.setAvailableDeliveryMethods(controller.getAvailableDeliveryMethods());
       return (AlertModel) saa;
    }
      
@@ -191,7 +190,7 @@ public class StokerAlarm extends AlertCondition
          
          for ( SProbeDataPoint spdp : aldp )
          {
-             SDevice sd = hardwareDeviceConfiguration.data().get( spdp.getDeviceID());
+             SDevice sd = controller.getDeviceByID( spdp.getDeviceID());
            // SDevice sd = m_hmConfig.get(spdp.getDeviceID());  // TODO: remove
             if ( sd == null || ! sd.isProbe() )
                continue;

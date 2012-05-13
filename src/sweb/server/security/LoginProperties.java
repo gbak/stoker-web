@@ -30,7 +30,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.StokerConstants;
+import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 
 public class LoginProperties extends Properties
@@ -50,10 +50,10 @@ public class LoginProperties extends Properties
            // Loading the StokerWebProperties is required since it will add the
            // stokerweb_dir to the classpath.
            StokerWebProperties.getInstance();
-           lastReadDate = new Date( new File(StokerConstants.FILE_LOGIN_PROPERTIES).lastModified() );
+           lastReadDate = new Date( new File(StokerWebConstants.FILE_LOGIN_PROPERTIES).lastModified() );
            
            InputStream inputStream = this.getClass().getClassLoader()
-                 .getResourceAsStream(StokerConstants.FILE_LOGIN_PROPERTIES);
+                 .getResourceAsStream(StokerWebConstants.FILE_LOGIN_PROPERTIES);
            load( inputStream );
 
         }
@@ -104,7 +104,7 @@ public class LoginProperties extends Properties
         try
         {
             URL url = this.getClass().getClassLoader()
-                    .getResource(StokerConstants.FILE_LOGIN_PROPERTIES);
+                    .getResource(StokerWebConstants.FILE_LOGIN_PROPERTIES);
             String strFile = url.getFile();
 
             OutputStream output = new FileOutputStream(strFile);

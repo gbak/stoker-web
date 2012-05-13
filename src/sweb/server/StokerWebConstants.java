@@ -18,7 +18,7 @@
 
 package sweb.server;
 
-public class StokerConstants
+public class StokerWebConstants
 {
 
     // Environment Variables

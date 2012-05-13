@@ -30,42 +30,53 @@ import sweb.server.CometMessenger;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.alerts.AlertsController;
 import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.config.stoker.StokerConfigurationController;
+import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.data.DataController;
-import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.data.telnet.StokerTelnetController;
-import sweb.server.controller.events.ConfigControllerEventListener;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEvent.EventType;
-import sweb.server.controller.events.DataControllerEventListener;
+import sweb.server.controller.events.BlowerEvent;
+import sweb.server.controller.events.BlowerEventListener;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.controller.events.ConfigChangeEventListener;
+import sweb.server.controller.events.DataPointEvent;
+import sweb.server.controller.events.DataPointEventListener;
+import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.controller.events.StateChangeEvent.EventType;
+import sweb.server.controller.events.StateChangeEventListener;
 import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.server.controller.weather.WeatherController;
+import sweb.server.log.LogManager;
+import sweb.server.monitors.PitMonitor;
+import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerList;
+import sweb.shared.model.HardwareDeviceStatus;
+import sweb.shared.model.LogItem;
 import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.logfile.LogNote;
 
 /**
  * @author gary.bak
  *
  */
-public class Controller
+public class Controller implements PitMonitor, LogManager
 {
-    private volatile static Controller m_Controller = null;
-    private DataController m_DataController = null;
-    private DataOrchestrator m_DataOrchestrator = null;
+    private PitMonitor m_PitMonitor = null;
+    private LogManager m_LogManager = null;
+    
   //  private ConfigurationController m_ConfigurationController = null;
  //   private WeatherController m_WeatherController = null;
     private AlertsController m_AlertsController = null;
   //  private ClientMessenger m_ClientMessenger = null;
-    private HardwareDeviceConfiguration m_HardwareConfiguration = null;
-    private StokerWebConfiguration m_StokerWebConfiguration = null;
 
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
     
  //   private ControllerEventListener m_ControllerListener = null;
 
 
-    public static boolean isNull()
+ /*   public static boolean isNull()
     {
         return m_Controller == null;
     }
@@ -83,48 +94,44 @@ public class Controller
             }
         }
         return m_Controller;
-    }
+    }*/
 
-    // TODO:
-    // THink about injecting StokerTelnetController
-    // Figure out how to reset or reinit everything.  If we are going the way
-    // of singleton injection, they can't be reset as we do now.
-    
-    private Controller()
+    @Inject
+    private Controller(PitMonitor pitMonitor,
+                       LogManager logManager,
+                       AlertsController alerts )
     {
-        synchronized ( Controller.class)
+        m_PitMonitor = pitMonitor;
+        m_LogManager = logManager;
+        m_AlertsController = alerts;
+       /* synchronized ( Controller.class)
         {
-            m_DataController= new StokerTelnetController();
-        //    m_ConfigurationController = new StokerConfigurationController();
+           
         //    m_WeatherController = new WeatherController();
             m_DataOrchestrator = new DataOrchestrator();
         //    m_ClientMessenger = new CometMessenger();
         //    m_HardwareConfiguration = new HardwareDeviceConfiguration();
          //   m_StokerWebConfiguration = new StokerWebConfiguration(m_HardwareConfiguration);
-        }
+        }*/
     }
 
     @Inject
-    private void setConfiguration( HardwareDeviceConfiguration hc,
-                                   AlertsController ac)
+    private void setConfiguration( AlertsController ac)
     {
-        m_HardwareConfiguration = hc;
+
         m_AlertsController = ac;
     }
     
     public void init()
     {
         logger.info("Controller init called");
-     //  m_AlertsController = new AlertsController();
-       m_DataController.setDataStore(m_DataOrchestrator);
-       
-       
-     //  m_ConfigurationController.setConfiguration(m_StokerConfiguration);
+    
+        setupDefaultLog();
 
-       m_DataController.addEventListener(new DataControllerEventListener()
+   /*    m_DataController.addEventListener(new StateChangeEventListener()
        {
 
-            public void actionPerformed(DataControllerEvent ce)
+            public void actionPerformed(StateChangeEvent ce)
             {
                if ( ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
                {
@@ -138,10 +145,9 @@ public class Controller
 
             }
 
-       });
+       });*/
 
 
-       m_DataController.start();
     //   m_WeatherController.start();
     }
 
@@ -152,10 +158,8 @@ public class Controller
         
         synchronized ( Controller.class)
         {
-            // this gets called when the stoker configuration has changed from the client side.
-            // A full flush needs to be done on the server and restart\
+
             
-            m_DataController= new StokerTelnetController();
        //     m_HardwareConfiguration = new HardwareDeviceConfiguration();
         //    m_ConfigurationController = new StokerConfigurationController();
        //     m_ConfigurationController.setConfiguration( m_StokerConfiguration );
@@ -168,92 +172,75 @@ public class Controller
         
     }
     
-    public DataOrchestrator getDataOrchestrator()
-    {
-        return m_DataOrchestrator;
-    }
-    
-/*    public ClientMessenger getClientMessenger()
-    {
-       return m_ClientMessenger;    
-    }*/
+
     public HardwareDeviceConfiguration getStokerConfiguration()
     {
+       // if ( m_HardwareConfiguration == null)
+    
+        return m_PitMonitor.
         return m_HardwareConfiguration;
     }
     
     private void setupDefaultLog()
     {
-        for( String s : m_HardwareConfiguration.getAllBlowerIDs() )
+       // for( String s : m_HardwareConfiguration.getAllBlowerIDs() )
+        for ( Cooker cooker : m_PitMonitor.getCookers().getCookerList())
         {
-            String strCookerName = StokerWebProperties.getInstance().getProperty( s );
-
+            //String strCookerName = StokerWebProperties.getInstance().getProperty( s );
+            String strCookerName = cooker.getCookerName();
+            
             if ( strCookerName == null )  strCookerName = "";
 
             boolean bTryAgain = true;
         //    while ( bTryAgain )
         //    {
             String strDefaultName = "Default_" + strCookerName;
-                if ( ! m_DataOrchestrator.isLogRunning(strDefaultName ))
+                if ( ! isLogRunning(strDefaultName ))
                 {
                     try
                     {
-                        m_DataOrchestrator.startLog(strCookerName, strDefaultName);
+                        startLog(strCookerName, strDefaultName);
                         bTryAgain = false;
                     }
                     catch (LogExistsException e)
                     {
-                        try { m_DataOrchestrator.stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
+                        try { stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
                     }
                 }
 
          //   }  // end while try again
 
         } // end for String
-        if (m_HardwareConfiguration.getAllBlowerIDs().size() == 0 )
-        {
-            logger.error("No Blowers configured!");
-        }
+
     }
     /**
      *  Request the StokerConfigurationController to retrieve the configuration data.
      *
      *   This in turn should fire the ConfigControllerEvent.EventType.CONFIG_UPDATE event.
      */
-    public void loadConfiguration()
+/*    public void loadConfiguration()
     {
         m_HardwareConfiguration.loadNow();
-    }
-
-/*    public void updateConfiguration()
+    }*/
+    public void updateConfiguration()
     {
+        m_PitMonitor.
         m_ConfigurationController.setConfiguration(m_StokerConfiguration);
-    }*/
-
-    public void addDataEventListener( DataControllerEventListener cl)
-    {
-        m_DataController.addEventListener(cl);
     }
 
-    public void removeDataEventListener( DataControllerEventListener cl)
-    {
-        m_DataController.removeEventListener(cl);
-    }
 
-  /*  public void addConfigEventListener( ConfigControllerEventListener configControllerEventListener)
+    public void addConfigEventListener( ConfigChangeEventListener configControllerEventListener)
     {
-        m_ConfigurationController.addEventListener(configControllerEventListener);
-    }*/
+        m_PitMonitor.addConfigChangeListener(configControllerEventListener);
+       // m_ConfigurationController.addEventListener(configControllerEventListener);
+    }
 
     /*public void removeConfigEventListener( ConfigControllerEventListener configControllerEventListener)
     {
         m_ConfigurationController.removeEventListener(configControllerEventListener);
     }
-*/
-    public boolean isDataControllerReady()
-    {
-       return m_DataController.isReady();
-    }
+
+
 
  /*  public void addWeatherChangeEventListener( WeatherChangeEventListener wcel )
    {
@@ -270,11 +257,7 @@ public class Controller
        return m_WeatherController;
    }*/
 
-   public DataController getDataController()
-   {
-       return m_DataController;
-   }
-   
+
    public ArrayList<AlertModel> getAlertConfiguration()
    {
       return m_AlertsController.getConfiguration();
@@ -290,4 +273,209 @@ public class Controller
    {
        return m_AlertsController.getAvailableDeliveryMethods();
    }
+
+    @Override
+    public HardwareDeviceStatus getState()
+    {
+        return m_PitMonitor.getState();
+    }
+    
+    @Override
+    public boolean isActive()
+    {
+        return m_PitMonitor.isActive();
+    }
+    
+    @Override
+    public boolean isConfigRequired()
+    {
+        return m_PitMonitor.isConfigRequired(); 
+    }
+    
+    @Override
+    public ArrayList<SDevice> getRawDevices()
+    {
+        return m_PitMonitor.getRawDevices();
+    }
+    
+    @Override
+    public CookerList getCookers()
+    {
+        return m_PitMonitor.getCookers();
+    }
+    
+    @Override
+    public void updateCooker(CookerList cookerList)
+    {
+        m_PitMonitor.updateCooker( cookerList );
+    }
+    
+    @Override
+    public ArrayList<SDataPoint> getCurrentTemps()
+    {
+        return m_PitMonitor.getCurrentTemps();
+    }
+    
+    @Override
+    public void addTempListener(DataPointEventListener dataListener)
+    {
+        m_PitMonitor.addTempListener( dataListener );
+    }
+    
+    @Override
+    public void removeTempListener(DataPointEventListener dataListener)
+    {
+        m_PitMonitor.removeTempListener( dataListener );
+    }
+    
+    @Override
+    public void fireTempEvent(DataPointEvent dataEvent)
+    {
+        m_PitMonitor.fireTempEvent( dataEvent );
+    }
+    
+    @Override
+    public void addConfigChangeListener(ConfigChangeEventListener configListener)
+    {
+        m_PitMonitor.addConfigChangeListener( configListener );
+        
+    }
+    
+    @Override
+    public void removeConfigChangeListener(ConfigChangeEventListener configListener)
+    {
+        m_PitMonitor.removeConfigChangeListener( configListener );
+    }
+    
+    @Override
+    public void fireConfigEvent(ConfigChangeEvent configEvent)
+    {
+        m_PitMonitor.fireConfigEvent( configEvent );
+    }
+    
+    @Override
+    public void addStateChangeListener(StateChangeEventListener stateChangeListener)
+    {
+        m_PitMonitor.addStateChangeListener( stateChangeListener );
+    }
+    
+    @Override
+    public void removeStateChangeListener(
+            StateChangeEventListener stateChangeListener)
+    {
+        m_PitMonitor.removeStateChangeListener(stateChangeListener);
+    }
+    
+    @Override
+    public void fireChangeEvent(StateChangeEvent changeEvent)
+    {
+        m_PitMonitor.fireChangeEvent(changeEvent);
+    }
+    
+    @Override
+    public void addBlowerChangeListener(BlowerEventListener blowerListener)
+    {
+        m_PitMonitor.addBlowerChangeListener(blowerListener);
+    }
+    
+    @Override
+    public void removeBlowerChangeListener(BlowerEventListener blowerListener)
+    {
+        m_PitMonitor.removeBlowerChangeListener(blowerListener);
+    }
+    
+    @Override
+    public void fireBlowerEvent(BlowerEvent blowerEvent)
+    {
+        m_PitMonitor.fireBlowerEvent(blowerEvent);
+    }
+
+    // LogManager Classes
+    
+    @Override
+    public ArrayList<ArrayList<SDataPoint>> getAllDataPoints(String logName)
+    {
+        return m_LogManager.getAllDataPoints(logName);
+    }
+
+    @Override
+    public ArrayList<SDevice> getConfigSettings(String logName)
+    {
+       return m_LogManager.getConfigSettings(logName);
+    }
+
+    @Override
+    public ArrayList<LogItem> getLogList()
+    {
+       return m_LogManager.getLogList();
+    }
+
+    @Override
+    public String getLogFilePath(String strLogName)
+    {
+        return m_LogManager.getLogFilePath(strLogName);
+    }
+
+    @Override
+    public String getLogFileName(String strLogName)
+    {
+        return m_LogManager.getLogFileName(strLogName);
+    }
+
+    @Override
+    public boolean isLogRunning(String strLogName)
+    {
+       return m_LogManager.isLogRunning(strLogName);
+    }
+
+    @Override
+    public void startLog(String strCookerName, String strLogName)
+            throws LogExistsException
+    {
+       m_LogManager.startLog(strCookerName, strLogName);
+    }
+
+    @Override
+    public void startLog(LogItem logItem) throws LogExistsException
+    {
+        m_LogManager.startLog(logItem);
+    }
+
+    @Override
+    public void stopLog(String strLogName) throws LogNotFoundException
+    {
+       m_LogManager.stopLog(strLogName);
+    }
+
+    @Override
+    public void stopAllLogs()
+    {
+        m_LogManager.stopAllLogs();
+    }
+
+    @Override
+    public Integer attachToExistingLog(String cookerName, String selectedLog,
+            String fileName)
+    {
+        return m_LogManager.attachToExistingLog(cookerName, selectedLog, fileName);
+    }
+
+    @Override
+    public ArrayList<LogNote> getNotes(String logName)
+    {
+        return m_LogManager.getNotes(logName);
+    }
+
+    @Override
+    public void addNoteToLog(String note, ArrayList<String> logList)
+    {
+       m_LogManager.addNoteToLog(note, logList);
+    }
+
+    @Override
+    public SDevice getDeviceByID(String ID)
+    {
+        return m_PitMonitor.getDeviceByID(ID);
+    }
+
 }

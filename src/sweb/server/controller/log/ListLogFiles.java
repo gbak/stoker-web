@@ -23,16 +23,16 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 
-import sweb.server.StokerConstants;
+import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.shared.model.logfile.LogDir;
 
 public class ListLogFiles
 {
    
-    private static final String baseDir = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKERWEB_DIR) + 
+    private static final String baseDir = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKERWEB_DIR) + 
                                           File.separator + 
-                   normalizePath(StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_LOGS_DIR));
+                   normalizePath(StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_LOGS_DIR));
 
     private static final Logger logger = Logger.getLogger(StokerFile.class.getName());
     

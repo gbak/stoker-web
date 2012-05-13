@@ -99,7 +99,7 @@ public class ReportServlet extends HttpServlet
      //       "jasper.reports.compile.temp",
      //       sc.getRealPath("/reports/"));
        
-       String stokerWebDir = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKERWEB_DIR);
+       String stokerWebDir = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKERWEB_DIR);
        logger.debug("Setting property: jasper.report.compile.temp to: [" + stokerWebDir + "]");
        System.setProperty("jasper.reports.compile.temp", stokerWebDir );
        

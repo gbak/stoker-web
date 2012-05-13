@@ -11,7 +11,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 
 import sweb.server.StokerWebProperties;
-import sweb.server.logging.LoggingConfigurator;
+import sweb.server.log.LoggingConfigurator;
 import sweb.server.security.LoginProperties;
 
 public class AddUser

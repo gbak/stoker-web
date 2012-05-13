@@ -19,12 +19,12 @@ import org.joda.time.Interval;
 import org.joda.time.Period;
 
 import sweb.server.controller.Controller;
-import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.LogFileFormatter;
 import sweb.server.controller.log.LogFileFormatter.LineType;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.server.controller.log.exceptions.LogReadErrorException;
+import sweb.server.log.LogManagerImpl;
 import sweb.server.report.JasperReportConstants.ReportConstants;
 import sweb.server.report.TableEntry.ActionType;
 import sweb.shared.model.data.SBlowerDataPoint;

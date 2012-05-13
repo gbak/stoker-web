@@ -1,4 +1,4 @@
-package sweb.server.controller.config.json;
+package sweb.server.monitors.stoker.config.json;
 
 import java.util.ArrayList;
 

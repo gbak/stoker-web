@@ -42,20 +42,20 @@ import sweb.server.controller.Controller;
 import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.ConfigControllerEvent;
-import sweb.server.controller.events.ConfigControllerEventListener;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.controller.events.ConfigChangeEventListener;
+import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.controller.events.StateChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
-import sweb.server.controller.events.DataControllerEvent.EventType;
+import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.log.ListLogFiles;
 import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.server.controller.weather.WeatherController;
+import sweb.server.log.LogManagerImpl;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
@@ -97,24 +97,22 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private Timer readTimeDataTimer = null;
     private DataPointEventListener m_DPEL= null;
 
-    DataControllerEventListener m_dcel = null;
-    ConfigControllerEventListener m_ccel = null;
+    StateChangeEventListener m_dcel = null;
+    ConfigChangeEventListener m_ccel = null;
     WeatherChangeEventListener m_wcel = null;
-    StokerWebConfiguration stokerWebConfiguration = null;
-    ConfigurationController m_ConfigurationController = null;
     WeatherController m_WeatherController = null;
     ClientMessenger m_ClientMessenger = null;
+    Controller m_Controller = null;
     
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
     @Inject
     public StokerCoreServiceImpl( StokerWebConfiguration config, 
-                                  ConfigurationController cc,
+                                  Controller c,
                                   ClientMessenger cm,
                                   WeatherController wc)
     {
-        this.stokerWebConfiguration = config;
-        this.m_ConfigurationController = cc;
+        this.m_Controller = c;
         this.m_ClientMessenger = cm;
         this.m_WeatherController = wc;
     }
@@ -122,7 +120,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public HashMap<String,SDevice> getDeviceConfiguration()
             throws IllegalArgumentException
     {
-        return Controller.getInstance().getStokerConfiguration().data();
+
+            return Controller.getInstance().getStokerConfiguration().data();
+            
+
     }
 
     
@@ -163,21 +164,26 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                 }
 
            };
-           Controller.getInstance().getDataOrchestrator().addListener( m_DPEL );
+           m_Controller.addTempListener(m_DPEL);
+          // Controller.getInstance().getDataOrchestrator().addListener( m_DPEL );
        }
     }
 
     public ArrayList<SDataPoint> getNewGraphDataPoints(String input) throws IllegalArgumentException
     {
-        return Controller.getInstance().getDataOrchestrator().getLastDPs();
+        return m_Controller.getCurrentTemps();
+       // return Controller.getInstance().getDataOrchestrator().getLastDPs();
 
     }
 
     private void removeControllerEvents()
     {
         logger.info("Removing event listeners!");
-        Controller.getInstance().removeDataEventListener( m_dcel );
-        m_ConfigurationController.removeEventListener(m_ccel);
+       // m_Controller.removeTempListener(m_dcel);
+        m_Controller.removeStateChangeListener(m_dcel);
+        m_Controller.removeConfigChangeListener(m_ccel);
+       // Controller.getInstance().removeDataEventListener( m_dcel );
+       // m_ConfigurationController.removeEventListener(m_ccel);
         m_WeatherController.removeEventListener(m_wcel);
     }
 
@@ -186,9 +192,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
         if (m_dcel == null)
         {
-            m_dcel = new DataControllerEventListener() {
+            m_dcel = new StateChangeEventListener() {
 
-                public void actionPerformed(DataControllerEvent ce)
+                public void actionPerformed(StateChangeEvent ce)
                 {
                     switch (ce.getEventType())
                     {
@@ -215,15 +221,16 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
             };
 
-            Controller.getInstance().addDataEventListener(m_dcel);
+            m_Controller.addStateChangeListener(m_dcel);
+           // Controller.getInstance().addDataEventListener(m_dcel);
 
         }
 
         if (m_ccel == null)
         {
-            m_ccel = new ConfigControllerEventListener() {
+            m_ccel = new ConfigChangeEventListener() {
 
-                public void actionPerformed(ConfigControllerEvent ce)
+                public void actionPerformed(ConfigChangeEvent ce)
                 {
                     switch (ce.getEventType())
                     {
@@ -240,7 +247,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
             };
 
-            m_ConfigurationController.addEventListener(m_ccel);
+            m_Controller.addConfigChangeListener(m_ccel);
+          //  m_ConfigurationController.addEventListener(m_ccel);
         }
 
         if (m_wcel == null)
@@ -362,12 +370,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             throws IllegalArgumentException
     {
 
-        return Controller.getInstance().getDataOrchestrator().getAllDataPoints( logName );
+        //return Controller.getInstance().getDataOrchestrator().getAllDataPoints( logName );
+        return m_Controller.getAllDataPoints(logName);
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
     {
-        return Controller.getInstance().getDataOrchestrator().getLogList();
+       // return Controller.getInstance().getDataOrchestrator().getLogList();
+        return m_Controller.getLogList();
     }
 
     public Integer startLog(String strCookerName, String strLogName, ArrayList<SDevice> arSD ) throws IllegalArgumentException
@@ -376,12 +386,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
           return -1;
        
         Integer ret = new Integer(0);
-        if ( ! Controller.getInstance().getDataOrchestrator().isLogRunning(strLogName))
+        if ( ! m_Controller.isLogRunning(strLogName))
         {
             try
             {
                 LogItem li = new LogItem(strCookerName, strLogName, arSD);
-                Controller.getInstance().getDataOrchestrator().startLog( li );
+                m_Controller.startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
                 m_ClientMessenger.push( le );
@@ -389,7 +399,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             }
             catch (LogExistsException e)
             {
-                try { Controller.getInstance().getDataOrchestrator().stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
+                try { m_Controller.stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
 
             }
         }
@@ -405,7 +415,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         Integer ret = new Integer(0);
         try
         {
-            Controller.getInstance().getDataOrchestrator().stopLog(strLogName);
+            m_Controller.stopLog(strLogName);
             ret = new Integer(1);
             // Create LogEvent and pass it back via comet stream
             LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
@@ -434,9 +444,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     {
        if ( ! loginGuard() )
           return -1;
-       
-       Controller.getInstance().getStokerConfiguration().update( asd );
-        //Controller.getInstance().loadConfiguration();
+
+       // Controller.getInstance().getStokerConfiguration().update( asd );
+       m_Controller.updateConfiguration(asd); 
+
+
         return new Integer(1);
     }
 
@@ -451,7 +463,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        if ( ! loginGuard() )
           return -1;
        
-        return Controller.getInstance().getDataOrchestrator().attachToExistingLog(cookerName, selectedLog, fileName);
+        return m_Controller.attachToExistingLog(cookerName, selectedLog, fileName);
 
     }
 
@@ -496,7 +508,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         HttpSession httpSession = getThreadLocalRequest().getSession();
       //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         Status s = null;
-        if ( Controller.getInstance().isDataControllerReady() )
+        if ( m_Controller.isActive() )
             s = Status.CONNECTED;
         else
             s = Status.DISCONNECTED;
@@ -513,7 +525,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         HttpSession httpSession = getThreadLocalRequest().getSession();
       //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         
-        for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
+        //for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
+        for ( SDataPoint sdp : m_Controller.getCurrentTemps())
             m_ClientMessenger.sessionPush( httpSession, sdp);
 
         WeatherData wd = m_WeatherController.getWeather();
@@ -531,7 +544,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         if ( ! loginGuard() )
             return -1;
         
-        Controller.getInstance().getDataOrchestrator().addNoteToLog(note, logList);
+        m_Controller.addNoteToLog(note, logList);
         return 0;
     }
 

@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import com.google.inject.Inject;
 
 import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.config.stoker.StokerConfigurationController;
+import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerPitSensor;
@@ -39,44 +39,21 @@ import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
  * @author gary.bak
  *
  */
-public class HardwareDeviceConfiguration
+public abstract class HardwareDeviceConfiguration
 {
-
-   // private volatile static StokerConfiguration stc;
-    ConfigurationController configurationController;
     
     HashMap<String,SDevice> m_HWConfig = new HashMap<String,SDevice>();
     private volatile boolean bisUpToDate = false;
 
     private static final Logger logger = Logger.getLogger(HardwareDeviceConfiguration.class.getName());
     
-   /* public static StokerConfiguration getInstance()
-    {
-        if ( stc == null)
-        {
-            synchronized ( StokerConfiguration.class)
-            {
-                if ( stc == null )
-                {
-                    stc = new StokerConfiguration();
-                }
-            }
-        }
-        return stc;
-    }*/
-
-    @Inject
-    public HardwareDeviceConfiguration( ConfigurationController cc )
+    public HardwareDeviceConfiguration()
     {
         logger.debug("HardwareDeviceConfiguration()");
-        configurationController = cc;
-        configurationController.setConfiguration(this);
     }
     
-    public void loadNow()
-    {
-       configurationController.loadNow() ;   
-    }
+    public abstract void loadNow();
+   
     
     public HashMap<String,SDevice> data()
     {
@@ -196,7 +173,7 @@ public class HardwareDeviceConfiguration
 
     public Integer update( ArrayList<SDevice> asd )
     {
-        StokerConfigurationController.postUpdate(asd);
+        StokerHardwareDevice.postUpdate(asd);
 
         return new Integer(1);
     }

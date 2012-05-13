@@ -111,4 +111,21 @@ public class Cooker implements Serializable
         }
         return sd;
     }
+    
+    public SDevice getDeviceByID( String ID )
+    {
+        if ( pitSensor.getID().equalsIgnoreCase(ID))
+            return pitSensor;
+        
+        
+        for ( SDevice p : probeList )
+        {
+            if ( p.getID().equalsIgnoreCase(ID))
+            {
+                return p;
+            }
+        }
+     
+        return null;
+    }
 }

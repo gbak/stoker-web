@@ -32,14 +32,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 
-import sweb.server.StokerConstants;
+import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.data.DataController;
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEvent.EventType;
+import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.parser.stoker.InvalidDataPointException;
 import sweb.server.controller.parser.stoker.SDataPointHelper;
+import sweb.server.monitors.stoker.StokerPitMonitor.Data;
+import sweb.server.monitors.stoker.StokerPitMonitor.State;
 import sweb.shared.model.data.SDataPoint;
 
 /*  This class does the following:
@@ -74,6 +75,9 @@ public class StokerTelnetController extends DataController
     Thread m_ReaderThread = null;  // thread that always runs to read the telnet input
     Timer startTimer = new Timer();
     Timer telnetMonitorTimer = new Timer();
+    
+    Data m_data = null;
+    State m_state = null;
 
     AtomicBoolean abStartHelper = new AtomicBoolean(false);
 
@@ -127,10 +131,12 @@ public class StokerTelnetController extends DataController
                 m_TelnetState == TelnetState.CONNECTED );
     }
 
-    public StokerTelnetController()
+    public StokerTelnetController(Data data, State state)
     {
         m_LoginState = LoginState.NO;
         m_TelnetState = TelnetState.ENTRY;
+        m_data = data;
+        m_state = state;
     }
 
     private void createConnection() throws IOException
@@ -139,8 +145,8 @@ public class StokerTelnetController extends DataController
         logger.info("Creating Telnet connection.");
 
         m_Telnet = new TelnetClient();
-        String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_IP_ADDRESS);
-        String strStokerPort = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKER_PORT);
+        String strStokerIP = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKER_IP_ADDRESS);
+        String strStokerPort = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKER_PORT);
         int iStokerPort =  new Integer( strStokerPort ).intValue();
         m_Telnet.connect( strStokerIP, iStokerPort ); 
                           
@@ -284,7 +290,7 @@ public class StokerTelnetController extends DataController
 
     private void closeConnection() throws IOException
     {
-        super.fireActionPerformed(new DataControllerEvent( this, EventType.LOST_CONNECTION ));
+        m_state.stateChange(new StateChangeEvent( this, EventType.LOST_CONNECTION ));
 
         m_TelnetState = TelnetState.DISCONNECTED;
         m_LoginState = LoginState.NO;
@@ -345,7 +351,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if (intRead == ' ' && lastRead == ':'
-                            && sb.toString().contains(StokerConstants.STOKER_PROMPT_LOGIN))  // login:
+                            && sb.toString().contains(StokerWebConstants.STOKER_PROMPT_LOGIN))  // login:
                     {
                         logger.info("found login string");
                         sendLoginSequence();
@@ -353,7 +359,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if (intRead == ' ' && lastRead == ':'
-                            && sb.toString().contains(StokerConstants.STOKER_PROMPT_PASSWORD))  // password
+                            && sb.toString().contains(StokerWebConstants.STOKER_PROMPT_PASSWORD))  // password
                     {
                         logger.info("found password string");
                         sendPasswordSequence();
@@ -369,7 +375,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if ( intRead == 't' && lastRead == 'r'
-                            && sb.toString().contains(StokerConstants.STOKER_CONDITION_START))  // stoker: start
+                            && sb.toString().contains(StokerWebConstants.STOKER_CONDITION_START))  // stoker: start
                     {
                         logger.info("Stoker Start response detected");
                         m_StokerState = StokerCmdState.STARTED;
@@ -377,7 +383,7 @@ public class StokerTelnetController extends DataController
                     }
 
                     if ( intRead == 'p' && lastRead == 'o'
-                            && sb.toString().contains(StokerConstants.STOKER_CONDITION_STOP))  // stkcmd: stop
+                            && sb.toString().contains(StokerWebConstants.STOKER_CONDITION_STOP))  // stkcmd: stop
                     {
                         logger.info("Stoker stopped response detected");
                         m_StokerState = StokerCmdState.STOPPED;
@@ -450,10 +456,11 @@ public class StokerTelnetController extends DataController
 
         for ( SDataPoint dp: arDP )
         {
-           super.m_StokerDataStore.addDataPoint(dp);
+           m_data.addData(dp);
         }
     }
 
+    
 
     private void waitForTemps()
     {
@@ -582,11 +589,6 @@ public class StokerTelnetController extends DataController
                 m_StokerState = StokerCmdState.ENTRY;
                 m_StokerResponseState = StokerResponseState.NONE;
 
-                if ( m_StokerDataStore == null )
-                {
-                    logger.error("NO data store defined in telnet controller, not starting");
-                    return;
-                }
        //     while (telnetState == TelnetState.CONNECTED && stokerState != State.STARTED )
         //    {
                 try
@@ -608,7 +610,7 @@ public class StokerTelnetController extends DataController
                        sendStopCommand();
                        sendStartCommand();
                     }
-                    super.fireActionPerformed(new DataControllerEvent( this, EventType.CONNECTION_ESTABLISHED ));
+                    m_state.stateChange(new StateChangeEvent( this, EventType.CONNECTION_ESTABLISHED ));
 
                 }
                 catch (ConnectException ce)
@@ -667,15 +669,8 @@ public class StokerTelnetController extends DataController
 
     }
 
-    public void setDataStore(DataOrchestrator sds)
-    {
-        m_StokerDataStore = sds;
-    }
 
-
-
-
-    public static void main(String[] args)
+   /* public static void main(String[] args)
     {
         StokerTelnetController sw = new StokerTelnetController();
 
@@ -686,7 +681,7 @@ public class StokerTelnetController extends DataController
         int x = 0;
         while ( true )
         {
-            /*
+            
             while ( sw.isMessageAvailable() )
             {
                System.out.println("Next message is: " + sw.getNextMessage());
@@ -700,7 +695,7 @@ public class StokerTelnetController extends DataController
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            */
+            
 
         }
       //  sw.sendStopCommand();
@@ -710,6 +705,6 @@ public class StokerTelnetController extends DataController
 
     }
 
-
+*/
 
 }

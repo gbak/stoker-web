@@ -16,9 +16,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.parser;
+package sweb.server.controller.events;
 
-public class StokerSettings
+import java.util.EventObject;
+
+public class ConfigChangeEvent extends EventObject
 {
+
+    private static final long serialVersionUID = -8808303440170428497L;
+
+    public enum EventType { NONE, CONFIG_UPDATE }
+
+    private EventType m_EventType = EventType.NONE;
+
+
+    public ConfigChangeEvent(Object source, EventType et)
+    {
+        super(source);
+        m_EventType = et;
+    }
+
+    public EventType getEventType()
+    {
+        return m_EventType;  // TODO: implement this
+    }
 
 }

@@ -3,6 +3,8 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import sweb.shared.model.devices.SDevice;
+
 public class CookerList  implements Serializable
 {
 
@@ -20,5 +22,14 @@ public class CookerList  implements Serializable
     public void setCookerList( ArrayList<Cooker> cookerList )
     {
         this.cookerList = cookerList;
+    }
+    
+    public SDevice getDeviceByID( String ID )
+    {
+        for ( Cooker c : cookerList )
+        {
+            return c.getDeviceByID( ID );
+        }
+        return null;
     }
 }

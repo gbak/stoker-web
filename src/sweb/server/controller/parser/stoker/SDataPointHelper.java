@@ -26,11 +26,15 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 import sweb.server.controller.Controller;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerPitSensor;
 /*
  *  Helper class to SDataPoint since GWT did not like the complex set of classes
  *  in the shared section.
@@ -40,6 +44,7 @@ public class SDataPointHelper
     public static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     public static final String OUTPUT_FORMAT = "%3s|%15s|%16s|%5.1f|%5.1f|%1s|%1s\n";
 
+    @Inject static Controller controller;
     private static final Logger logger = Logger.getLogger(SDataPointHelper.class.getName());
     
 
@@ -97,9 +102,18 @@ public class SDataPointHelper
 
           if ( bHasFan )  // TODO: stokerconfiguration( HardwareDeviceConfiguration) is returning null, since we have not scraped the stoker yet.
           {
-              String strBlowerID = Controller.getInstance().getStokerConfiguration().getBlowerID(deviceID);
-              SBlowerDataPoint sdp = new SBlowerDataPoint( strBlowerID, Calendar.getInstance().getTime(), bFanOn );
-              arDP.add( sdp );
+              SDevice pitDevice = controller.getDeviceByID(deviceID);
+              if ( pitDevice instanceof StokerPitSensor )
+              {
+                  SDevice fanDevice = ((StokerPitSensor) pitDevice).getFanDevice();
+                  if ( fanDevice != null)
+                  {
+                      String strBlowerID = fanDevice.getID();
+                      SBlowerDataPoint sdp = new SBlowerDataPoint( strBlowerID, Calendar.getInstance().getTime(), bFanOn );
+                      arDP.add( sdp );
+                  }
+              }
+             
           }
 
           SProbeDataPoint pdp = new SProbeDataPoint(deviceID, Calendar.getInstance().getTime(),  fTempF , fTempC);

@@ -6,9 +6,11 @@ import sweb.server.StokerInit;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.alerts.AlertsController;
-import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.config.stoker.StokerConfigurationController;
+import sweb.server.controller.config.stoker.StokerHardwareDevice;
+import sweb.server.controller.parser.stoker.SDataPointHelper;
 import sweb.server.controller.weather.WeatherController;
+import sweb.server.log.LogManager;
+import sweb.server.log.LogManagerImpl;
 
 public class DispatchServletModule extends ServletModule
 {
@@ -18,15 +20,16 @@ public class DispatchServletModule extends ServletModule
     //      DispatchServiceImpl.class);
       
       
-      bind(ConfigurationController.class).to(StokerConfigurationController.class).in(Singleton.class);;
-      
-      bind(HardwareDeviceConfiguration.class).asEagerSingleton();
-      bind(StokerWebConfiguration.class).asEagerSingleton();
-      
+     
+     // bind(HardwareDeviceConfiguration.class).asEagerSingleton();
+    //  bind(StokerWebConfiguration.class).asEagerSingleton();
+      bind(LogManager.class).to(LogManagerImpl.class);
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
       bind(AlertsController.class);
       bind(sweb.server.StokerInit.class).asEagerSingleton();
+      
+      requestStaticInjection(SDataPointHelper.class);
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       

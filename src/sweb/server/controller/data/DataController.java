@@ -20,8 +20,8 @@ package sweb.server.controller.data;
 
 import java.util.ArrayList;
 
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
+import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.controller.events.StateChangeEventListener;
 
 /**
  * @author gary.bak
@@ -29,9 +29,6 @@ import sweb.server.controller.events.DataControllerEventListener;
  */
 public abstract class DataController
 {
-    protected DataOrchestrator m_StokerDataStore = null;
-    ArrayList<DataControllerEventListener> arListener = new ArrayList<DataControllerEventListener>();
-
     public abstract void start();
     public abstract void stop();
     public abstract boolean isReady();
@@ -46,12 +43,8 @@ public abstract class DataController
      */
     public abstract boolean waitForReady(long lWaitTimeMills );
 
-    public void setDataStore( DataOrchestrator sds)
-    {
-        m_StokerDataStore = sds;
-    }
 
-    public void addEventListener( DataControllerEventListener listener )
+    /*public void addEventListener( StateChangeEventListener listener )
     {
         synchronized( this )
         {
@@ -59,7 +52,7 @@ public abstract class DataController
         }
     }
 
-    public void removeEventListener( DataControllerEventListener listener )
+    public void removeEventListener( StateChangeEventListener listener )
     {
         synchronized( this )
         {
@@ -68,16 +61,16 @@ public abstract class DataController
         }
     }
 
-    protected void fireActionPerformed( DataControllerEvent ce )
+    protected void fireActionPerformed( StateChangeEvent ce )
     {
         synchronized( this )
         {
-            for ( DataControllerEventListener listener : arListener )
+            for ( StateChangeEventListener listener : arListener )
             {
                 listener.actionPerformed(ce);
             }
         }
-    }
+    }*/
 
 
 }
