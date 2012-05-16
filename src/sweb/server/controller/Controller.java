@@ -104,15 +104,11 @@ public class Controller implements PitMonitor, LogManager
         m_PitMonitor = pitMonitor;
         m_LogManager = logManager;
         m_AlertsController = alerts;
-       /* synchronized ( Controller.class)
-        {
-           
-        //    m_WeatherController = new WeatherController();
-            m_DataOrchestrator = new DataOrchestrator();
-        //    m_ClientMessenger = new CometMessenger();
-        //    m_HardwareConfiguration = new HardwareDeviceConfiguration();
-         //   m_StokerWebConfiguration = new StokerWebConfiguration(m_HardwareConfiguration);
-        }*/
+        
+        init();
+        // TODO:  this will not work correctly.  Reset all need to clear out
+        // these objects so they can be created again.  
+      
     }
 
     @Inject
@@ -122,10 +118,27 @@ public class Controller implements PitMonitor, LogManager
         m_AlertsController = ac;
     }
     
+    private void setupListeners()
+    {
+        addStateChangeListener( new StateChangeEventListener() {
+
+            public void actionPerformed(StateChangeEvent ce)
+            {
+               if ( ce.getEventType() == StateChangeEvent.EventType.EXTENDED_CONNECTION_LOSS )
+               {
+                   stopAllLogs();
+               }
+
+            }
+
+        });    
+    }
+    
     public void init()
     {
         logger.info("Controller init called");
     
+        setupListeners();
         setupDefaultLog();
 
    /*    m_DataController.addEventListener(new StateChangeEventListener()
@@ -173,12 +186,9 @@ public class Controller implements PitMonitor, LogManager
     }
     
 
-    public HardwareDeviceConfiguration getStokerConfiguration()
+    public CookerList getStokerConfiguration()
     {
-       // if ( m_HardwareConfiguration == null)
-    
-        return m_PitMonitor.
-        return m_HardwareConfiguration;
+         return m_PitMonitor.getCookers();
     }
     
     private void setupDefaultLog()
@@ -222,10 +232,11 @@ public class Controller implements PitMonitor, LogManager
     {
         m_HardwareConfiguration.loadNow();
     }*/
-    public void updateConfiguration()
+    
+    @Override
+    public void updateSettings(ArrayList<SDevice> sdc)
     {
-        m_PitMonitor.
-        m_ConfigurationController.setConfiguration(m_StokerConfiguration);
+        //TODO: write this
     }
 
 

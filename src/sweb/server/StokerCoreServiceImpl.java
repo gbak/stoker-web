@@ -121,7 +121,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             throws IllegalArgumentException
     {
 
-            return Controller.getInstance().getStokerConfiguration().data();
+        HashMap<String,SDevice> hm = new HashMap<String,SDevice>();
+        for ( SDevice s : m_Controller.getRawDevices() )
+        {
+            hm.put( s.getID(), s);
+        }
+        return hm;
             
 
     }
@@ -439,14 +444,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     }
 
 
-    public Integer updateConfiguration(ArrayList<SDevice> asd)
+    public Integer updateSettings(ArrayList<SDevice> asd)
             throws IllegalArgumentException
     {
        if ( ! loginGuard() )
           return -1;
 
        // Controller.getInstance().getStokerConfiguration().update( asd );
-       m_Controller.updateConfiguration(asd); 
+       m_Controller.updateSettings(asd); 
 
 
         return new Integer(1);
@@ -629,7 +634,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         // TODO Auto-generated method stub
         
         // Save Cooker to property file as JSON
-        stokerWebConfiguration.saveConfig(cookerList);
+        //stokerWebConfiguration.saveConfig(cookerList);
+        m_Controller.updateCooker(cookerList);
+        
         
         // TODO:  Update Stoker
         // Restart necessary Server objects to reflect updated config

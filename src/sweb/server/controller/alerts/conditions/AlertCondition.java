@@ -6,6 +6,7 @@ import sweb.shared.model.alerts.AlertModel;
 public abstract class AlertCondition
 {
 
+    // TODO: make this an interface
    boolean m_Enabled = false;
    String  m_Identifier = "";
    

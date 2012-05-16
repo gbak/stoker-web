@@ -25,8 +25,6 @@ import org.apache.log4j.Logger;
 import com.google.inject.Inject;
 
 import sweb.server.controller.Controller;
-import sweb.server.controller.StokerWebConfiguration;
-import sweb.server.controller.data.DataOrchestrator;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.CookerConfigChangeListener;
@@ -68,25 +66,18 @@ public class StokerInit extends HttpServlet
         if ( wasNull )
         {         
 
-            m_Controller.a
-            Controller.getInstance().addDataEventListener( new StateChangeEventListener() {
+            m_Controller.addStateChangeListener( new StateChangeEventListener() {
 
                 public void actionPerformed(StateChangeEvent ce)
                 {
                    if ( ce.getEventType() == StateChangeEvent.EventType.EXTENDED_CONNECTION_LOSS )
                    {
-                       Controller.getInstance().getDataOrchestrator().stopAllLogs();
+                       m_Controller.stopAllLogs();
                    }
 
                 }
 
             });
-
-            // This will initialize the Data and the configuration controller
-            // Once the config listener completes it will fire the event
-            // and the default log file will start recording.
-
-            Controller.getInstance().init();
 
         }
     }

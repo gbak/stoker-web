@@ -239,7 +239,7 @@ public class MainPage
                         Log.debug("Getting config updates from cooker: " + cc.getName());
                         alUpdates.addAll( cc.getConfigUpdates());
                     }
-                    stokerService.updateConfiguration( alUpdates, new AsyncCallback<Integer>() {
+                    stokerService.updateSettings( alUpdates, new AsyncCallback<Integer>() {
 
                         public void onFailure(Throwable caught)
                         {

@@ -47,7 +47,9 @@ public interface PitMonitor
     
     public CookerList getCookers();
     
-    public void updateCooker( CookerList cookerList );
+    public void updateCooker( CookerList cookerList );   
+    
+    public void updateSettings( ArrayList<SDevice> deviceList );
     
     public ArrayList<SDataPoint> getCurrentTemps();
     

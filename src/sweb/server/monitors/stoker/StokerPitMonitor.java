@@ -380,4 +380,12 @@ public class StokerPitMonitor implements PitMonitor
     }
 
 
+    @Override
+    public void updateSettings(ArrayList<SDevice> deviceList)
+    {
+        StokerHardwareDevice.postUpdate(deviceList);
+        
+    }
+
+
 }
