@@ -275,13 +275,13 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     
     public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
     {
-       Controller.getInstance().setAlertConfiguration(alertBaseList);
+       m_Controller.setAlertConfiguration(alertBaseList);
        
     }
     
     public ArrayList<AlertModel> getAlertConfiguration()
     {
-       ArrayList<AlertModel> ab = Controller.getInstance().getAlertConfiguration();
+       ArrayList<AlertModel> ab = m_Controller.getAlertConfiguration();
        return ab;
     }
     

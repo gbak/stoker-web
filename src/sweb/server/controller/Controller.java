@@ -28,7 +28,8 @@ import com.google.inject.Inject;
 import sweb.server.ClientMessenger;
 import sweb.server.CometMessenger;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.alerts.AlertsController;
+import sweb.server.controller.alerts.AlertManager;
+import sweb.server.controller.alerts.AlertsManagerImpl;
 import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.data.DataController;
@@ -61,14 +62,14 @@ import sweb.shared.model.logfile.LogNote;
  * @author gary.bak
  *
  */
-public class Controller implements PitMonitor, LogManager
+public class Controller implements PitMonitor, LogManager, AlertManager
 {
     private PitMonitor m_PitMonitor = null;
     private LogManager m_LogManager = null;
     
   //  private ConfigurationController m_ConfigurationController = null;
  //   private WeatherController m_WeatherController = null;
-    private AlertsController m_AlertsController = null;
+    private AlertsManagerImpl m_AlertsController = null;
   //  private ClientMessenger m_ClientMessenger = null;
 
     private static final Logger logger = Logger.getLogger(Controller.class.getName());
@@ -99,7 +100,7 @@ public class Controller implements PitMonitor, LogManager
     @Inject
     private Controller(PitMonitor pitMonitor,
                        LogManager logManager,
-                       AlertsController alerts )
+                       AlertsManagerImpl alerts )
     {
         m_PitMonitor = pitMonitor;
         m_LogManager = logManager;
@@ -109,13 +110,6 @@ public class Controller implements PitMonitor, LogManager
         // TODO:  this will not work correctly.  Reset all need to clear out
         // these objects so they can be created again.  
       
-    }
-
-    @Inject
-    private void setConfiguration( AlertsController ac)
-    {
-
-        m_AlertsController = ac;
     }
     
     private void setupListeners()
@@ -269,12 +263,14 @@ public class Controller implements PitMonitor, LogManager
    }*/
 
 
+    @Override
    public ArrayList<AlertModel> getAlertConfiguration()
    {
       return m_AlertsController.getConfiguration();
       
    }
    
+   @Override
    public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
    {
       m_AlertsController.setConfiguration(alertBaseList);
@@ -488,5 +484,6 @@ public class Controller implements PitMonitor, LogManager
     {
         return m_PitMonitor.getDeviceByID(ID);
     }
+
 
 }

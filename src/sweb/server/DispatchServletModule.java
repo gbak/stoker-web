@@ -5,7 +5,7 @@ import com.google.inject.servlet.ServletModule;
 import sweb.server.StokerInit;
 import sweb.server.controller.HardwareDeviceConfiguration;
 import sweb.server.controller.StokerWebConfiguration;
-import sweb.server.controller.alerts.AlertsController;
+import sweb.server.controller.alerts.AlertsManagerImpl;
 import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.parser.stoker.SDataPointHelper;
 import sweb.server.controller.weather.WeatherController;
@@ -26,7 +26,7 @@ public class DispatchServletModule extends ServletModule
       bind(LogManager.class).to(LogManagerImpl.class);
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
-      bind(AlertsController.class);
+      bind(AlertsManagerImpl.class);
       bind(sweb.server.StokerInit.class).asEagerSingleton();
       
       requestStaticInjection(SDataPointHelper.class);

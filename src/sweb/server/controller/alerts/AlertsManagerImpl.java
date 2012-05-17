@@ -36,17 +36,17 @@ import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.ConnectionChangeAlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;
 
-public class AlertsController
+public class AlertsManagerImpl
 {
    StokerAlarm stokerAlarm; // = new StokerAlarm(false);
    ConnectionOrConfigChangeAlert connConfigChangeAlarm = new ConnectionOrConfigChangeAlert(false);
    ArrayList<TempAlert> tempAlert = new ArrayList<TempAlert>();
    ArrayList<TimedAlert> timedAlert = new ArrayList<TimedAlert>();
 
-   private static final Logger logger = Logger.getLogger(AlertsController.class.getName());
+   private static final Logger logger = Logger.getLogger(AlertsManagerImpl.class.getName());
    
    @Inject
-   public AlertsController(StokerAlarm sa)
+   public AlertsManagerImpl(StokerAlarm sa)
    {
        stokerAlarm = sa;
    }
