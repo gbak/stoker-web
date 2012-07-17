@@ -25,6 +25,7 @@ import sweb.server.log.LogManagerImpl;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.HardwareDeviceStatus;
+import sweb.shared.model.HardwareDeviceStatus.Status;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
@@ -40,6 +41,7 @@ public class StokerPitMonitor implements PitMonitor
     private CookerList m_CookerList = null;
     
     StokerHardwareDevice m_StokerHardware = null;
+    HardwareDeviceStatus m_HardwareDeviceStatus = null;
     
     ConcurrentHashMap<String,SDataPoint> hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
 
@@ -70,7 +72,14 @@ public class StokerPitMonitor implements PitMonitor
         Config c = new Config() {@Override public void configChange(ConfigChangeEvent cce) { configChange(cce);  } };
         
         m_StokerHardware = new StokerHardwareDevice( c );
+        boolean bLoadStatus = m_StokerHardware.loadNow();
         
+        if ( bLoadStatus == false )
+        {
+            // TODO: unable to pull config from stoker.  Set disconnected and retry later
+            m_HardwareDeviceStatus.setHardwareStatus(Status.DISCONNECTED);
+            return;
+        }
         Data d = new Data() {@Override public void addData(SDataPoint sdp) { addDataPoint(sdp);  } };
         State s = new State() {@Override public void stateChange(StateChangeEvent change) { stateChange(change);  } };
         
@@ -82,30 +91,34 @@ public class StokerPitMonitor implements PitMonitor
     @Override
     public HardwareDeviceStatus getState()
     {
-        
-        // TODO Auto-generated method stub
-        return null;
+        return m_HardwareDeviceStatus;
     }
 
     @Override
     public boolean isActive()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return m_DataController.isReady();
     }
 
+    /* (non-Javadoc)
+     * @see sweb.server.monitors.PitMonitor#isConfigRequired()
+     */
     @Override
     public boolean isConfigRequired()
     {
         // TODO Auto-generated method stub
+        // Does the local configuration file exist?
+        // Is there a cooker defined in the file?
+        // Is there at least one probe - Pit or food assigned to the cooker
+        // Is there a probe assigned to a cooker that no longer exists
+        
         return false;
     }
 
     @Override
     public ArrayList<SDevice> getRawDevices()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return m_StokerHardware.getAllDevices();
     }
 
     @Override
@@ -280,12 +293,36 @@ public class StokerPitMonitor implements PitMonitor
         
     }
 
+    private void setHardwareState( StateChangeEvent.EventType eventType )
+    {
+        // EventType { NONE, LOST_CONNECTION, CONNECTION_ESTABLISHED, EXTENDED_CONNECTION_LOSS }
+        switch ( eventType ) 
+        {
+            case  CONNECTION_ESTABLISHED:
+                m_HardwareDeviceStatus.setHardwareStatus( HardwareDeviceStatus.Status.CONNECTED );
+                break;
+                
+            case LOST_CONNECTION:
+            case EXTENDED_CONNECTION_LOSS:
+                m_HardwareDeviceStatus.setHardwareStatus( HardwareDeviceStatus.Status.DISCONNECTED );
+                
+            case NONE:
+                m_HardwareDeviceStatus.setHardwareStatus( HardwareDeviceStatus.Status.UNKNOWN );
+        
+            default:
+                m_HardwareDeviceStatus.setHardwareStatus( HardwareDeviceStatus.Status.UNKNOWN );
+        }        
+        
+    }
+    
     private void configChange( ConfigChangeEvent cce )
     {
         fireConfigEvent(cce);
     }
+    
     private void stateChange( StateChangeEvent change )
     {
+        setHardwareState( change.getEventType() );
         fireChangeEvent( change );
     }
     

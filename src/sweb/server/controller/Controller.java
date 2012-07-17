@@ -132,8 +132,12 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     {
         logger.info("Controller init called");
     
-        setupListeners();
-        setupDefaultLog();
+        if ( ! m_PitMonitor.isConfigRequired() )
+        { 
+            setupListeners();
+            setupDefaultLog();
+        }
+          
 
    /*    m_DataController.addEventListener(new StateChangeEventListener()
        {

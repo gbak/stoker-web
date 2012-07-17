@@ -52,7 +52,7 @@ public abstract class HardwareDeviceConfiguration
         logger.debug("HardwareDeviceConfiguration()");
     }
     
-    public abstract void loadNow();
+    public abstract boolean loadNow();
    
     
     public HashMap<String,SDevice> data()

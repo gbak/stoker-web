@@ -33,7 +33,7 @@ public interface PitMonitor
     
     /**
      * Query PitMontitor to see if the Cooker setup has been completed.
-     * This step is for proper operation
+     * This says if the local configuration is required.
      * @return true if configuration is required
      */
     public boolean isConfigRequired();

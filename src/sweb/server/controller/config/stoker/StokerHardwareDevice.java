@@ -202,7 +202,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
        super.setUpdatedStaus(true);
    }
 
-    public synchronized void pullJSonConfig()
+    public synchronized boolean pullJSonConfig()
     {
         boolean bSuccess = false;
         int iTry = 0;
@@ -310,10 +310,16 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
 
     //    assignCookerNames();
 
+        if ( bSuccess == false )
+        {
+            return false;
+        }
         super.setUpdatedStaus(true);
         logger.debug("Config: " + super.debugString());
         config.configChange(new ConfigChangeEvent(this,
                 ConfigChangeEvent.EventType.CONFIG_UPDATE));
+        
+        return true;
 
     }
    public synchronized void scrapeWebPage()
@@ -627,11 +633,11 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
    }
 
    @Override
-    public void loadNow()
+    public boolean loadNow()
     {
        super.setUpdatedStaus(false);
        //scrapeWebPage();
-        pullJSonConfig();
+        return pullJSonConfig();
 
     }
 

@@ -11,6 +11,8 @@ import sweb.server.controller.parser.stoker.SDataPointHelper;
 import sweb.server.controller.weather.WeatherController;
 import sweb.server.log.LogManager;
 import sweb.server.log.LogManagerImpl;
+import sweb.server.monitors.PitMonitor;
+import sweb.server.monitors.stoker.StokerPitMonitor;
 
 public class DispatchServletModule extends ServletModule
 {
@@ -23,6 +25,7 @@ public class DispatchServletModule extends ServletModule
      
      // bind(HardwareDeviceConfiguration.class).asEagerSingleton();
     //  bind(StokerWebConfiguration.class).asEagerSingleton();
+      bind(PitMonitor.class).to(StokerPitMonitor.class); 
       bind(LogManager.class).to(LogManagerImpl.class);
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);

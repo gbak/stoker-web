@@ -69,9 +69,10 @@ public class ReportData
         }
         else
         {
+            // TODO: removed these to eliminate a compile error.  Not sure what the case is for.
             logger.debug("Log file does not end in .log");
-           strLogFilePath = Controller.getInstance().getDataOrchestrator().getLogFilePath(name);
-           strLogNameShort = Controller.getInstance().getDataOrchestrator().getLogFileName(name);
+           strLogFilePath = ""; //Controller.getInstance().getDataOrchestrator().getLogFilePath(name);
+           strLogNameShort = ""; //Controller.getInstance().getDataOrchestrator().getLogFileName(name);
         }
         logger.debug("Full path is: " + strLogFilePath );
         logger.debug("Short log name: " + strLogNameShort );

@@ -56,6 +56,7 @@ import sweb.server.controller.log.exceptions.LogExistsException;
 import sweb.server.controller.log.exceptions.LogNotFoundException;
 import sweb.server.controller.weather.WeatherController;
 import sweb.server.log.LogManagerImpl;
+import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
@@ -76,6 +77,7 @@ import sweb.shared.model.events.LogEvent.LogEventType;
 import sweb.shared.model.logfile.LogDir;
 import sweb.shared.model.weather.WeatherData;
 
+import com.google.common.eventbus.EventBus;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 
@@ -102,17 +104,21 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     WeatherChangeEventListener m_wcel = null;
     WeatherController m_WeatherController = null;
     ClientMessenger m_ClientMessenger = null;
-    Controller m_Controller = null;
+ //   Controller m_Controller = null;
+    PitMonitor m_pitMonitor = null;
     
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
     @Inject
     public StokerCoreServiceImpl( StokerWebConfiguration config, 
+                                  PitMonitor pm,
                                   Controller c,
                                   ClientMessenger cm,
-                                  WeatherController wc)
+                                  WeatherController wc,
+                                  EventBus bus)
     {
         this.m_Controller = c;
+        this.m_pitMonitor = pm;
         this.m_ClientMessenger = cm;
         this.m_WeatherController = wc;
     }
