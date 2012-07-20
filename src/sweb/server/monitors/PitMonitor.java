@@ -2,14 +2,6 @@ package sweb.server.monitors;
 
 import java.util.ArrayList;
 
-import sweb.server.controller.events.BlowerEvent;
-import sweb.server.controller.events.BlowerEventListener;
-import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEventListener;
-import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
-import sweb.server.controller.events.StateChangeEvent;
-import sweb.server.controller.events.StateChangeEventListener;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.data.SDataPoint;
@@ -53,29 +45,17 @@ public interface PitMonitor
     
     public ArrayList<SDataPoint> getCurrentTemps();
     
-    public void addTempListener( DataPointEventListener dataListener );
+    //public void addTempListener( DataPointEventListener dataListener );
     
-    public void removeTempListener( DataPointEventListener dataListener );
+    //public void removeTempListener( DataPointEventListener dataListener );
     
-    public abstract void fireTempEvent( DataPointEvent dataEvent );
-    
-    public void addConfigChangeListener( ConfigChangeEventListener configListener );
-    
-    public void removeConfigChangeListener( ConfigChangeEventListener configListener );
-    
-    public void fireConfigEvent( ConfigChangeEvent configEvent );
-    
-    public void addStateChangeListener( StateChangeEventListener stateChangeListener );
-    
-    public void removeStateChangeListener( StateChangeEventListener stateChangeListener );
+    //public abstract void fireTempEvent( DataPointEvent dataEvent );
+       
+/*    public void fireConfigEvent( ConfigChangeEvent configEvent );
     
     public void fireChangeEvent( StateChangeEvent changeEvent );
     
-    public void addBlowerChangeListener( BlowerEventListener blowerListener );
-    
-    public void removeBlowerChangeListener( BlowerEventListener blowerListener );
-    
     public void fireBlowerEvent( BlowerEvent blowerEvent );
-    
+    */
     public SDevice getDeviceByID( String ID );
 }

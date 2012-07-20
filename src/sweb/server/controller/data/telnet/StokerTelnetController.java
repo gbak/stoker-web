@@ -32,6 +32,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.log4j.Logger;
 
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.data.DataController;
@@ -39,8 +42,6 @@ import sweb.server.controller.events.StateChangeEvent;
 import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.parser.stoker.InvalidDataPointException;
 import sweb.server.controller.parser.stoker.SDataPointHelper;
-import sweb.server.monitors.stoker.StokerPitMonitor.Data;
-import sweb.server.monitors.stoker.StokerPitMonitor.State;
 import sweb.shared.model.data.SDataPoint;
 
 /*  This class does the following:
@@ -50,7 +51,7 @@ import sweb.shared.model.data.SDataPoint;
  *     Captures incomming temp messages and sends them to the data store
  */
 
-public class StokerTelnetController extends DataController
+public class StokerTelnetController implements DataController
 {
   //  private volatile static StokerTelnetController stc = null;
 
@@ -75,13 +76,22 @@ public class StokerTelnetController extends DataController
     Thread m_ReaderThread = null;  // thread that always runs to read the telnet input
     Timer startTimer = new Timer();
     Timer telnetMonitorTimer = new Timer();
-    
-    Data m_data = null;
-    State m_state = null;
 
     AtomicBoolean abStartHelper = new AtomicBoolean(false);
+    
+    EventBus eventBus;
 
     private static final Logger logger = Logger.getLogger(StokerTelnetController.class.getName());
+    
+    @Inject
+    public StokerTelnetController(EventBus eventBus)
+    {
+        this.eventBus = eventBus;
+        
+        m_LoginState = LoginState.NO;
+        m_TelnetState = TelnetState.ENTRY;
+
+    }
     
     public boolean waitForReady(long lWaitTimeMills )
     {
@@ -131,13 +141,7 @@ public class StokerTelnetController extends DataController
                 m_TelnetState == TelnetState.CONNECTED );
     }
 
-    public StokerTelnetController(Data data, State state)
-    {
-        m_LoginState = LoginState.NO;
-        m_TelnetState = TelnetState.ENTRY;
-        m_data = data;
-        m_state = state;
-    }
+   
 
     private void createConnection() throws IOException
     {
@@ -290,7 +294,7 @@ public class StokerTelnetController extends DataController
 
     private void closeConnection() throws IOException
     {
-        m_state.stateChange(new StateChangeEvent( this, EventType.LOST_CONNECTION ));
+        eventBus.post(new StateChangeEvent( this, EventType.LOST_CONNECTION ));
 
         m_TelnetState = TelnetState.DISCONNECTED;
         m_LoginState = LoginState.NO;
@@ -456,7 +460,7 @@ public class StokerTelnetController extends DataController
 
         for ( SDataPoint dp: arDP )
         {
-           m_data.addData(dp);
+           eventBus.post(dp);
         }
     }
 
@@ -610,7 +614,7 @@ public class StokerTelnetController extends DataController
                        sendStopCommand();
                        sendStartCommand();
                     }
-                    m_state.stateChange(new StateChangeEvent( this, EventType.CONNECTION_ESTABLISHED ));
+                    eventBus.post(new StateChangeEvent( this, EventType.CONNECTION_ESTABLISHED ));
 
                 }
                 catch (ConnectException ce)

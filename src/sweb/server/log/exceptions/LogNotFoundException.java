@@ -16,15 +16,16 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.log.exceptions;
+package sweb.server.log.exceptions;
 
-public class LogExistsException extends Exception
+
+public class LogNotFoundException extends Exception
 {
 
    private static final long serialVersionUID = 8046243461612517416L;
 
-   public LogExistsException( String s )
+   public LogNotFoundException( String s )
    {
-      super("Log file already exists: [" + s + "]");
+      super("Log file not found: [" + s + "]");
    }
 }

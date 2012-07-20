@@ -2,26 +2,19 @@ package sweb.server.monitors.stoker;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.controller.StokerWebConfiguration;
 import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.telnet.StokerTelnetController;
-import sweb.server.controller.events.BlowerEvent;
-import sweb.server.controller.events.BlowerEventListener;
 import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.StateChangeEvent;
-import sweb.server.controller.events.StateChangeEventListener;
-import sweb.server.log.LogManagerImpl;
+import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.HardwareDeviceStatus;
@@ -30,7 +23,11 @@ import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
 
-public class StokerPitMonitor implements PitMonitor
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+
+public class StokerPitMonitor implements PitMonitor, DataController
 {
 
     private static final Logger logger = Logger.getLogger(StokerPitMonitor.class.getName());
@@ -38,53 +35,33 @@ public class StokerPitMonitor implements PitMonitor
     // Data members
     private DataController m_DataController = null;
  //   private HardwareDeviceConfiguration m_HardwareDeviceConfig = null;
-    private CookerList m_CookerList = null;
+  //  private CookerList m_CookerList = null;
     
     StokerHardwareDevice m_StokerHardware = null;
-    HardwareDeviceStatus m_HardwareDeviceStatus = null;
+    HardwareDeviceStatus m_HardwareDeviceStatus = new HardwareDeviceStatus(Status.UNKNOWN, Calendar.getInstance().getTime());
     
-    ConcurrentHashMap<String,SDataPoint> hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
+    ConcurrentHashMap<String,SDataPoint> m_hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
 
+    EventBus eventBus;
     
-    // Listener Lists
-    private ArrayList<StateChangeEventListener> stateChangeListenList = new ArrayList<StateChangeEventListener>();
-    private ArrayList<BlowerEventListener> blowerEventListenList = new ArrayList<BlowerEventListener>();
-    private Set<DataPointEventListener> dataEventListenList = Collections.newSetFromMap(new ConcurrentHashMap<DataPointEventListener,Boolean>());
-    
-    public interface Data
-    {
-        void addData( SDataPoint sdp );
-    }
-    
-    public interface State
-    {
-        void stateChange( StateChangeEvent change);
-    }
-    
-    public interface Config
-    {
-        void configChange( ConfigChangeEvent event );
-    }
-    
-    public StokerPitMonitor()
+    @Inject
+    public StokerPitMonitor(EventBus eventBus,
+                            StokerHardwareDevice stokerHardwareDevice,
+                            StokerTelnetController stc,
+                            StokerWebConfiguration swc )
     {
     
-        Config c = new Config() {@Override public void configChange(ConfigChangeEvent cce) { configChange(cce);  } };
         
-        m_StokerHardware = new StokerHardwareDevice( c );
-        boolean bLoadStatus = m_StokerHardware.loadNow();
+        this.eventBus = eventBus;
+        this.m_StokerHardware = stokerHardwareDevice;
+        this.m_DataController = stc;
         
-        if ( bLoadStatus == false )
-        {
-            // TODO: unable to pull config from stoker.  Set disconnected and retry later
-            m_HardwareDeviceStatus.setHardwareStatus(Status.DISCONNECTED);
-            return;
-        }
-        Data d = new Data() {@Override public void addData(SDataPoint sdp) { addDataPoint(sdp);  } };
-        State s = new State() {@Override public void stateChange(StateChangeEvent change) { stateChange(change);  } };
-        
-        // Attempt to pull stoker config, if that succeeds connect telnet
-        m_DataController= new StokerTelnetController(d, s);
+        this.eventBus.register(this);
+       
+
+        // TODO: need to start stokerTelnet here.
+        start();
+        swc.init();
     }
     
 
@@ -143,14 +120,14 @@ public class StokerPitMonitor implements PitMonitor
         // The Client should not be checking for data if the controller is down, but just in case.
         if ( isActive())
         {
-           ar = new ArrayList<SDataPoint>(hmLatestData.values());
+           ar = new ArrayList<SDataPoint>(m_hmLatestData.values());
         }
         else
            ar = new ArrayList<SDataPoint>();
 
         return ar;
     }
-
+/*
     @Override
     public void addTempListener(DataPointEventListener dataListener)
     {
@@ -194,9 +171,9 @@ public class StokerPitMonitor implements PitMonitor
                ((DataPointEventListener)copy[i]).stateChange(dataEvent);
             }
 
-    }
+    }*/
 
-    @Override
+ /*   @Override
     public void addConfigChangeListener(ConfigChangeEventListener configListener)
     {
         // TODO Auto-generated method stub
@@ -209,16 +186,16 @@ public class StokerPitMonitor implements PitMonitor
     {
         // TODO Auto-generated method stub
 
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void fireConfigEvent(ConfigChangeEvent configEvent)
     {
         // TODO Auto-generated method stub
 
-    }
+    }*/
 
-    @Override
+ /*   @Override
     public void addStateChangeListener(
             StateChangeEventListener stateChangeListener)
     {
@@ -228,8 +205,8 @@ public class StokerPitMonitor implements PitMonitor
         }
 
     }
-
-    @Override
+*/
+/*    @Override
     public void removeStateChangeListener(
             StateChangeEventListener stateChangeListener)
     {
@@ -239,9 +216,9 @@ public class StokerPitMonitor implements PitMonitor
         }
 
 
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void fireChangeEvent(StateChangeEvent changeEvent)
     {
         synchronized( this )
@@ -252,9 +229,9 @@ public class StokerPitMonitor implements PitMonitor
             }
         }
 
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void addBlowerChangeListener(BlowerEventListener blowerListener)
     {
         synchronized ( this )
@@ -262,9 +239,9 @@ public class StokerPitMonitor implements PitMonitor
             blowerEventListenList.add( blowerListener );
         }
         
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void removeBlowerChangeListener(BlowerEventListener blowerListener)
     {
         synchronized ( this )
@@ -272,9 +249,9 @@ public class StokerPitMonitor implements PitMonitor
             blowerEventListenList.remove( blowerListener );
         }
         
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void fireBlowerEvent(BlowerEvent blowerEvent)
     {
         Object[] copy;
@@ -291,7 +268,7 @@ public class StokerPitMonitor implements PitMonitor
             }
         
         
-    }
+    }*/
 
     private void setHardwareState( StateChangeEvent.EventType eventType )
     {
@@ -317,24 +294,28 @@ public class StokerPitMonitor implements PitMonitor
     
     private void configChange( ConfigChangeEvent cce )
     {
-        fireConfigEvent(cce);
+        eventBus.post( cce );
+        // fireConfigEvent(cce);
     }
     
     private void stateChange( StateChangeEvent change )
     {
         setHardwareState( change.getEventType() );
-        fireChangeEvent( change );
+        eventBus.post( change );
+       // fireChangeEvent( change );
     }
     
-    private void addDataPoint( SDataPoint dp)
+    @Subscribe
+    public void addDataPoint( SDataPoint dp)
     {
+        logger.trace("StokerPitMonitor:addDataPoint( SDataPoint )");
 
         if ( dp.getDeviceID() == null )
         {
             logger.warn("DeviceID is null");
             return;
         }
-        SDataPoint dpFromMap =  hmLatestData.get(dp.getDeviceID());
+        SDataPoint dpFromMap =  m_hmLatestData.get(dp.getDeviceID());
         
         
         if ( dpFromMap != null)
@@ -386,7 +367,8 @@ public class StokerPitMonitor implements PitMonitor
             if ( bChanged )
             {
                 DataPointEvent be = new DataPointEvent(this, false, dpFromMap );
-                fireTempEvent(be);
+                eventBus.post( be );
+                //fireTempEvent(be);
             }
             logger.trace("Debug: " + dpFromMap.getDebugString());
             
@@ -404,7 +386,7 @@ public class StokerPitMonitor implements PitMonitor
                   sdp.setBlowerOnTime(sdp.getCollectedDate());
            }
         
-           hmLatestData.put(dp.getDeviceID(),dp);
+           m_hmLatestData.put(dp.getDeviceID(),dp);
         }
         
     }
@@ -413,7 +395,8 @@ public class StokerPitMonitor implements PitMonitor
     @Override
     public SDevice getDeviceByID(String ID)
     {
-        return m_CookerList.getDeviceByID(ID);
+        return m_StokerHardware.getDevice(ID);
+        // return m_CookerList.getDeviceByID(ID);
     }
 
 
@@ -422,6 +405,58 @@ public class StokerPitMonitor implements PitMonitor
     {
         StokerHardwareDevice.postUpdate(deviceList);
         
+    }
+
+    @Subscribe
+    public void setStatus(StateChangeEvent sce)
+    {
+        if ( sce.getEventType() == EventType.CONNECTION_ESTABLISHED)
+        {
+            m_HardwareDeviceStatus.setHardwareStatus(Status.CONNECTED);
+        } 
+        else if (sce.getEventType() == EventType.EXTENDED_CONNECTION_LOSS )
+        {
+            m_HardwareDeviceStatus.setHardwareStatus(Status.DISCONNECTED );
+        }
+    }
+
+    @Override
+    public void start()
+    {
+        if ( m_StokerHardware.loadNow() )
+        {
+            m_DataController.start();
+        }
+        else
+        {
+            m_HardwareDeviceStatus.setHardwareStatus(Status.DISCONNECTED);
+        }
+    }
+
+
+    @Override
+    public void stop()
+    {
+        if (m_HardwareDeviceStatus.getHardwareStatus() == Status.CONNECTED )
+        {
+            m_DataController.stop();
+        }
+        
+    }
+
+
+    @Override
+    public boolean isReady()
+    {
+        return isActive();
+    }
+
+
+    @Override
+    public boolean waitForReady(long lWaitTimeMills)
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 

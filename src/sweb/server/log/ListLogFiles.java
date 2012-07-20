@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.log;
+package sweb.server.log;
 
 import java.io.File;
 

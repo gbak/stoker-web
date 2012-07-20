@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.log;
+package sweb.server.log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,25 +35,17 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.text.StrLookup;
 import org.apache.log4j.Logger;
-
-import com.google.inject.Inject;
 
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.Controller;
-import sweb.server.controller.HardwareDeviceConfiguration;
-import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEventListener;
-import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
+import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
-import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.weather.WeatherController;
-import sweb.server.log.LogManagerImpl;
+import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
@@ -61,6 +53,10 @@ import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogNote;
 import sweb.shared.model.weather.WeatherData;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 
 public class StokerFile
 {
@@ -86,7 +82,10 @@ public class StokerFile
 
     private static final Logger logger = Logger.getLogger(StokerFile.class.getName());
     
-    private Controller m_controller;
+   // private Controller m_controller;
+    private PitMonitor m_pitMonitor;
+    
+    private EventBus eventBus;
     
     private StokerFile()
     {
@@ -133,7 +132,7 @@ public class StokerFile
         // if no devices were set to be logged, log everything
         if ( asd == null)
         {
-           asd = m_controller.getRawDevices();
+           asd = m_pitMonitor.getRawDevices();
         }
 
         int x = 1;
@@ -150,10 +149,13 @@ public class StokerFile
     }
 
     @Inject
-    public void addControllers(Controller controller, WeatherController weatherController )
+    public void addControllers(PitMonitor pit, 
+                               WeatherController weatherController,
+                               EventBus eventBus )
     {
-        this.m_controller = controller;
+        this.m_pitMonitor = pit;
         this.weatherController = weatherController;
+        this.eventBus = eventBus;
     }
     
     private void writeHeader()
@@ -172,11 +174,133 @@ public class StokerFile
         }
     }
 
+    @Subscribe
+    public void handleDataPointEvent( DataPointEvent de )
+    {
+        synchronized (this)
+        {
+            Writer output = null;
+            try
+            {
+                output = new BufferedWriter(new FileWriter(m_outfile,
+                        true));
+
+                ArrayList<SProbeDataPoint> arPDP = de
+                        .getSProbeDataPoints();
+
+                if (arPDP != null && arPDP.size() > 0
+                        && de.isTimedEvent())
+                {
+                    output.write(LogFileFormatter.logDataDate(arPDP
+                            .get(0).getCollectedDate()));
+
+                    for (SProbeDataPoint sd : arPDP)
+                    {
+                        if (m_hmSD.get(sd.getDeviceID()) != null)
+                        {
+                            output.write(LogFileFormatter
+                                    .logPointSeperator());
+                            output.write(LogFileFormatter.logData(sd,
+                                    m_hmSDIndex));
+                        }
+                    }
+                    output.write(LogFileFormatter.logEnd());
+                }
+
+                // Blower device
+                SBlowerDataPoint bdp = de.getSBlowerDataPoint();
+                if (bdp != null && !de.isTimedEvent()) // don't log the
+                                                       // blower timed
+                                                       // events
+                {
+                    output.write(LogFileFormatter.logBlowerDate(bdp
+                            .getCollectedDate()));
+
+                    if (m_hmSD.get(bdp.getDeviceID()) != null)
+                    {
+                        output.write(LogFileFormatter
+                                .logPointSeperator());
+                        output.write(LogFileFormatter.logData(bdp,
+                                m_hmSDIndex));
+                    }
+                    output.write(LogFileFormatter.logEnd());
+                }
+
+            }
+            catch (IOException e)
+            {
+                logger.error("IOException writing to output file: " + e.getStackTrace());
+            }
+            finally
+            {
+                try
+                {
+                    output.close();
+                }
+                catch (IOException e)
+                {
+                    logger.error("Exception closing output file: " + e.getStackTrace());
+                }
+            }
+        }
+    }
+    
+    @Subscribe
+    public void handleWeatherChangeEvent( WeatherChangeEvent wce)
+    {
+        synchronized (this)
+        {
+            Writer output = null;
+            try
+            {
+                output = new BufferedWriter(new FileWriter(m_outfile,
+                        true));
+
+                WeatherData wd = wce.getWeatherData();
+                output.write(LogFileFormatter.logWeatherDate(Calendar.getInstance().getTime()));
+                output.write(LogFileFormatter.logPointSeperator());
+                output.write(LogFileFormatter.logWeather(wd));
+                output.write(LogFileFormatter.logEnd());
+
+            }
+            catch (IOException e)
+            {
+                logger.error("IOException writing to output file: " + e.getStackTrace());
+            }
+            finally
+            {
+                try
+                {
+                    output.close();
+                }
+                catch (IOException e)
+                {
+                    logger.error("Exception closing output file: " + e.getStackTrace());
+                }
+            }
+        }
+    }
+    
+    @Subscribe
+    public void handleConfigChangeEvent( ConfigChangeEvent ce )
+    {
+        for ( String s : m_hmSD.keySet() )
+        {
+            SDevice sd = m_pitMonitor.getDeviceByID(s);
+            if ( sd != null )
+            {
+                m_hmSD.put( s, sd);
+            }
+        }
+        
+        writeHeader();    
+    }
+    
     public void start()
     {
 
         writeHeader();
-
+/*
         m_dl = new DataPointEventListener() {
 
             public void stateChange(DataPointEvent de)
@@ -249,8 +373,8 @@ public class StokerFile
                 }
             }
         };
-
-        
+*/
+        /*
         WeatherChangeEventListener wce = new WeatherChangeEventListener() {
 
             public void weatherUpdated(WeatherChangeEvent wce)
@@ -295,13 +419,16 @@ public class StokerFile
         m_controller.addConfigChangeListener(getConfigEventListener());
    
         weatherController.addEventListener(wce);
-
+*/
+        
     }
 
     public void stop()
     {
         //logTimer.cancel();
-        m_controller.removeTempListener(m_dl);
+        
+        // TODO: removed for EventBus
+        //m_controller.removeTempListener(m_dl);
 
     }
 
@@ -563,6 +690,8 @@ public class StokerFile
         return m_strLogFileName.substring(m_strLogFileName.lastIndexOf(File.separatorChar) + 1);
     }
     
+    /*
+     // TODO: Removed for EventBus
     private ConfigChangeEventListener getConfigEventListener()
     {
        ConfigChangeEventListener ccl = new   ConfigChangeEventListener() {
@@ -591,6 +720,7 @@ public class StokerFile
        };
        return ccl;
     }
+    */
 
     public void test()
     {

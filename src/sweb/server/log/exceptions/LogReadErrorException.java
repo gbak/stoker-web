@@ -1,7 +1,8 @@
+
 /**
  *  Stoker-web
  *
- *  Copyright (C) 2011  Gary Bak
+ *  Copyright (C) 2012  Gary Bak
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,16 +17,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.log.exceptions;
+package sweb.server.log.exceptions;
 
 
-public class LogNotFoundException extends Exception
+public class LogReadErrorException extends Exception
 {
+    private static final long serialVersionUID = 3534415431738738666L;
 
-   private static final long serialVersionUID = 8046243461612517416L;
-
-   public LogNotFoundException( String s )
+public LogReadErrorException( String s )
    {
-      super("Log file not found: [" + s + "]");
+      super("Error reading log file: [" + s + "]");
    }
 }

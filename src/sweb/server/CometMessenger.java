@@ -12,30 +12,13 @@ import net.zschech.gwt.comet.server.CometSession;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.controller.Controller;
-
 public class CometMessenger implements ClientMessenger
 {
 
-  //  private volatile static CometMessagePusher m_ClientMessagePusher = null;
     private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
     
     private static final Logger logger = Logger.getLogger(CometMessenger.class.getName());
     
-   /* public static ClientMessagePusher getInstance()
-    {
-        if ( m_ClientMessagePusher == null)
-        {
-            synchronized ( Controller.class)
-            {
-                if ( m_ClientMessagePusher == null )
-                {
-                    m_ClientMessagePusher = new ClientMessagePusher();
-                }
-            }
-        }
-        return m_ClientMessagePusher;
-    }*/
     
     @Override
     public void addSession(HttpSession httpSession)

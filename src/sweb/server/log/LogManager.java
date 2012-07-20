@@ -2,8 +2,8 @@ package sweb.server.log;
 
 import java.util.ArrayList;
 
-import sweb.server.controller.log.exceptions.LogExistsException;
-import sweb.server.controller.log.exceptions.LogNotFoundException;
+import sweb.server.log.exceptions.LogExistsException;
+import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;

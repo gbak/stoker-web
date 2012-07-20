@@ -9,10 +9,12 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-import sweb.server.controller.Controller;
 import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.controller.alerts.AlertManager;
 import sweb.server.controller.alerts.delivery.Messenger;
 import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.events.ConfigChangeEvent;
@@ -20,6 +22,7 @@ import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.log.LogManagerImpl;
+import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;
 import sweb.shared.model.data.SProbeDataPoint;
@@ -34,13 +37,18 @@ public class StokerAlarm extends AlertCondition
    Date lastAlertDate = null;
    private StokerAlarmAlertModel saa = null;
          
-   private Controller controller;
+   //private Controller controller;
+   private PitMonitor m_pitMonitor;
+   private AlertManager m_alertManager;
+   
    
    @Inject
-   public StokerAlarm(Controller controller) 
+   public StokerAlarm(PitMonitor pit, AlertManager alert, EventBus eventBus) 
    { 
        super(); 
-       this.controller = controller;
+       this.m_pitMonitor = pit;
+       this.m_alertManager = alert;
+       eventBus.register(this);
        init();
    }
   // public  StokerAlarm( boolean b ) { super(b); init(); }
@@ -60,7 +68,10 @@ public class StokerAlarm extends AlertCondition
    {
     //  setConfig();
       executor = Executors.newFixedThreadPool(2);
-      handleControllerEvents();
+      
+      // TODO: Removed for EventBus
+     // handleControllerEvents();
+      
       saa = new StokerAlarmAlertModel(false);
      // saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
    }
@@ -71,6 +82,31 @@ public class StokerAlarm extends AlertCondition
       m_hmConfig = Controller.getInstance().getStokerConfiguration().data();   
    }*/
    
+   @Subscribe
+   public void handleDataPointEvent(DataPointEvent de)
+   {
+       Runnable worker = new CheckDataEventRunnable( de );
+       executor.execute( worker );
+   }
+   
+   @Subscribe
+   public void handleConfigChangeEvent( ConfigChangeEvent ce )
+   {
+       if ( saa == null || saa.getEnabled() == false )
+           return;
+        
+         switch( ce.getEventType())
+         {
+             case NONE:
+                 break;
+             case CONFIG_UPDATE:
+     //            setConfig();
+                 break;
+             default:
+         }
+   }
+   /*
+    // Removed for EventBus
    private void handleControllerEvents()
    {
 
@@ -107,7 +143,7 @@ public class StokerAlarm extends AlertCondition
 
           controller.addConfigEventListener(m_ccel);
 
-   }
+   }*/
    
    private void soundTempAlert( TempAlertType t, StokerProbe sp, float data )
    {
@@ -166,7 +202,7 @@ public class StokerAlarm extends AlertCondition
    {
        // TODO: this is kind of a hack, this does not really belong here but I had
        // problems putting it in the constructors or init methods because of circular dependencies.
-       saa.setAvailableDeliveryMethods(controller.getAvailableDeliveryMethods());
+       saa.setAvailableDeliveryMethods(m_alertManager.getAvailableDeliveryMethods());
       return (AlertModel) saa;
    }
      
@@ -190,7 +226,7 @@ public class StokerAlarm extends AlertCondition
          
          for ( SProbeDataPoint spdp : aldp )
          {
-             SDevice sd = controller.getDeviceByID( spdp.getDeviceID());
+             SDevice sd = m_pitMonitor.getDeviceByID( spdp.getDeviceID());
            // SDevice sd = m_hmConfig.get(spdp.getDeviceID());  // TODO: remove
             if ( sd == null || ! sd.isProbe() )
                continue;

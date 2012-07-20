@@ -14,9 +14,9 @@ public interface AlertManager
      * Set configuration options sent by Client. All configuration comes in as
      * the base AlertModel class.
      */
-    public void setAlertConfiguration(ArrayList<AlertModel> alertBaseList);
+    public void setConfiguration(ArrayList<AlertModel> alertBaseList);
 
-    public ArrayList<AlertModel> getAlertConfiguration();
+    public ArrayList<AlertModel> getConfiguration();
 
     public Set<String> getAvailableDeliveryMethods();
 

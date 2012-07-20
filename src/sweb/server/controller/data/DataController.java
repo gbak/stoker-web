@@ -18,20 +18,15 @@
 
 package sweb.server.controller.data;
 
-import java.util.ArrayList;
-
-import sweb.server.controller.events.StateChangeEvent;
-import sweb.server.controller.events.StateChangeEventListener;
-
 /**
  * @author gary.bak
  *
  */
-public abstract class DataController
+public interface DataController
 {
-    public abstract void start();
-    public abstract void stop();
-    public abstract boolean isReady();
+    public void start();
+    public void stop();
+    public boolean isReady();
 
     /**
      * Waits for the Controller to be in a Ready state.  If
@@ -41,36 +36,8 @@ public abstract class DataController
      * @return true if the timeout condition occurred.
      *
      */
-    public abstract boolean waitForReady(long lWaitTimeMills );
+    public boolean waitForReady(long lWaitTimeMills );
 
-
-    /*public void addEventListener( StateChangeEventListener listener )
-    {
-        synchronized( this )
-        {
-           arListener.add( listener );
-        }
-    }
-
-    public void removeEventListener( StateChangeEventListener listener )
-    {
-        synchronized( this )
-        {
-            arListener.remove(listener);
-
-        }
-    }
-
-    protected void fireActionPerformed( StateChangeEvent ce )
-    {
-        synchronized( this )
-        {
-            for ( StateChangeEventListener listener : arListener )
-            {
-                listener.actionPerformed(ce);
-            }
-        }
-    }*/
 
 
 }

@@ -36,7 +36,7 @@ import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.ConnectionChangeAlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;
 
-public class AlertsManagerImpl
+public class AlertsManagerImpl implements AlertManager
 {
    StokerAlarm stokerAlarm; // = new StokerAlarm(false);
    ConnectionOrConfigChangeAlert connConfigChangeAlarm = new ConnectionOrConfigChangeAlert(false);
@@ -54,6 +54,7 @@ public class AlertsManagerImpl
    /*
     * Set configuration options sent by Client.  All configuration comes in as the base AlertModel class.
     */
+   @Override
    public void setConfiguration(ArrayList<AlertModel> alertBaseList)
    {
       logger.debug("AlertsController::setConfiguration");
@@ -70,7 +71,7 @@ public class AlertsManagerImpl
       }
    }
 
-   
+   @Override
    public ArrayList<AlertModel> getConfiguration()
    {
       ArrayList<AlertModel> alertBaseList = new ArrayList<AlertModel>();
@@ -127,4 +128,6 @@ public class AlertsManagerImpl
 
      // nm.init();
    }
+
+
 }

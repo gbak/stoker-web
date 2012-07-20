@@ -37,8 +37,7 @@ public class StokerWebConfiguration
     private HardwareDeviceConfiguration deviceConfiguration = null;
     private CookerList cookerList;
     
-    private ArrayList<CookerConfigChangeListener> arListener = new ArrayList<CookerConfigChangeListener>();
-    
+   
    /* public static StokerWebConfiguration getInstance()
     {
         if ( stokerWebConfiguration == null)
@@ -59,7 +58,7 @@ public class StokerWebConfiguration
     public StokerWebConfiguration(HardwareDeviceConfiguration stokerConfig) 
     { 
         this.deviceConfiguration = stokerConfig;
-
+       // init();
     }
     
     public void init()
@@ -209,7 +208,7 @@ public class StokerWebConfiguration
     }
     
     
-    public void addChangeListener( CookerConfigChangeListener listener )
+ /*   public void addChangeListener( CookerConfigChangeListener listener )
     {
         synchronized( this )
         {
@@ -235,5 +234,5 @@ public class StokerWebConfiguration
                 listener.actionPerformed();
             }
         }
-    }
+    }*/
 }

@@ -5,7 +5,6 @@ import java.io.Serializable;
 import com.google.inject.Inject;
 
 import sweb.server.ClientMessenger;
-import sweb.server.controller.Controller;
 
 public class BrowserDelivery
 {

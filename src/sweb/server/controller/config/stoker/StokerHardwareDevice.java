@@ -46,6 +46,9 @@ import org.apache.log4j.Logger;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.HardwareDeviceConfiguration;
@@ -68,11 +71,13 @@ import net.htmlparser.jericho.*;
 public class StokerHardwareDevice extends HardwareDeviceConfiguration
 {
     private static final Logger logger = Logger.getLogger(StokerHardwareDevice.class.getName());
-    sweb.server.monitors.stoker.StokerPitMonitor.Config config;
-
-    public StokerHardwareDevice( sweb.server.monitors.stoker.StokerPitMonitor.Config c )
+   // sweb.server.monitors.stoker.StokerPitMonitor.Config config;
+    private EventBus eventBus;
+    
+    @Inject
+    public StokerHardwareDevice( EventBus eventBus )
     {
-       config = c;
+       this.eventBus = eventBus;
     }
     
    private String convert( InputStream is)
@@ -316,7 +321,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
         }
         super.setUpdatedStaus(true);
         logger.debug("Config: " + super.debugString());
-        config.configChange(new ConfigChangeEvent(this,
+        eventBus.post(new ConfigChangeEvent(this,
                 ConfigChangeEvent.EventType.CONFIG_UPDATE));
         
         return true;
@@ -416,7 +421,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
 
        super.setUpdatedStaus(true);
       logger.debug("Config: " + super.debugString());
-      config.configChange(new ConfigChangeEvent( this, ConfigChangeEvent.EventType.CONFIG_UPDATE ));
+      eventBus.post(new ConfigChangeEvent( this, ConfigChangeEvent.EventType.CONFIG_UPDATE ));
 
    }
 /*

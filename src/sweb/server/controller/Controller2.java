@@ -35,19 +35,19 @@ import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.telnet.StokerTelnetController;
 import sweb.server.controller.events.BlowerEvent;
-import sweb.server.controller.events.BlowerEventListener;
+
 import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEventListener;
+
 import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
+
 import sweb.server.controller.events.StateChangeEvent;
 import sweb.server.controller.events.StateChangeEvent.EventType;
-import sweb.server.controller.events.StateChangeEventListener;
-import sweb.server.controller.events.WeatherChangeEventListener;
-import sweb.server.controller.log.exceptions.LogExistsException;
-import sweb.server.controller.log.exceptions.LogNotFoundException;
+
+
 import sweb.server.controller.weather.WeatherController;
 import sweb.server.log.LogManager;
+import sweb.server.log.exceptions.LogExistsException;
+import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
@@ -62,7 +62,7 @@ import sweb.shared.model.logfile.LogNote;
  * @author gary.bak
  *
  */
-public class Controller implements PitMonitor, LogManager, AlertManager
+public class Controller2 implements PitMonitor, LogManager, AlertManager
 {
     private PitMonitor m_PitMonitor = null;
     private LogManager m_LogManager = null;
@@ -72,7 +72,7 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     private AlertsManagerImpl m_AlertsController = null;
   //  private ClientMessenger m_ClientMessenger = null;
 
-    private static final Logger logger = Logger.getLogger(Controller.class.getName());
+  //  private static final Logger logger = Logger.getLogger(Controller.class.getName());
     
  //   private ControllerEventListener m_ControllerListener = null;
 
@@ -98,7 +98,7 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     }*/
 
     @Inject
-    private Controller(PitMonitor pitMonitor,
+    private Controller2(PitMonitor pitMonitor,
                        LogManager logManager,
                        AlertsManagerImpl alerts )
     {
@@ -112,7 +112,7 @@ public class Controller implements PitMonitor, LogManager, AlertManager
       
     }
     
-    private void setupListeners()
+/*    private void setupListeners()
     {
         addStateChangeListener( new StateChangeEventListener() {
 
@@ -126,15 +126,15 @@ public class Controller implements PitMonitor, LogManager, AlertManager
             }
 
         });    
-    }
+    }*/
     
     public void init()
     {
-        logger.info("Controller init called");
+       // logger.info("Controller init called");
     
         if ( ! m_PitMonitor.isConfigRequired() )
         { 
-            setupListeners();
+            //setupListeners();
             setupDefaultLog();
         }
           
@@ -167,7 +167,7 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     {
         // TODO: this is so incomplete!
         
-        synchronized ( Controller.class)
+        synchronized ( Controller2.class)
         {
 
             
@@ -238,12 +238,12 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     }
 
 
-    public void addConfigEventListener( ConfigChangeEventListener configControllerEventListener)
+/*    public void addConfigEventListener( ConfigChangeEventListener configControllerEventListener)
     {
         m_PitMonitor.addConfigChangeListener(configControllerEventListener);
        // m_ConfigurationController.addEventListener(configControllerEventListener);
     }
-
+*/
     /*public void removeConfigEventListener( ConfigControllerEventListener configControllerEventListener)
     {
         m_ConfigurationController.removeEventListener(configControllerEventListener);
@@ -266,20 +266,20 @@ public class Controller implements PitMonitor, LogManager, AlertManager
        return m_WeatherController;
    }*/
 
-
+/*
     @Override
-   public ArrayList<AlertModel> getAlertConfiguration()
+   public ArrayList<AlertModel> getConfiguration()
    {
       return m_AlertsController.getConfiguration();
       
    }
    
    @Override
-   public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
+   public void setConfiguration( ArrayList<AlertModel> alertBaseList )
    {
       m_AlertsController.setConfiguration(alertBaseList);
    }
-   
+  */ 
    public Set<String> getAvailableDeliveryMethods()
    {
        return m_AlertsController.getAvailableDeliveryMethods();
@@ -327,24 +327,24 @@ public class Controller implements PitMonitor, LogManager, AlertManager
         return m_PitMonitor.getCurrentTemps();
     }
     
-    @Override
-    public void addTempListener(DataPointEventListener dataListener)
-    {
-        m_PitMonitor.addTempListener( dataListener );
-    }
-    
-    @Override
-    public void removeTempListener(DataPointEventListener dataListener)
-    {
-        m_PitMonitor.removeTempListener( dataListener );
-    }
-    
-    @Override
-    public void fireTempEvent(DataPointEvent dataEvent)
-    {
-        m_PitMonitor.fireTempEvent( dataEvent );
-    }
-    
+//    @Override
+//    public void addTempListener(DataPointEventListener dataListener)
+//    {
+//        m_PitMonitor.addTempListener( dataListener );
+//    }
+//    
+//    @Override
+//    public void removeTempListener(DataPointEventListener dataListener)
+//    {
+//        m_PitMonitor.removeTempListener( dataListener );
+//    }
+//    
+//    @Override
+//    public void fireTempEvent(DataPointEvent dataEvent)
+//    {
+//        m_PitMonitor.fireTempEvent( dataEvent );
+//    }
+    /*
     @Override
     public void addConfigChangeListener(ConfigChangeEventListener configListener)
     {
@@ -400,7 +400,7 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     {
         m_PitMonitor.fireBlowerEvent(blowerEvent);
     }
-
+*/
     // LogManager Classes
     
     @Override
@@ -487,6 +487,20 @@ public class Controller implements PitMonitor, LogManager, AlertManager
     public SDevice getDeviceByID(String ID)
     {
         return m_PitMonitor.getDeviceByID(ID);
+    }
+
+    @Override
+    public void setConfiguration(ArrayList<AlertModel> alertBaseList)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public ArrayList<AlertModel> getConfiguration()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 

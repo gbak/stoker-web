@@ -32,17 +32,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
-import sweb.server.controller.Controller;
 import sweb.server.controller.events.BlowerEvent;
-import sweb.server.controller.events.BlowerEventListener;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
-import sweb.server.controller.log.ListLogFiles;
-import sweb.server.controller.log.StokerFile;
-import sweb.server.controller.log.exceptions.LogExistsException;
-import sweb.server.controller.log.exceptions.LogNotFoundException;
+import sweb.server.log.exceptions.LogExistsException;
+import sweb.server.log.exceptions.LogNotFoundException;
+import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
@@ -64,37 +62,46 @@ public class LogManagerImpl implements LogManager
  //   private Set<DataPointEventListener> m_dpListener = Collections.newSetFromMap(new ConcurrentHashMap<DataPointEventListener,Boolean>());
 
     Timer updateTimer = new Timer();
-
+    private PitMonitor m_pitMonitor;
+    private EventBus   eventBus;
+    
     private static final Logger logger = Logger.getLogger(LogManagerImpl.class.getName());
     
-    public LogManagerImpl()
+    @Inject
+    public LogManagerImpl(PitMonitor pit, EventBus eventBus)
     {
+        this.m_pitMonitor = pit;
+        this.eventBus = eventBus;
+        
         RunTimer _runTimer = new RunTimer();
         updateTimer.schedule( _runTimer, 10000 );
     }
 
+    /* Not sure I like this.
+     * The stoker files can consume all temp points and then save off the last of each
+     * When the timer dings, they can write the temps to to the log, if they
+     * are set for the specific log.
+     */
 
     private class RunTimer extends TimerTask
     {
-       private Controller controller;
-        
-       @Inject
-       private void setController(Controller controller)
-       {
-          this.controller= controller;
-       }
-       
+         
        public void run()
        {
           Calendar c = Calendar.getInstance();
 
           DataPointEvent be = new DataPointEvent(this, true );
-          for ( SDataPoint sdp : controller.getCurrentTemps())
+          for ( SDataPoint sdp : m_pitMonitor.getCurrentTemps())
           {
               be.addDataPoint(sdp);
           }
           // TODO: decide if to fire the event if there are no data points!
-          controller.fireTempEvent(be);
+          // TODO: Removed for EventBus
+          //controller.fireTempEvent(be);
+          
+          eventBus.post(be);
+          
+          
 
           c.add(Calendar.MINUTE,1);
           c.set(Calendar.SECOND, 0);
@@ -209,6 +216,7 @@ public class LogManagerImpl implements LogManager
         logger.info("Log stopped: " + strLogName );
     }
 
+    
     @Override
     public void stopAllLogs()
     {
