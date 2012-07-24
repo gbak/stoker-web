@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller;
+package sweb.server.config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,10 +26,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.google.inject.Inject;
-
-import sweb.server.controller.config.ConfigurationController;
-import sweb.server.controller.config.stoker.StokerHardwareDevice;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerPitSensor;
@@ -53,6 +49,9 @@ public abstract class HardwareDeviceConfiguration
     }
     
     public abstract boolean loadNow();
+    
+    public abstract Integer update( ArrayList<SDevice> asd );
+
    
     
     public HashMap<String,SDevice> data()
@@ -171,12 +170,6 @@ public abstract class HardwareDeviceConfiguration
 
     }
 
-    public Integer update( ArrayList<SDevice> asd )
-    {
-        StokerHardwareDevice.postUpdate(asd);
-
-        return new Integer(1);
-    }
 
     public String debugString()
     {

@@ -82,7 +82,7 @@ public class StokerPitSensor extends StokerProbe implements Serializable
         sfan.update(pdp);
     }
 
-    public String getPrintString()
+    public String printString()
     {
         String str = new String();
         str = "Name: " + this.getName() + " - TargetTemp: " + this.getTargetTemp() + " - Alarm: " + this.getAlarmEnabled();

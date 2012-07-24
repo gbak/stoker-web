@@ -172,17 +172,17 @@ public class ReportData
                         {
                             case FOOD:
                                 StokerProbe sp = (StokerProbe)sd;
-                                sb.append(sp.getPrintString());
+                                sb.append(sp.printString());
                                 break;
                             
                             case PIT:
                                 StokerPitSensor sps = (StokerPitSensor)sd;
-                                sb.append( sps.getPrintString());
+                                sb.append( sps.printString());
                                 break;
                             
                             case BLOWER:
                                 StokerFan sf = (StokerFan)sd;
-                                sb.append( sf.getPrintString());     
+                                sb.append( sf.printString());     
                                 break;
                         }
                         

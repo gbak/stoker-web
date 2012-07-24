@@ -64,11 +64,6 @@ public class StokerFan extends SDevice  implements Serializable
         return bFanOn;
     }
 
-    public String getPostData()
-    {
-        return new String();
-    }
-
     public long getTotalRuntime()
     {
         return m_TotalRuntime;
@@ -93,8 +88,8 @@ public class StokerFan extends SDevice  implements Serializable
            m_TotalRuntime = ((SBlowerDataPoint)dp).getTotalRuntime();
         }
     }
-
-    public String getPrintString()
+    
+    public String printString()
     {
         return ("Name: " + this.getName() + "\n");
     }
@@ -104,4 +99,10 @@ public class StokerFan extends SDevice  implements Serializable
     {
        return DeviceType.BLOWER;
     }
+    
+    public void setProbeType( DeviceType dt)
+    {
+        
+    }
+    
 }

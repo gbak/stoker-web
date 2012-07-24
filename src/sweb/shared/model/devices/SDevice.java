@@ -45,20 +45,24 @@ public class SDevice  implements Serializable
    {
        return strID;
    }
+   
+   public void setID(String id)
+   {
+       strID = id;
+   }
 
+   public void setName(String name)
+   {
+       strName = name;
+   }
    public String getName()
    {
        return strName;
    }
 
-   public boolean isProbe()
+   public boolean isProbe()  // TODO: causing problems with jackson
    {
        return false;
-   }
-
-   public String getPostData()
-   {
-       return new String();
    }
 
    public String debugString()
@@ -69,6 +73,11 @@ public class SDevice  implements Serializable
    public DeviceType getProbeType()
    {
       return DeviceType.UNKNOWN;
+   }
+   
+   public void setProbeType( DeviceType dt )
+   {
+       
    }
    
  

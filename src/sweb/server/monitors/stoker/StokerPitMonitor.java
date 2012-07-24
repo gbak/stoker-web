@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.controller.StokerWebConfiguration;
-import sweb.server.controller.config.stoker.StokerHardwareDevice;
+import sweb.server.config.StokerWebConfiguration;
+import sweb.server.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.data.telnet.StokerTelnetController;
 import sweb.server.controller.events.ConfigChangeEvent;
@@ -403,7 +403,7 @@ public class StokerPitMonitor implements PitMonitor, DataController
     @Override
     public void updateSettings(ArrayList<SDevice> deviceList)
     {
-        StokerHardwareDevice.postUpdate(deviceList);
+        m_StokerHardware.update(deviceList);
         
     }
 

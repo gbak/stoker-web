@@ -31,9 +31,9 @@ public class StokerProbe extends SDevice implements Serializable
 
     public static enum AlarmType { NONE, ALARM_FOOD, ALARM_FIRE };
 
-    int fTargetTemp;
-    int fLowerTempAlarm;
-    int fUpperTempAlarm;
+    int targetTemp;
+    int lowerTempAlarm;
+    int upperTempAlarm;
     AlarmType alarm;
     float fCurrentTemp;
 
@@ -42,45 +42,45 @@ public class StokerProbe extends SDevice implements Serializable
     public StokerProbe(String id, String name)
     {
         super(id, name);
-        fTargetTemp = 0;
-        fLowerTempAlarm = 0;
-        fUpperTempAlarm = 0;
+        targetTemp = 0;
+        lowerTempAlarm = 0;
+        upperTempAlarm = 0;
         alarm = AlarmType.NONE;
     }
 
     public StokerProbe(String id, String name, int f )
     {
         super(id, name);
-        fTargetTemp = f;
-        fLowerTempAlarm = 0;
-        fUpperTempAlarm = 0;
+        targetTemp = f;
+        lowerTempAlarm = 0;
+        upperTempAlarm = 0;
         alarm = AlarmType.NONE;
     }
 
     public StokerProbe( StokerProbe sp )
     {
        super( sp.getID(), sp.getName() );
-       fTargetTemp = sp.fTargetTemp;
-       fLowerTempAlarm = sp.fLowerTempAlarm;
-       fUpperTempAlarm = sp.fUpperTempAlarm;
+       targetTemp = sp.targetTemp;
+       lowerTempAlarm = sp.lowerTempAlarm;
+       upperTempAlarm = sp.upperTempAlarm;
        alarm = sp.alarm;
     }
 
     public StokerProbe(String id, String name, int f, int up, int dn )
     {
         super(id, name);
-        fTargetTemp = f;
-        fLowerTempAlarm = dn;
-        fUpperTempAlarm = up;
+        targetTemp = f;
+        lowerTempAlarm = dn;
+        upperTempAlarm = up;
         alarm = AlarmType.NONE;
     }
     
     public StokerProbe(String id, String name, int f, int up, int dn, AlarmType at )
     {
         super(id, name);
-        fTargetTemp = f;
-        fLowerTempAlarm = dn;
-        fUpperTempAlarm = up;
+        targetTemp = f;
+        lowerTempAlarm = dn;
+        upperTempAlarm = up;
         alarm = at;
     }
 
@@ -101,29 +101,29 @@ public class StokerProbe extends SDevice implements Serializable
 
     public void setTargetTemp( int f )
     {
-        fTargetTemp = f;
+        targetTemp = f;
     }
     public int getTargetTemp()
     {
-        return fTargetTemp;
+        return targetTemp;
     }
 
     public void setLowerTempAlarm( int f )
     {
-        fLowerTempAlarm = f;
+        lowerTempAlarm = f;
     }
     public int getLowerTempAlarm()
     {
-        return fLowerTempAlarm;
+        return lowerTempAlarm;
     }
 
     public void setUpperTempAlarm( int f )
     {
-        fUpperTempAlarm = f;
+        upperTempAlarm = f;
     }
     public int getUpperTempAlarm()
     {
-        return fUpperTempAlarm;
+        return upperTempAlarm;
     }
 
     public void setAlarmEnabled( AlarmType a )
@@ -143,9 +143,9 @@ public class StokerProbe extends SDevice implements Serializable
     {
         StringBuilder sb = new StringBuilder();
         sb.append(super.debugString());
-        sb.append("Target Temp: [" + fTargetTemp + "] ");
-        sb.append("Lower Temp Alarm: [" + fLowerTempAlarm + "] ");
-        sb.append("Upper Temp Alarm: [" + fUpperTempAlarm + "] ");
+        sb.append("Target Temp: [" + targetTemp + "] ");
+        sb.append("Lower Temp Alarm: [" + lowerTempAlarm + "] ");
+        sb.append("Upper Temp Alarm: [" + upperTempAlarm + "] ");
         sb.append("Alarm Type: [" + alarm + "] ");
         sb.append("Current Temp: [" + fCurrentTemp + "] ");
 
@@ -157,7 +157,7 @@ public class StokerProbe extends SDevice implements Serializable
         fCurrentTemp = dp.getTempF();
     }
 
-    public String getPrintString()
+    public String printString()
     {
         String str = new String();
         str = "Name: " + this.getName() + " - Alarm: " + this.getAlarmEnabled();
@@ -180,6 +180,11 @@ public class StokerProbe extends SDevice implements Serializable
     public DeviceType getProbeType()
     {
        return DeviceType.FOOD;
+    }
+    
+    public void setProbeType(DeviceType type)
+    {
+       
     }
 
     public static AlarmType getAlarmTypeForString( String str )

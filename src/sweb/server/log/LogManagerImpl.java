@@ -33,14 +33,19 @@ import org.apache.log4j.Logger;
 import org.jfree.util.Log;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
+import sweb.server.config.StokerWebConfiguration;
 import sweb.server.controller.events.BlowerEvent;
+import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.log.exceptions.LogExistsException;
 import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.server.monitors.PitMonitor;
+import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerHelper;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
@@ -64,14 +69,19 @@ public class LogManagerImpl implements LogManager
     Timer updateTimer = new Timer();
     private PitMonitor m_pitMonitor;
     private EventBus   eventBus;
+    private StokerWebConfiguration stokerWebConfiguration;
     
     private static final Logger logger = Logger.getLogger(LogManagerImpl.class.getName());
     
     @Inject
-    public LogManagerImpl(PitMonitor pit, EventBus eventBus)
+    public LogManagerImpl(PitMonitor pit, EventBus eventBus,
+                           StokerWebConfiguration swc)
     {
         this.m_pitMonitor = pit;
         this.eventBus = eventBus;
+        this.stokerWebConfiguration = swc;
+        
+        eventBus.register(this);
         
         RunTimer _runTimer = new RunTimer();
         updateTimer.schedule( _runTimer, 10000 );
@@ -271,6 +281,51 @@ public class LogManagerImpl implements LogManager
             sf.addNote( note );
         }
     }
+    
+    @Subscribe
+    public void detectConfigChange( ConfigChangeEvent cce )
+    {
+        // We need the configuration to do the following:
+        // A.  Start a default log
+        // B.  Detect changes in config to remove logs that have config changes 
+        switch( cce.getEventType() )
+        {
+            case CONFIG_SAVED:
+                
+                break;
+            case CONFIG_LOADED:
+                logger.info("LogManagerImpl:detectConfigChange() CONFIG_LOADED");
+                startDefaultLogs();
+                break;
+            case CONFIG_UPDATE_DETECTED:
+                
+                break;
+            default:
+        }
+    }
+    
+    
+    private void startDefaultLogs()
+    {
+         for ( Cooker cooker : stokerWebConfiguration.getCookerList().getCookerList() )
+         {
+             String strDefaultName = "Default_" + cooker.getCookerName();
+             if ( ! isLogRunning(strDefaultName ))
+             {
+                 try
+                 {
+                     LogItem li = new LogItem(cooker.getCookerName(), strDefaultName, CookerHelper.getDeviceList(cooker));
+                     startLog(li);
+                 }
+                 catch (LogExistsException e)
+                 {
+                     logger.error( "LogExistsException: [" + strDefaultName + "]");
+                     try { stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
+                 }
+             }
+         }
+    }
+    
     
    /* protected void fireStateChange( BlowerEvent be )
     {

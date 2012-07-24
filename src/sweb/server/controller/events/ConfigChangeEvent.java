@@ -25,7 +25,7 @@ public class ConfigChangeEvent extends EventObject
 
     private static final long serialVersionUID = -8808303440170428497L;
 
-    public enum EventType { NONE, CONFIG_UPDATE }
+    public enum EventType { NONE, CONFIG_SAVED, CONFIG_LOADED, CONFIG_UPDATE_DETECTED }
 
     private EventType m_EventType = EventType.NONE;
 

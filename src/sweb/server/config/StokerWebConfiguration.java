@@ -1,7 +1,8 @@
-package sweb.server.controller;
+package sweb.server.config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -14,50 +15,39 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
+import sweb.server.StokerWebConstants;
+import sweb.server.StokerWebProperties;
+import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.controller.events.ConfigChangeEvent.EventType;
 
-import sweb.server.CometMessenger;
-import sweb.server.controller.events.CookerConfigChangeListener;
-import sweb.server.controller.events.StateChangeEvent;
-import sweb.server.controller.events.StateChangeEventListener;
 import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerHelper;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerPitSensor;
 
 public class StokerWebConfiguration
 {
     private static final Logger logger = Logger.getLogger(StokerWebConfiguration.class.getName());
+
+    private static final String strConfigFile = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKERWEB_DIR) + 
+            File.separator + "CookerConfig.json";
+
     
-  //  private volatile static StokerWebConfiguration stokerWebConfiguration = null;
-    
-    private HardwareDeviceConfiguration deviceConfiguration = null;
-    private CookerList cookerList;
-    
-   
-   /* public static StokerWebConfiguration getInstance()
-    {
-        if ( stokerWebConfiguration == null)
-        {
-            synchronized ( Controller.class)
-            {
-                if ( stokerWebConfiguration == null )
-                {
-                    stokerWebConfiguration = new StokerWebConfiguration();
-                }
-            }
-        }
-        return stokerWebConfiguration;
-    }
-    */
+    private HardwareDeviceConfiguration m_deviceConfiguration = null;
+    private CookerList m_cookerList;
+    private EventBus m_eventBus;
     
     @Inject
-    public StokerWebConfiguration(HardwareDeviceConfiguration stokerConfig) 
+    public StokerWebConfiguration(HardwareDeviceConfiguration stokerConfig,
+                                  EventBus eventBus ) 
     { 
-        this.deviceConfiguration = stokerConfig;
+        this.m_deviceConfiguration = stokerConfig;
+        this.m_eventBus = eventBus;
        // init();
     }
     
@@ -66,10 +56,10 @@ public class StokerWebConfiguration
         
         loadConfig(); 
 
-        if ( cookerList == null )
-            cookerList = new CookerList();
+        if ( m_cookerList == null )
+            m_cookerList = new CookerList();
         
-        reconcile( deviceConfiguration );
+        reconcile( m_deviceConfiguration );
         
     }
     
@@ -92,12 +82,12 @@ public class StokerWebConfiguration
         stokerConfig.getAllDevices();
        
         logger.debug("Looping over cookers");
-       for ( Cooker cooker : cookerList.getCookerList() )
+       for ( Cooker cooker : m_cookerList.getCookerList() )
        {
            if ( logger.isDebugEnabled() && cooker.getCookerName() != null )
               logger.debug("Found cooker: " + cooker.getCookerName());
            
-           StokerPitSensor cookerPitSensor = cooker.getStokerPitSensor();
+           StokerPitSensor cookerPitSensor = cooker.getPitSensor();
            
            if ( cookerPitSensor != null )
            {
@@ -142,7 +132,7 @@ public class StokerWebConfiguration
               }
            }
            
-           for ( SDevice cookerProbe : cooker.getStokerProbeList() )
+           for ( SDevice cookerProbe : cooker.getProbeList() )
            {
                SDevice sdStoker = hmStoker.get( cookerProbe.getID() );
                
@@ -158,17 +148,27 @@ public class StokerWebConfiguration
     public void saveConfig(CookerList cookerList)
     {
         try 
-        {
+        {  
             ObjectMapper mapper = new ObjectMapper();
-            BufferedWriter out = new BufferedWriter(new FileWriter("CookerConfig.json"));
+            BufferedWriter out = new BufferedWriter(new FileWriter(strConfigFile));
+
             mapper.writeValue(out, cookerList);
             
             out.close();
-            this.cookerList = cookerList;
+            this.m_cookerList = cookerList;
+            ArrayList<SDevice> arAllDevices = new ArrayList<SDevice>();
+            for ( Cooker c : m_cookerList.getCookerList())
+            {
+               
+               arAllDevices.addAll(CookerHelper.getDeviceList( c ));
+            }
+            m_deviceConfiguration.update(arAllDevices);
+            m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_SAVED) );
+            
         } 
         catch (IOException e) 
         {
-            logger.error("Error writing CookerConig.json:\n" + e.getStackTrace() );
+            logger.error("Error writing " + strConfigFile + "\n" + e.getStackTrace() );
         }
     }
     
@@ -177,9 +177,11 @@ public class StokerWebConfiguration
         ObjectMapper mapper = new ObjectMapper();
         try
         {
-            BufferedReader in = new BufferedReader(new FileReader("CookerConfig.json"));
-            cookerList = mapper.readValue(in, CookerList.class);
+            
+            BufferedReader in = new BufferedReader(new FileReader(strConfigFile));
+            m_cookerList = mapper.readValue(in, CookerList.class);
             in.close();
+            m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));
         }
         catch (FileNotFoundException e)
         {
@@ -193,7 +195,7 @@ public class StokerWebConfiguration
         }
         catch (JsonMappingException e)
         {
-            logger.error("Error mapping CookerConfig.json in loadConfig");
+            logger.error("Error mapping CookerConfig.json in loadConfig\n" + e.getMessage());
         }
         catch (IOException e)
         {
@@ -204,35 +206,7 @@ public class StokerWebConfiguration
     
     public CookerList getCookerList()
     {
-        return cookerList;
+        return m_cookerList;
     }
-    
-    
- /*   public void addChangeListener( CookerConfigChangeListener listener )
-    {
-        synchronized( this )
-        {
-           arListener.add( listener );
-        }
-    }
-
-    public void removeChangeListener( CookerConfigChangeListener listener )
-    {
-        synchronized( this )
-        {
-            arListener.remove(listener);
-
-        }
-    }
-
-    protected void fireActionPerformed()
-    {
-        synchronized( this )
-        {
-            for ( CookerConfigChangeListener listener : arListener )
-            {
-                listener.actionPerformed();
-            }
-        }
-    }*/
+  
 }

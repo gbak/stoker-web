@@ -3,7 +3,6 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerProbe;
 
@@ -55,6 +54,11 @@ public class Cooker implements Serializable
         this.probeList.add( stokerProbe );
     }
     
+    public void setCookerName(String cookerName)
+    {
+        this.cookerName = cookerName;
+    }
+    
     public String getCookerName()
     {
         if ( this.cookerName != null)
@@ -63,26 +67,16 @@ public class Cooker implements Serializable
             return "null";
     }
     
-    public StokerPitSensor getStokerPitSensor()
+    public StokerPitSensor getPitSensor()
     {
         return pitSensor;
     }
     
-    public ArrayList<StokerProbe> getStokerProbeList()
+    public ArrayList<StokerProbe> getProbeList()
     {
         return probeList;
     }
-    
-    public int getProbeCount()
-    {
-        int count = 0;
-        if ( pitSensor != null )
-            count++;
-        
-        count += probeList.size();
-        
-        return count;
-    }
+
     
     public void removeStokerProbe( String probeID )
     {
@@ -95,7 +89,7 @@ public class Cooker implements Serializable
             }
         }
     }
-    
+/*
     public ArrayList<SDevice> getDeviceList()
     {
         ArrayList<SDevice> sd = new ArrayList<SDevice>();
@@ -109,23 +103,12 @@ public class Cooker implements Serializable
                
            }
         }
-        return sd;
-    }
-    
-    public SDevice getDeviceByID( String ID )
-    {
-        if ( pitSensor.getID().equalsIgnoreCase(ID))
-            return pitSensor;
-        
-        
-        for ( SDevice p : probeList )
+        for ( StokerProbe sp : probeList )
         {
-            if ( p.getID().equalsIgnoreCase(ID))
-            {
-                return p;
-            }
+            sd.add( (SDevice)sp );
         }
-     
-        return null;
-    }
+        return sd;
+    }*/
+    
+    
 }

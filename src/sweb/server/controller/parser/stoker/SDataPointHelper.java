@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
 
-import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;

@@ -36,6 +36,7 @@ import sweb.client.gauge.ProbeComponent.Alignment;
 import sweb.client.graph.HighChartLineGraph;
 import sweb.client.graph.StokerLineGraph;
 import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerHelper;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.data.SBlowerDataPoint;
@@ -409,7 +410,7 @@ public class CookerComponent extends Composite
 
             public void onClick(ClickEvent event)
             {
-                new NewLogDialog( cooker.getDeviceList(), new NewLogDialogHandler() {
+                new NewLogDialog( CookerHelper.getDeviceList(cooker), new NewLogDialogHandler() {
 
                     public void onReturn(String sLogName,
                             ArrayList<SDevice> arSD)
@@ -517,15 +518,23 @@ public class CookerComponent extends Composite
 
     public void addComponents( Cooker c )
     {
-    
-        StokerProbe pit = (StokerProbe) c.getStokerPitSensor();
+
+        StokerProbe pit = (StokerProbe) c.getPitSensor();
         ProbeComponent gc = new ProbeComponent( pit, alignment, properties );
         mapGuages.put( pit.getID(), gc );
         gc.addStyleName("sweb-gaugeFlowPanel");
         hpStokerElements.add( gc );
         gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
         
+        for ( StokerProbe probe : c.getProbeList())
+        {
+            ProbeComponent gcp = new ProbeComponent( probe, alignment, properties );
+            mapGuages.put( probe.getID(), gcp );
+            gcp.addStyleName("sweb-gaugeFlowPanel");
+            hpStokerElements.add( gcp );
+            gaugePanelWidth = gaugePanelWidth +  gcp.getOffsetWidth();
         
+        }
         
     }
     public void addDevice( SDevice sd1 )
@@ -608,6 +617,7 @@ public class CookerComponent extends Composite
            outerPanel.add( dpGraph );
         }
         
+        addComponents(c);
         getActiveLogListFromServer();
         
 
@@ -746,7 +756,7 @@ public class CookerComponent extends Composite
             {
                 if ( sdp instanceof SBlowerDataPoint )
                 {
-                    ProbeComponent pc = mapGuages.get(cooker.getStokerPitSensor().getID());
+                    ProbeComponent pc = mapGuages.get(cooker.getPitSensor().getID());
                     if ( pc != null )
                        pc.updateData(sdp);
                 }

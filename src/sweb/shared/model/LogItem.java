@@ -40,16 +40,16 @@ public class LogItem implements Serializable
 
     public LogItem() { }
 
-    public LogItem( String strCookerName, String s)
+    public LogItem( String CookerName, String logName)
     {
-       m_strCookerName = strCookerName;
-        m_strLogName = s;
+       m_strCookerName = CookerName;
+        m_strLogName = logName;
     }
 
-    public LogItem( String strCookerName,  String s, ArrayList<SDevice> a )
+    public LogItem( String CookerName,  String LogName, ArrayList<SDevice> deviceList )
     {
-        this( strCookerName, s );
-        m_asd = a;
+        this( CookerName, LogName );
+        m_asd = deviceList;
         
     }
 

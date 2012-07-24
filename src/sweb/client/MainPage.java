@@ -28,6 +28,7 @@ import sweb.client.weather.WeatherComponent;
 import sweb.client.widgets.Configuration;
 import sweb.client.widgets.handlers.ConfigUpdateHandler;
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.CookerHelper;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.CallBackRequestType.RequestType;
 import sweb.shared.model.HardwareDeviceStatus.Status;
@@ -45,6 +46,7 @@ import sweb.shared.model.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.weather.WeatherData;
 import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerHelper;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
@@ -52,6 +54,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
@@ -82,7 +85,8 @@ public class MainPage
     private final StokerCoreServiceAsync stokerService = GWT.create(StokerCoreService.class);
 
     private static enum LoadedPage { NONE, CONNECTED_PAGE, NOT_CONNECTED_PAGE };
-
+    EventBus eb;
+    
     
     LoadedPage currentPage = LoadedPage.NONE;
 
@@ -113,7 +117,7 @@ public class MainPage
 
     @SerialTypes(
     { SDataPoint.class, SProbeDataPoint.class, SBlowerDataPoint.class, ControllerEventLight.class, WeatherData.class, CallBackRequestType.class,
-        HardwareDeviceStatus.class, LogEvent.class, AlertModel.class, BrowserAlarmModel.class, CookerList.class, Cooker.class })
+        HardwareDeviceStatus.class, LogEvent.class, AlertModel.class, BrowserAlarmModel.class, CookerList.class, Cooker.class, CookerHelper.class })
 
     public static abstract class StokerCometSerializer extends CometSerializer {
     }
@@ -168,6 +172,100 @@ public class MainPage
         }
     }
 
+    private void presentConfigScreen()
+    {
+        stokerService
+        .getDeviceConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
+
+            public void onFailure(Throwable caught)
+            {
+                caught.printStackTrace();
+                System.out
+                        .println("Client configuration failure");
+            }
+
+            public void onSuccess( HashMap<String, SDevice> result)
+            {
+                Log.info("Opening configuration window");
+                ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
+              /*  final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
+                window.setTitle("Cooker Configuration");
+               // window.setHeaderControls(HeaderControls.CLOSE_BUTTON );
+                window.setWidth(900);
+                window.setHeight(420);
+                window.setCanDragReposition(true);
+                window.setCanDragResize(true);
+                sweb.client.widgets.Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
+                window.addItem( ccfg );
+                window.centerInPage();
+              //  window.setShowMinimizeButton(false);
+               
+                CloseClickHandler ccl = new CloseClickHandler() {  
+
+                    @Override
+                    public void onCloseClick(
+                            CloseClickEvent event)
+                    {
+                       window.destroy(); 
+                    }  
+                };  
+                
+                ccfg.addCloseHandler( ccl );
+                window.addCloseClickHandler( ccl );
+                window.draw();*/
+                Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
+                
+                ArrayList<Cooker> cookerList = new ArrayList<Cooker>();
+                
+                ccfg.setTitle("Cooker Configuration");
+                
+                ccfg.setWidth(920);
+                ccfg.setHeight(500);
+                ccfg.setCanDragReposition(true);
+                ccfg.setCanDragResize(true);
+                ccfg.addUpdateHandler( new ConfigUpdateHandler() {
+
+                    @Override
+                    public void onUpdate( CookerList cookerList)
+                    {
+                       stokerService.updateStokerWebConfig(cookerList, new AsyncCallback<Integer>() {
+
+                        @Override
+                        public void onFailure(
+                                Throwable caught)
+                        {
+                            Log.error("unable to update StokerWebConfig");
+                            
+                            
+                        }
+
+                        @Override
+                        public void onSuccess(Integer result)
+                        {
+                            Log.info("Successfully called save ");
+                            
+                        } 
+                           
+                           // updateStokerWebConfig( CookerList cookerList, new AsyncCallback<Integer>() ) {
+                           
+                       });
+                       // TODO: Save config to ini
+                        //      Update Stoker
+                        //      Restart stoker server
+                        //      Refresh Browser
+                        Log.debug("Config update fired");
+                        
+                    }
+                    
+                });
+                
+                ccfg.draw();
+                
+            }
+
+        });
+    }
+    
     private void initStokerPage(Date d)
     {
         Log.debug("initStokerPage()");
@@ -273,96 +371,8 @@ public class MainPage
                 {
 
                     Log.debug("Configuration button clicked");
-                    stokerService
-                            .getDeviceConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
-
-                                public void onFailure(Throwable caught)
-                                {
-                                    caught.printStackTrace();
-                                    System.out
-                                            .println("Client configuration failure");
-                                }
-
-                                public void onSuccess( HashMap<String, SDevice> result)
-                                {
-                                    Log.info("Opening configuration window");
-                                    ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
-                                  /*  final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
-                                    window.setTitle("Cooker Configuration");
-                                   // window.setHeaderControls(HeaderControls.CLOSE_BUTTON );
-                                    window.setWidth(900);
-                                    window.setHeight(420);
-                                    window.setCanDragReposition(true);
-                                    window.setCanDragResize(true);
-                                    sweb.client.widgets.Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
-                                    window.addItem( ccfg );
-                                    window.centerInPage();
-                                  //  window.setShowMinimizeButton(false);
-                                   
-                                    CloseClickHandler ccl = new CloseClickHandler() {  
-
-                                        @Override
-                                        public void onCloseClick(
-                                                CloseClickEvent event)
-                                        {
-                                           window.destroy(); 
-                                        }  
-                                    };  
-                                    
-                                    ccfg.addCloseHandler( ccl );
-                                    window.addCloseClickHandler( ccl );
-                                    window.draw();*/
-                                    Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
-                                    
-                                    ArrayList<Cooker> cookerList = new ArrayList<Cooker>();
-                                    
-                                    ccfg.setTitle("Cooker Configuration");
-                                    
-                                    ccfg.setWidth(920);
-                                    ccfg.setHeight(500);
-                                    ccfg.setCanDragReposition(true);
-                                    ccfg.setCanDragResize(true);
-                                    ccfg.addUpdateHandler( new ConfigUpdateHandler() {
-
-                                        @Override
-                                        public void onUpdate( CookerList cookerList)
-                                        {
-                                           stokerService.updateStokerWebConfig(cookerList, new AsyncCallback<Integer>() {
-
-                                            @Override
-                                            public void onFailure(
-                                                    Throwable caught)
-                                            {
-                                                Log.error("unable to update StokerWebConfig");
-                                                
-                                                
-                                            }
-
-                                            @Override
-                                            public void onSuccess(Integer result)
-                                            {
-                                                Log.info("Successfully called save ");
-                                                
-                                            } 
-                                               
-                                               // updateStokerWebConfig( CookerList cookerList, new AsyncCallback<Integer>() ) {
-                                               
-                                           });
-                                           // TODO: Save config to ini
-                                            //      Update Stoker
-                                            //      Restart stoker server
-                                            //      Refresh Browser
-                                            Log.debug("Config update fired");
-                                            
-                                        }
-                                        
-                                    });
-                                    
-                                    ccfg.draw();
-                                    
-                                }
-
-                            });
+                    presentConfigScreen();
+                    
                 }
             });
 
@@ -649,6 +659,9 @@ public class MainPage
                                                     makeCallBackRequest( new CallBackRequestType( RequestType.FORCE_DATA_PUSH ));
                                                 }
                                              //   getStokerConfiguration();
+                                                break;
+                                            case CONFIG_UPDATE_REFRESH:
+                                                Window.Location.reload();
                                                 break;
                                             default:
                                         }
@@ -949,23 +962,30 @@ public class MainPage
            cooker.add( cc );
        }
        */
-        for ( Cooker c : result.getCookerList() )
-        {
-            CookerComponent cc = new CookerComponent(stokerService, properties);
-            
-            vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
-
-            vpCookers.setWidth("100%");
-
-            int numProbes = c.getProbeCount();
-            // Debug ***
-            Log.debug("numProbes is [" + numProbes + "]");
-            if ( numProbes > 3 )
-               cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
-            cc.init( c );
-            cooker.add(cc);
-        }
-        
+        ArrayList<Cooker> alc = result.getCookerList();
+       if ( alc.size() == 0 )
+       {
+           presentConfigScreen();
+       }
+       else
+       {
+            for ( Cooker c : alc )
+            {
+                CookerComponent cc = new CookerComponent(stokerService, properties);
+                
+                vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
+    
+                vpCookers.setWidth("100%");
+    
+                int numProbes = CookerHelper.getProbeCount(c);
+                // Debug ***
+                Log.debug("numProbes is [" + numProbes + "]");
+                if ( numProbes > 3 )
+                   cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
+                cc.init( c );
+                cooker.add(cc);
+            }
+       }        
     }
 
     /*

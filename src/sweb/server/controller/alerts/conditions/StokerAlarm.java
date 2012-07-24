@@ -13,10 +13,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.controller.alerts.AlertManager;
 import sweb.server.controller.alerts.delivery.Messenger;
-import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
@@ -99,7 +98,7 @@ public class StokerAlarm extends AlertCondition
          {
              case NONE:
                  break;
-             case CONFIG_UPDATE:
+             case CONFIG_UPDATE_DETECTED:
      //            setConfig();
                  break;
              default:

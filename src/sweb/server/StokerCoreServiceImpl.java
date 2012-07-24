@@ -18,7 +18,6 @@
 
 package sweb.server;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -26,11 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -38,10 +34,8 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.log4j.Logger;
 
 import sweb.client.StokerCoreService;
-import sweb.server.controller.StokerWebConfiguration;
-import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.config.StokerWebConfiguration;
 import sweb.server.controller.alerts.AlertsManagerImpl;
-import sweb.server.controller.config.ConfigurationController;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.StateChangeEvent;
@@ -54,14 +48,12 @@ import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.weather.WeatherController;
 import sweb.server.log.ListLogFiles;
 import sweb.server.log.LogManager;
-import sweb.server.log.LogManagerImpl;
 import sweb.server.log.exceptions.LogExistsException;
 import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
-import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
@@ -267,7 +259,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         {
             case NONE:
                 break;
-            case CONFIG_UPDATE:
+            case CONFIG_UPDATE_DETECTED:
                 m_ClientMessenger.push(
                         new ControllerEventLight(
                                 EventTypeLight.CONFIG_UPDATE));
@@ -723,17 +715,19 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 */
     @Override
     public Integer updateStokerWebConfig(CookerList cookerList )
-    {
-        // TODO Auto-generated method stub
-        
+    {      
         // Save Cooker to property file as JSON
-        //stokerWebConfiguration.saveConfig(cookerList);
-        m_pitMonitor.updateCooker(cookerList);
+        m_StokerWebConfig.saveConfig(cookerList);
+        //m_eventBus.post( cookerList );
+        //m_pitMonitor.updateCooker(cookerList);
         
         
         // TODO:  Update Stoker
         // Restart necessary Server objects to reflect updated config
         // send refresh over comet stream to refresh clients.
+        m_ClientMessenger.push(
+                new ControllerEventLight(
+                        EventTypeLight.CONFIG_UPDATE_REFRESH));
         return new Integer(1);
     }
 

@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.server.controller.config.stoker;
+package sweb.server.config.stoker;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import com.google.inject.Inject;
 
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.HardwareDeviceConfiguration;
+import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.monitors.stoker.config.json.Blower;
 import sweb.server.monitors.stoker.config.json.Sensor;
@@ -75,7 +75,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
     private EventBus eventBus;
     
     @Inject
-    public StokerHardwareDevice( EventBus eventBus )
+    private StokerHardwareDevice( EventBus eventBus )
     {
        this.eventBus = eventBus;
     }
@@ -207,7 +207,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
        super.setUpdatedStaus(true);
    }
 
-    public synchronized boolean pullJSonConfig()
+    private synchronized boolean pullJSonConfig()
     {
         boolean bSuccess = false;
         int iTry = 0;
@@ -322,12 +322,12 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
         super.setUpdatedStaus(true);
         logger.debug("Config: " + super.debugString());
         eventBus.post(new ConfigChangeEvent(this,
-                ConfigChangeEvent.EventType.CONFIG_UPDATE));
+                ConfigChangeEvent.EventType.CONFIG_UPDATE_DETECTED));
         
         return true;
 
     }
-   public synchronized void scrapeWebPage()
+   private synchronized void scrapeWebPage()
    {
        boolean bSuccess = false;
        int iTry = 0;
@@ -421,7 +421,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
 
        super.setUpdatedStaus(true);
       logger.debug("Config: " + super.debugString());
-      eventBus.post(new ConfigChangeEvent( this, ConfigChangeEvent.EventType.CONFIG_UPDATE ));
+      eventBus.post(new ConfigChangeEvent( this, ConfigChangeEvent.EventType.CONFIG_UPDATE_DETECTED ));
 
    }
 /*
@@ -598,8 +598,10 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
    
    /** Update Stoker with updated configuration settings
     * @param stokerDeviceList List of SDevice's that are to be updated
+ * @return 
     */
-   public static void postUpdate( ArrayList<SDevice> stokerDeviceList)
+   @Override
+   public Integer update( ArrayList<SDevice> stokerDeviceList)
    {
        try
        {
@@ -635,6 +637,8 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
            rd.close();
        } catch (Exception e) {
        }
+       
+       return new Integer(1);
    }
 
    @Override
