@@ -1,6 +1,7 @@
 package sweb.server;
 
 import com.google.common.eventbus.EventBus;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import sweb.server.StokerInit;
@@ -23,24 +24,33 @@ public class DispatchServletModule extends ServletModule
     public void configureServlets() {
     //  serve("/" + ActionImpl.DEFAULT_SERVICE_NAME + "*").with(
     //      DispatchServiceImpl.class);
-      
-      
-     
+ 
      // bind(HardwareDeviceConfiguration.class).asEagerSingleton();
-      bind(StokerWebConfiguration.class).asEagerSingleton();
+        
+        
       bind( EventBus.class).asEagerSingleton();
+
+      
+      bind(HardwareDeviceConfiguration.class).to(StokerHardwareDevice.class).in(Singleton.class);
+      
+      bind(StokerWebConfiguration.class).asEagerSingleton();
+      
+      //bind(StokerPitMonitor.class).in(Scopes.SINGLETON);
+      bind(PitMonitor.class).to(StokerPitMonitor.class).in(Singleton.class); 
+      
       
     //  bind(StokerHardwareDevice.class).asEagerSingleton();
       bind(StokerTelnetController.class).asEagerSingleton();
-      bind(HardwareDeviceConfiguration.class).to(StokerHardwareDevice.class).in(Singleton.class);
-      bind(PitMonitor.class).to(StokerPitMonitor.class).in(Singleton.class); 
-      bind(LogManager.class).to(LogManagerImpl.class);
+      
+      
+ 
+      bind(LogManager.class).to(LogManagerImpl.class).in(Singleton.class);
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
       bind(AlertManager.class).to(AlertsManagerImpl.class);
-      bind(sweb.server.StokerInit.class).asEagerSingleton();
       
-      requestStaticInjection(SDataPointHelper.class);
+      bind(sweb.server.StokerInit.class).asEagerSingleton();
+      //requestStaticInjection(SDataPointHelper.class);
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       

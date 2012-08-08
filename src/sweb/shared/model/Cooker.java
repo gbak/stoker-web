@@ -8,10 +8,9 @@ import sweb.shared.model.stoker.StokerProbe;
 
 public class Cooker implements Serializable
 {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 2387713458606878320L;
+    
     String cookerName;
     StokerPitSensor pitSensor;
     ArrayList<StokerProbe> probeList = new ArrayList<StokerProbe>();

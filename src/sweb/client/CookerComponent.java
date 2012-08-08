@@ -520,12 +520,15 @@ public class CookerComponent extends Composite
     {
 
         StokerProbe pit = (StokerProbe) c.getPitSensor();
-        ProbeComponent gc = new ProbeComponent( pit, alignment, properties );
-        mapGuages.put( pit.getID(), gc );
-        gc.addStyleName("sweb-gaugeFlowPanel");
-        hpStokerElements.add( gc );
-        gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
         
+        if ( pit != null )
+        {
+            ProbeComponent gc = new ProbeComponent( pit, alignment, properties );
+            mapGuages.put( pit.getID(), gc );
+            gc.addStyleName("sweb-gaugeFlowPanel");
+            hpStokerElements.add( gc );
+            gaugePanelWidth = gaugePanelWidth +  gc.getOffsetWidth();
+        }
         for ( StokerProbe probe : c.getProbeList())
         {
             ProbeComponent gcp = new ProbeComponent( probe, alignment, properties );

@@ -3,6 +3,9 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
+
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerProbe;
@@ -11,7 +14,7 @@ public class CookerHelper  implements Serializable
 {
 
     private static final long serialVersionUID = -7918341887496824145L;
-
+    private static final Logger logger = Logger.getLogger(CookerHelper.class.getName());
 
     public static SDevice getDeviceByID(CookerList cl,  String ID )
     {
@@ -25,18 +28,24 @@ public class CookerHelper  implements Serializable
     public static SDevice getDeviceByID( Cooker cooker, String ID )
     {
 
-        if ( cooker.getPitSensor().getID().equalsIgnoreCase(ID))
-            return cooker.getPitSensor();
-        
+        logger.debug("CookerHelper::getDeviceByID() searching for: " + ID );
+        if ( cooker.getPitSensor() != null )
+           if ( cooker.getPitSensor().getID().equalsIgnoreCase(ID))
+           {
+               logger.debug("CookerHelper::getDeviceByID() found pit sensor: " + cooker.getPitSensor());
+              return cooker.getPitSensor();
+           }
         
         for ( SDevice p : cooker.getProbeList() )
         {
             if ( p.getID().equalsIgnoreCase(ID))
             {
+                logger.debug("CookerHelper::getDeviceByID() found probe: " + p.getID());
                 return p;
             }
         }
      
+        logger.debug("CookerHelper::getDeviceByID() found nothing");
         return null;
     }
     

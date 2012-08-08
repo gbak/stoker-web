@@ -27,9 +27,12 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import sweb.server.config.HardwareDeviceConfiguration;
+import sweb.server.config.StokerWebConfiguration;
 import sweb.server.monitors.PitMonitor;
+import sweb.shared.model.CookerHelper;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
@@ -44,7 +47,6 @@ public class SDataPointHelper
     public static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     public static final String OUTPUT_FORMAT = "%3s|%15s|%16s|%5.1f|%5.1f|%1s|%1s\n";
 
-    @Inject static PitMonitor pitMonitor;
     private static final Logger logger = Logger.getLogger(SDataPointHelper.class.getName());
 
     private static String getTime(Date d)
@@ -53,7 +55,7 @@ public class SDataPointHelper
        return sdf.format( d );
     }
 
-    public static ArrayList<SDataPoint> createDataPoint(String strIN ) throws InvalidDataPointException
+    public static ArrayList<SDataPoint> createDataPoint(String strIN, StokerWebConfiguration configuration ) throws InvalidDataPointException
     {
         ArrayList<SDataPoint> arDP = new ArrayList<SDataPoint>();
 
@@ -68,7 +70,7 @@ public class SDataPointHelper
        int deviceColonPos = strInString.indexOf(':');
        if ( deviceColonPos == 16)
        {
-          deviceID = strInString.substring(0, deviceColonPos);
+          deviceID = strInString.substring(0, deviceColonPos).toUpperCase();
           StringTokenizer st =new StringTokenizer( strInString );
           int iTokenIndex = 0;
           while ( st.hasMoreTokens() )
@@ -101,7 +103,8 @@ public class SDataPointHelper
 
           if ( bHasFan )  // TODO: stokerconfiguration( HardwareDeviceConfiguration) is returning null, since we have not scraped the stoker yet.
           {
-              SDevice pitDevice = pitMonitor.getDeviceByID(deviceID);
+              
+              SDevice pitDevice = CookerHelper.getDeviceByID(configuration.getCookerList(), deviceID);
               if ( pitDevice instanceof StokerPitSensor )
               {
                   SDevice fanDevice = ((StokerPitSensor) pitDevice).getFanDevice();

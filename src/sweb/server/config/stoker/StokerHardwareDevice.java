@@ -128,7 +128,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
        super.setUpdatedStaus(false);
 
        String prefix = strInput.substring(0,2).toLowerCase();
-       String deviceID = strInput.substring( 2 ).toLowerCase();
+       String deviceID = strInput.substring( 2 ).toUpperCase();
 
      logger.debug("Prefix: " + prefix );
      logger.debug("Device ID: " + deviceID );
@@ -239,16 +239,16 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                 ArrayList<Blower> stokerBlowers = stoke.getBlowers();
                 for ( Blower b : stokerBlowers )
                 {
-                    logger.debug("Adding fan device: " + b.getId().toLowerCase() + " with name: " + b.getName());
-                    super.addDevice( new StokerFan(b.getId().toLowerCase(), b.getName()));
+                    logger.debug("Adding fan device: " + b.getId().toUpperCase() + " with name: " + b.getName());
+                    super.addDevice( new StokerFan(b.getId().toUpperCase(), b.getName()));
                 }
                 
                 for ( Sensor sensor : stoke.getSensors())
                 {
                     if ( sensor.getBlower() == null )
                     {
-                        logger.debug("Adding sensor device: " + sensor.getId().toLowerCase()+ " with name: " + sensor.getName());
-                        StokerProbe sp = new StokerProbe( sensor.getId().toLowerCase(), sensor.getName());
+                        logger.debug("Adding sensor device: " + sensor.getId().toUpperCase()+ " with name: " + sensor.getName());
+                        StokerProbe sp = new StokerProbe( sensor.getId().toUpperCase(), sensor.getName());
                         sp.setCurrentTemp((float)sensor.getTc());
                         sp.setLowerTempAlarm(sensor.getTl());
                         sp.setTargetTemp(sensor.getTa());
@@ -267,8 +267,8 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                     }
                     else
                     {
-                        logger.debug("Adding pit sensor device: " + sensor.getId().toLowerCase()+ " with name: " + sensor.getName());
-                        StokerPitSensor sp = new StokerPitSensor( sensor.getId().toLowerCase(), sensor.getName());
+                        logger.debug("Adding pit sensor device: " + sensor.getId().toUpperCase()+ " with name: " + sensor.getName());
+                        StokerPitSensor sp = new StokerPitSensor( sensor.getId().toUpperCase(), sensor.getName());
                         sp.setCurrentTemp((float)sensor.getTc());
                         sp.setLowerTempAlarm(sensor.getTl());
                         sp.setTargetTemp(sensor.getTa());
@@ -282,7 +282,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                             logger.warn("Invalid number in al: " + sensor.getAl() );
                             sp.setAlarmEnabled( StokerProbe.AlarmType.NONE );
                         }
-                        sp.setFanDevice((StokerFan)super.getDevice(sensor.getBlower().toLowerCase()));
+                        sp.setFanDevice((StokerFan)super.getDevice(sensor.getBlower().toUpperCase()));
                         super.addDevice( sp );
                     }
                 }
@@ -384,7 +384,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                 List<String> al = f.getValues();
                 Iterator<String> listIter = al.iterator();
                 if ( listIter.hasNext())
-                    addConfig( f.getName(), listIter.next().toLowerCase());
+                    addConfig( f.getName(), listIter.next().toUpperCase());
                 else
                 {
                     // if there is no value, pull the default from the javascript variable sel =.

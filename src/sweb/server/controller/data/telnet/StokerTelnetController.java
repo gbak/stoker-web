@@ -37,6 +37,7 @@ import com.google.inject.Inject;
 
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
+import sweb.server.config.StokerWebConfiguration;
 import sweb.server.controller.data.DataController;
 import sweb.server.controller.events.StateChangeEvent;
 import sweb.server.controller.events.StateChangeEvent.EventType;
@@ -69,9 +70,6 @@ public class StokerTelnetController implements DataController
     OutputStream m_StreamToStoker = null;
     InputStream  m_StreamFromStoker = null;
 
-    // StokerDataStore m_StokerDataStore = null;
-    //BlockingDeque<String> deqStokerMessages = new LinkedBlockingDeque<String>();
-
     Date m_LastMessageTime = null; // Last time we received a valid data point from the Stoker
     Thread m_ReaderThread = null;  // thread that always runs to read the telnet input
     Timer startTimer = new Timer();
@@ -79,14 +77,17 @@ public class StokerTelnetController implements DataController
 
     AtomicBoolean abStartHelper = new AtomicBoolean(false);
     
-    EventBus eventBus;
+    private EventBus eventBus;
+    private StokerWebConfiguration swConfiguration;
 
     private static final Logger logger = Logger.getLogger(StokerTelnetController.class.getName());
     
     @Inject
-    public StokerTelnetController(EventBus eventBus)
+    public StokerTelnetController(EventBus eventBus,
+                                  StokerWebConfiguration config)
     {
         this.eventBus = eventBus;
+        this.swConfiguration = config;
         
         m_LoginState = LoginState.NO;
         m_TelnetState = TelnetState.ENTRY;
@@ -187,11 +188,14 @@ public class StokerTelnetController implements DataController
             {
                 e.printStackTrace();
             }
-            if (x > 10)
+            if (x++ > 60)
             {
-                logger.warn("Unable to connect or login, giving up");
-                stopInternal();
-                break;
+                if ( m_LoginState == LoginState.NO )
+                {
+                    logger.warn("Unable to connect or login, giving up");
+                    stopInternal();
+                    break;
+                }
             }
         }
 
@@ -405,24 +409,24 @@ public class StokerTelnetController implements DataController
                     }
 
 
-                    if (intRead == 10)
+                    if (intRead == 10 ) // && m_StokerState == StokerCmdState.STARTED)
                     {
                         if (sb.length() > 0)
                         {
                             sb.append('\n');
-                            //System.out.println("From Stoker: " + sb.toString());
-                           // deqStokerMessages.addLast(sb.toString());
+
                             try
                             {
                                 // Not sure if I want this here.
                                logger.trace("t");
                                 addDataPoint( sb.toString() );
+
                               // System.out.print("p");
 
                                m_StokerResponseState = StokerResponseState.TEMPS;
                                m_LastMessageTime = Calendar.getInstance().getTime();
                             }
-                            catch ( InvalidDataPointException idp)
+                           catch ( InvalidDataPointException idp)
                             {
                                 logger.warn("Invalid Data Point: [" + sb.toString() + "]");
                             }
@@ -441,7 +445,8 @@ public class StokerTelnetController implements DataController
         }
         catch (Exception e)
         {
-            logger.error("Exception while reading socket:" );
+            logger.error("Exception while reading socket: " + e.getMessage());
+
             StackTraceElement [] sta = e.getStackTrace();
             
             for ( int i = 0; i < sta.length; i++ )
@@ -456,8 +461,8 @@ public class StokerTelnetController implements DataController
 
     protected void addDataPoint( String s ) throws InvalidDataPointException
     {
-        ArrayList<SDataPoint> arDP = SDataPointHelper.createDataPoint( s );
-
+        ArrayList<SDataPoint> arDP = SDataPointHelper.createDataPoint( s, swConfiguration );
+        
         for ( SDataPoint dp: arDP )
         {
            eventBus.post(dp);
@@ -468,6 +473,7 @@ public class StokerTelnetController implements DataController
 
     private void waitForTemps()
     {
+        logger.debug("StokerTelnetController::waitForTemps()");
        // TODO: replace this code with a better solution
         boolean leave = false;
         int x = 0;
@@ -486,6 +492,7 @@ public class StokerTelnetController implements DataController
             }
             sleep(1000);
         }
+        logger.debug("StokerTelnetController::waitForTemps() done");
     }
 
     /*
@@ -651,7 +658,7 @@ public class StokerTelnetController implements DataController
     }
     public void start()
     {
-        Timer startTimer = new Timer();
+        startTimer = new Timer();
         TimerTask tt = new TimerTask() {
 
             @Override

@@ -135,6 +135,10 @@ public class StokerProbe extends SDevice implements Serializable
         return alarm;
     }
 
+    public void setFanDevice( StokerFan sf )
+    {
+        // Dummy method for jackson
+    }
     public StokerFan getFanDevice()
     {
         return null;

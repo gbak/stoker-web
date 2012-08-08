@@ -26,12 +26,14 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
+import sweb.server.config.StokerWebConfiguration;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.CookerConfigChangeListener;
 import sweb.server.controller.events.StateChangeEvent;
 import sweb.server.controller.events.StateChangeEventListener;
 import sweb.server.log.LogManager;
+import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
 
 public class StokerInit extends HttpServlet
@@ -51,6 +53,8 @@ public class StokerInit extends HttpServlet
     {
         eventBus.register(this);
         this.m_logManager = logManager;
+        
+     //   config.init();
         
         logger.debug("StokerInit()");
     }

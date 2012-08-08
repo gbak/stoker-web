@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
@@ -16,6 +17,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 import sweb.server.StokerWebConstants;
@@ -29,6 +31,7 @@ import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.stoker.StokerProbe;
 
 public class StokerWebConfiguration
 {
@@ -48,7 +51,17 @@ public class StokerWebConfiguration
     { 
         this.m_deviceConfiguration = stokerConfig;
         this.m_eventBus = eventBus;
+        eventBus.register(this);
        // init();
+    }
+     
+    @Subscribe
+    public void listenForConfigInit( ConfigChangeEvent cce)
+    {
+       if ( cce.getEventType() == EventType.CONFIG_INIT)
+       {
+           init();
+       }
     }
     
     public void init()
@@ -76,7 +89,7 @@ public class StokerWebConfiguration
         HashMap<String,SDevice> hmStoker = new HashMap<String,SDevice>(); 
         for ( SDevice sd : stokerConfig.getAllDevices() )
         {
-            hmStoker.put( sd.getID(),sd);
+            hmStoker.put( sd.getID().toUpperCase(),sd);
         }
        
         stokerConfig.getAllDevices();
@@ -91,7 +104,7 @@ public class StokerWebConfiguration
            
            if ( cookerPitSensor != null )
            {
-              SDevice sdStoker = hmStoker.get( cookerPitSensor.getID());
+              SDevice sdStoker = hmStoker.get( cookerPitSensor.getID().toUpperCase());
               if ( sdStoker != null )
               {
                  if ( sdStoker.getProbeType() == DeviceType.PIT )
@@ -132,15 +145,22 @@ public class StokerWebConfiguration
               }
            }
            
+           ArrayList<String> removeProbes = new ArrayList<String>();
+           
            for ( SDevice cookerProbe : cooker.getProbeList() )
            {
-               SDevice sdStoker = hmStoker.get( cookerProbe.getID() );
+               SDevice sdStoker = hmStoker.get( cookerProbe.getID().toUpperCase() );
                
                if ( sdStoker == null )
                {
-                   logger.warn("device: [" + cookerProbe.getName() + "] with id [" + cookerProbe.getID() + "] does not exist in stoker");
+                   logger.warn("device: [" + cookerProbe.getName() + "] with id [" + cookerProbe.getID().toUpperCase() + "] does not exist in stoker");
                }
-               cooker.removeStokerProbe(cookerProbe.getID());
+              // cooker.removeStokerProbe(cookerProbe.getID());  //. cant remove probes from list we are looping over
+               removeProbes.add( cookerProbe.getID());
+           }
+           for ( String s : removeProbes )
+           {
+               cooker.removeStokerProbe(s);
            }
        }
     }

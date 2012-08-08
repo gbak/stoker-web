@@ -26,7 +26,9 @@ import sweb.shared.model.devices.SDevice;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+@Singleton
 public class StokerPitMonitor implements PitMonitor, DataController
 {
 
@@ -37,12 +39,12 @@ public class StokerPitMonitor implements PitMonitor, DataController
  //   private HardwareDeviceConfiguration m_HardwareDeviceConfig = null;
   //  private CookerList m_CookerList = null;
     
-    StokerHardwareDevice m_StokerHardware = null;
-    HardwareDeviceStatus m_HardwareDeviceStatus = new HardwareDeviceStatus(Status.UNKNOWN, Calendar.getInstance().getTime());
+    private StokerHardwareDevice m_StokerHardware = null;
+    private HardwareDeviceStatus m_HardwareDeviceStatus = new HardwareDeviceStatus(Status.UNKNOWN, Calendar.getInstance().getTime());
     
-    ConcurrentHashMap<String,SDataPoint> m_hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
+    private ConcurrentHashMap<String,SDataPoint> m_hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
 
-    EventBus eventBus;
+    private EventBus m_eventBus;
     
     @Inject
     public StokerPitMonitor(EventBus eventBus,
@@ -52,16 +54,16 @@ public class StokerPitMonitor implements PitMonitor, DataController
     {
     
         
-        this.eventBus = eventBus;
+        this.m_eventBus = eventBus;
         this.m_StokerHardware = stokerHardwareDevice;
         this.m_DataController = stc;
         
-        this.eventBus.register(this);
+        this.m_eventBus.register(this);
        
 
         // TODO: need to start stokerTelnet here.
         start();
-        swc.init();
+     //   swc.init();
     }
     
 
@@ -294,14 +296,14 @@ public class StokerPitMonitor implements PitMonitor, DataController
     
     private void configChange( ConfigChangeEvent cce )
     {
-        eventBus.post( cce );
+        m_eventBus.post( cce );
         // fireConfigEvent(cce);
     }
     
     private void stateChange( StateChangeEvent change )
     {
         setHardwareState( change.getEventType() );
-        eventBus.post( change );
+        m_eventBus.post( change );
        // fireChangeEvent( change );
     }
     
@@ -367,7 +369,7 @@ public class StokerPitMonitor implements PitMonitor, DataController
             if ( bChanged )
             {
                 DataPointEvent be = new DataPointEvent(this, false, dpFromMap );
-                eventBus.post( be );
+                m_eventBus.post( be );
                 //fireTempEvent(be);
             }
             logger.trace("Debug: " + dpFromMap.getDebugString());
@@ -425,6 +427,7 @@ public class StokerPitMonitor implements PitMonitor, DataController
     {
         if ( m_StokerHardware.loadNow() )
         {
+            m_eventBus.post( new ConfigChangeEvent( this, ConfigChangeEvent.EventType.CONFIG_INIT) );
             m_DataController.start();
         }
         else

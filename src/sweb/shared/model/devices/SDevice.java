@@ -31,7 +31,7 @@ public class SDevice  implements Serializable
 
    protected SDevice( String id, String name )
    {
-      strID = id;
+      strID = id.toUpperCase();
       strName = name;
    }
 
@@ -48,7 +48,7 @@ public class SDevice  implements Serializable
    
    public void setID(String id)
    {
-       strID = id;
+       strID = id.toUpperCase();
    }
 
    public void setName(String name)
@@ -60,7 +60,12 @@ public class SDevice  implements Serializable
        return strName;
    }
 
-   public boolean isProbe()  // TODO: causing problems with jackson
+   // Dummy method for Jackson.  Can't use the annotations because of gwt.
+   public void setProbe(boolean b)
+   {
+       
+   }
+   public boolean isProbe() 
    {
        return false;
    }

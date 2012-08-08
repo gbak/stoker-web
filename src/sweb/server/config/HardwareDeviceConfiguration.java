@@ -94,7 +94,7 @@ public abstract class HardwareDeviceConfiguration
 
     public synchronized SDevice getDevice( String ID)
     {
-        SDevice sd = m_HWConfig.get(ID);
+        SDevice sd = m_HWConfig.get(ID.toUpperCase());
         return sd;
     }
 
@@ -105,7 +105,7 @@ public abstract class HardwareDeviceConfiguration
      */
     public synchronized boolean hasDevice( String ID)
     {
-        return m_HWConfig.containsKey(ID);
+        return m_HWConfig.containsKey(ID.toUpperCase());
 
     }
     public synchronized void replaceDevice( SDevice d )
@@ -143,7 +143,7 @@ public abstract class HardwareDeviceConfiguration
      */
     public String getBlowerID( String strProbeID )
     {
-        SDevice sd =  m_HWConfig.get( strProbeID );
+        SDevice sd =  m_HWConfig.get( strProbeID.toUpperCase() );
         if ( sd != null)
         {
             if ( sd.getProbeType() == DeviceType.PIT )
