@@ -77,6 +77,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
     @Inject
     private StokerHardwareDevice( EventBus eventBus )
     {
+        super();
        this.eventBus = eventBus;
     }
     

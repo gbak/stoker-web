@@ -146,6 +146,7 @@ public class LogFileFormatter
                             sp2.getID(),
                             sp2.getProbeType().toString(),sp2.getTargetTemp(),
                             sp2.getAlarmEnabled(),sp2.getUpperTempAlarm(),sp2.getLowerTempAlarm(),encode(sp2.getName()),sp2.getFanDevice().getID());
+                    break;
                 case UNKNOWN:
                     System.err.println("Unknown found while writing log header!");
                     System.err.println("Device: " + sd.toString());

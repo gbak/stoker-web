@@ -61,6 +61,7 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -101,9 +102,10 @@ public class CookerComponent extends Composite
 
     private HorizontalPanel hpStokerHeader = new HorizontalPanel();
      
-  //  private FlowPanel fpStokerHeader = new FlowPanel();
-    private SimplePanel sGraphPanel = new SimplePanel();
-   // private DecoratorPanel sGraphPanel = new DecoratorPanel();
+  
+   // private SimplePanel sGraphPanel = new SimplePanel();
+    private HTMLPanel sGraphPanel = new HTMLPanel("<div class=\"content\" style=\"width: 100%; height: 100%; \" id=\"graph\"></div>");
+   
 
 
     private Label cookerLabel = new Label("Cooker: ");
@@ -587,7 +589,7 @@ public class CookerComponent extends Composite
         cookerNameLabel.setText(cooker.getCookerName());
 
     //    sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
-        DecoratorPanel dpGraph = new DecoratorPanel();
+      //  DecoratorPanel dpGraph = new DecoratorPanel();
         
        // dpGraph.addStyleName("sweb-graphPanel");
 
@@ -596,10 +598,12 @@ public class CookerComponent extends Composite
         {
             m_Width = hpStokerElements.getOffsetWidth() - gaugePanelWidth - 10;
             
-            sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
+           // sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
+            sGraphPanel.setWidth("100%");
+            sGraphPanel.setHeight("100%");
 
-           dpGraph.add( sGraphPanel);
-           hpStokerElements.add( dpGraph );
+         //  dpGraph.add( sGraphPanel);
+           hpStokerElements.add( sGraphPanel );
         }
         else
         {
@@ -616,8 +620,8 @@ public class CookerComponent extends Composite
             dp.setContent( sGraphPanel );
             dp.setAnimationEnabled(true);
             
-            dpGraph.add( dp );
-           outerPanel.add( dpGraph );
+        //    dpGraph.add( dp );
+       //    outerPanel.add( dpGraph );
         }
         
         addComponents(c);
@@ -641,9 +645,9 @@ public class CookerComponent extends Composite
 
         refreshGraphData(strLogName);
 
-        Widget w = sGraphPanel.getWidget();
-        if ( w != null )
-           sGraphPanel.remove(w);
+//        Widget w = sGraphPanel.getWidget();
+//        if ( w != null )
+//           sGraphPanel.remove(w);
         
         sGraphPanel.add(graphStoker);
 

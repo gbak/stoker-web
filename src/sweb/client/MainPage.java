@@ -538,9 +538,9 @@ public class MainPage
             });
             
 
-            // Consider not calling this if the stoker if offline,this allows the reports
-            // to be generated with stoker offline.  This couild replace the stoker not
-            // conencted page.
+            // Consider not calling this if the Stoker if off-line,this allows the reports
+            // to be generated with Stoker off-line.  This could replace the Stoker not
+            // connected page.
             
             
             //getStokerConfiguration();

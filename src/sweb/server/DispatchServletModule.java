@@ -31,25 +31,25 @@ public class DispatchServletModule extends ServletModule
       bind( EventBus.class).asEagerSingleton();
 
       
-      bind(HardwareDeviceConfiguration.class).to(StokerHardwareDevice.class).in(Singleton.class);
+      //bind(HardwareDeviceConfiguration.class).to(StokerHardwareDevice.class).in(Singleton.class);
+      bind(HardwareDeviceConfiguration.class).to(StokerHardwareDevice.class).asEagerSingleton();
       
       bind(StokerWebConfiguration.class).asEagerSingleton();
-      
-      //bind(StokerPitMonitor.class).in(Scopes.SINGLETON);
-      bind(PitMonitor.class).to(StokerPitMonitor.class).in(Singleton.class); 
-      
-      
-    //  bind(StokerHardwareDevice.class).asEagerSingleton();
+
       bind(StokerTelnetController.class).asEagerSingleton();
-      
+
+      bind(PitMonitor.class).to(StokerPitMonitor.class).in(Singleton.class); 
       
  
       bind(LogManager.class).to(LogManagerImpl.class).in(Singleton.class);
+
+      bind(sweb.server.StokerInit.class).asEagerSingleton();
+
+      bind(AlertManager.class).to(AlertsManagerImpl.class);
+
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
-      bind(AlertManager.class).to(AlertsManagerImpl.class);
       
-      bind(sweb.server.StokerInit.class).asEagerSingleton();
       //requestStaticInjection(SDataPointHelper.class);
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();

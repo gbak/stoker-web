@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.data.DataController;
@@ -48,22 +49,22 @@ public class StokerPitMonitor implements PitMonitor, DataController
     
     @Inject
     public StokerPitMonitor(EventBus eventBus,
-                            StokerHardwareDevice stokerHardwareDevice,
+                            HardwareDeviceConfiguration stokerHardwareDevice,
                             StokerTelnetController stc,
                             StokerWebConfiguration swc )
     {
     
         
         this.m_eventBus = eventBus;
-        this.m_StokerHardware = stokerHardwareDevice;
+        this.m_StokerHardware = (StokerHardwareDevice)stokerHardwareDevice;
         this.m_DataController = stc;
         
         this.m_eventBus.register(this);
        
 
         // TODO: need to start stokerTelnet here.
-        start();
-     //   swc.init();
+       // start();
+    
     }
     
 

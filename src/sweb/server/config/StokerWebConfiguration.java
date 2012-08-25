@@ -67,16 +67,17 @@ public class StokerWebConfiguration
     public void init()
     {
         
-        loadConfig(); 
+        if ( loadConfig() == false )
+            return;
 
         if ( m_cookerList == null )
             m_cookerList = new CookerList();
         
-        reconcile( m_deviceConfiguration );
-        
+        reconcile( );
+        m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));
     }
     
-    private void reconcile( HardwareDeviceConfiguration stokerConfig )
+    private void reconcile()
     {
         /* This method checks to see if the devices listed in the saved stoker-web
          * configuration exist on the stoker hardware.  If the device does not
@@ -87,12 +88,12 @@ public class StokerWebConfiguration
         logger.debug("reconcile");
         
         HashMap<String,SDevice> hmStoker = new HashMap<String,SDevice>(); 
-        for ( SDevice sd : stokerConfig.getAllDevices() )
+        for ( SDevice sd : m_deviceConfiguration.getAllDevices() )
         {
             hmStoker.put( sd.getID().toUpperCase(),sd);
         }
        
-        stokerConfig.getAllDevices();
+        m_deviceConfiguration.getAllDevices();
        
         logger.debug("Looping over cookers");
        for ( Cooker cooker : m_cookerList.getCookerList() )
@@ -154,15 +155,17 @@ public class StokerWebConfiguration
                if ( sdStoker == null )
                {
                    logger.warn("device: [" + cookerProbe.getName() + "] with id [" + cookerProbe.getID().toUpperCase() + "] does not exist in stoker");
+                   removeProbes.add( cookerProbe.getID());
                }
               // cooker.removeStokerProbe(cookerProbe.getID());  //. cant remove probes from list we are looping over
-               removeProbes.add( cookerProbe.getID());
+               
            }
            for ( String s : removeProbes )
            {
                cooker.removeStokerProbe(s);
            }
        }
+       m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED) );
     }
     
     public void saveConfig(CookerList cookerList)
@@ -192,16 +195,19 @@ public class StokerWebConfiguration
         }
     }
     
-    public void loadConfig()
+    public boolean loadConfig() 
     {
         ObjectMapper mapper = new ObjectMapper();
+        boolean bReturn = false;
+        
         try
         {
             
             BufferedReader in = new BufferedReader(new FileReader(strConfigFile));
             m_cookerList = mapper.readValue(in, CookerList.class);
             in.close();
-            m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));
+            
+            bReturn = true;
         }
         catch (FileNotFoundException e)
         {
@@ -210,18 +216,20 @@ public class StokerWebConfiguration
         }
         catch (JsonParseException e)
         {
-            logger.error("Error parsing CookerConfig.json in loadConfig");
-            
+            logger.error("Error parsing CookerConfig.json in loadConfig");    
         }
         catch (JsonMappingException e)
         {
             logger.error("Error mapping CookerConfig.json in loadConfig\n" + e.getMessage());
+            
         }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
+        return bReturn;
     }
     
     public CookerList getCookerList()

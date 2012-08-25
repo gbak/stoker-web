@@ -79,11 +79,17 @@ public class HighChartLineGraph extends StokerLineGraph
             .setFloating(false)
             .setBorderWidth(0)
            );
-        chart.setHeight(iHeight - 5);
-        chart.setWidth( iWidth );
+        //chart.setHeight(iHeight - 5);
+       // chart.setWidth( iWidth );
+        
         chart.setChartTitleText(null);
 
+        chart.setReflow(true);
         
+        chart.setHeight100();
+        chart.setWidth100( );
+      //  chart.setOption("/chart/width", "100%");
+      //  chart.setOption("/chart/height", "100%");
         
         setHighchartTimezone();
 
