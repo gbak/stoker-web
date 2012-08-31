@@ -85,5 +85,9 @@ public class SDevice  implements Serializable
        
    }
    
+   public void update( SDevice sd )
+   {
+       strName = sd.getName();
+   }
  
 }

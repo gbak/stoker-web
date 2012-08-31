@@ -201,4 +201,14 @@ public class StokerProbe extends SDevice implements Serializable
 
         return AlarmType.NONE;
     }
+    
+    public void update( StokerProbe sp )
+    {
+        super.update( (SDevice) sp );
+        targetTemp = sp.getTargetTemp();
+        lowerTempAlarm = sp.getLowerTempAlarm();
+        upperTempAlarm = sp.getUpperTempAlarm();
+        alarm = sp.getAlarmEnabled();
+        
+    }
 }

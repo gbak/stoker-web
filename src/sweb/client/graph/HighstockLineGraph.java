@@ -281,4 +281,11 @@ public class HighstockLineGraph extends StokerLineGraph
         }
     }
 
+    @Override
+    public void setNewSize(int width, int height)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

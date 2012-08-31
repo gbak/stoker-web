@@ -54,6 +54,14 @@ public abstract class StokerLineGraph extends Composite
      */
     public abstract void addData( SDataPoint sdp, boolean refresh );
 
+    /**
+     * Calls setSize with new size parameters and animation set to false.
+     * 
+     * @param width
+     * @param height
+     */
+    
+    public abstract void setNewSize( int width, int height );
 
     /** Adds multiple data points to the graph that are marked as TimedEvent.
      * Refresh parameter allows all the data points in the array to be considered

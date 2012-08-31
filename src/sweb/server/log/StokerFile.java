@@ -67,52 +67,27 @@ public class StokerFile
     private String m_strCookerName = null;
     private String m_strLogName = null;
     private String m_strLogFileName = null;
-    File m_outfile = null;
-    HashMap<String,SDevice> m_hmSD = new HashMap<String,SDevice>();
-    HashMap<String,String> m_hmSDIndex = new HashMap<String,String>();
-    int m_iLastMinute = -1;
-  //  private ConfigurationController configurationController;
-    private WeatherController weatherController;
+    private File m_outfile = null;
+    private HashMap<String,SDevice> m_hmSD = new HashMap<String,SDevice>();
+    private HashMap<String,String> m_hmSDIndex = new HashMap<String,String>();
 
-    private EventType m_eventType = EventType.NONE;
-
-    private static final int READ_BUFFER_SIZE = 1024 * 64;
-
-    private DataPointEventListener m_dl = null;
+    private PitMonitor m_pitMonitor;
+    private EventBus eventBus;
 
     private static final Logger logger = Logger.getLogger(StokerFile.class.getName());
     
-   // private Controller m_controller;
-    private PitMonitor m_pitMonitor;
     
-    private EventBus eventBus;
-    
-    private StokerFile()
+    public void init( String strCookerName,  String strLogFileName )
     {
-       this(null, null);
+        init( strCookerName, strLogFileName, getConfigFromExistingFile( ListLogFiles.getFullPathForFile(strLogFileName)) );
+    }
+   
+    public void init( LogItem li )
+    {
+        init( li.getCookerName(), li.getLogName(), li.getLogItems());
     }
 
-    public StokerFile( String strCookerName,  String strLogFileName )
-    {
-       this( strCookerName, strLogFileName, getConfigFromExistingFile( ListLogFiles.getFullPathForFile(strLogFileName)) );
-    }
-
-    private String dirName( String s )
-    {
-        return s.substring(0, s.lastIndexOf(File.separatorChar));
-    }
-
-    public String getName()
-    {
-        return m_strLogName;
-    }
-
-    public StokerFile( LogItem li )
-    {
-        this( li.getCookerName(), li.getLogName(), li.getLogItems());
-    }
-
-    public StokerFile( String strCookerName, String strLogName, ArrayList<SDevice> asd)
+    public void init( String strCookerName, String strLogName, ArrayList<SDevice> asd)
     {
         this.m_strCookerName = strCookerName;
         this.m_strLogName = strLogName;
@@ -148,14 +123,24 @@ public class StokerFile
 
     }
 
+    private String dirName( String s )
+    {
+        return s.substring(0, s.lastIndexOf(File.separatorChar));
+    }
+
+    public String getName()
+    {
+        return m_strLogName;
+    }
+    
     @Inject
-    public void addControllers(PitMonitor pit, 
-                               WeatherController weatherController,
-                               EventBus eventBus )
+    private StokerFile( PitMonitor pit, 
+                        EventBus eventBus )
     {
         this.m_pitMonitor = pit;
-        this.weatherController = weatherController;
         this.eventBus = eventBus;
+        
+        this.eventBus.register(this);
     }
     
     private void writeHeader()
@@ -690,38 +675,7 @@ public class StokerFile
         return m_strLogFileName.substring(m_strLogFileName.lastIndexOf(File.separatorChar) + 1);
     }
     
-    /*
-     // TODO: Removed for EventBus
-    private ConfigChangeEventListener getConfigEventListener()
-    {
-       ConfigChangeEventListener ccl = new   ConfigChangeEventListener() {
-
-        public void actionPerformed(ConfigChangeEvent ce)
-        {
-            // Configuration Update
-            
-            // Need to populate new config data!
-         
-       //     HashMap<String,SDevice> hm = Controller.getInstance().getStokerConfiguration().data();
-            
-            for ( String s : m_hmSD.keySet() )
-            {
-                SDevice sd = m_controller.getDeviceByID(s);
-                if ( sd != null )
-                {
-                    m_hmSD.put( s, sd);
-                }
-            }
-            
-            writeHeader();
-        }
-
-
-       };
-       return ccl;
-    }
-    */
-
+ 
     public void test()
     {
         StringBuilder sb = new StringBuilder();

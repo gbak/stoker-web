@@ -168,6 +168,12 @@ public class StokerWebConfiguration
        m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED) );
     }
     
+    public void updateConfig( ArrayList<SDevice> arsd)
+    {
+       m_cookerList.update( arsd );
+       
+    }
+    
     public void saveConfig(CookerList cookerList)
     {
         try 

@@ -3,6 +3,7 @@ package sweb.shared.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerProbe;
 
@@ -88,6 +89,18 @@ public class Cooker implements Serializable
             }
         }
     }
+    
+    public void update( ArrayList<SDevice> arsd )
+    {
+        pitSensor.update( arsd );
+        for ( StokerProbe sp : probeList )
+        {
+           // sp.update( arsd );
+            // TODO: update me
+        }
+        
+    }
+    
 /*
     public ArrayList<SDevice> getDeviceList()
     {

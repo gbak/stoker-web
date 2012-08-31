@@ -105,4 +105,8 @@ public class StokerFan extends SDevice  implements Serializable
         
     }
     
+    public void update( StokerFan sf )
+    {
+        super.update( sf );
+    }
 }

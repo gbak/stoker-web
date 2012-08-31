@@ -174,8 +174,8 @@ public class MainPage
 
     private void presentConfigScreen()
     {
-        stokerService
-        .getDeviceConfiguration(new AsyncCallback<HashMap<String, SDevice>>() {
+        stokerService.getDeviceConfiguration(new AsyncCallback<HashMap<String, SDevice>>() 
+         {
 
             public void onFailure(Throwable caught)
             {
@@ -336,6 +336,7 @@ public class MainPage
                     {
                         Log.debug("Getting config updates from cooker: " + cc.getName());
                         alUpdates.addAll( cc.getConfigUpdates());
+                        
                     }
                     stokerService.updateSettings( alUpdates, new AsyncCallback<Integer>() {
 
@@ -899,7 +900,7 @@ public class MainPage
 
 
 
-    private void createCookers(CookerList result, ArrayList<CookerComponent> cooker )
+    private void createCookers(CookerList cookerList, ArrayList<CookerComponent> componentList )
     {
         Log.debug("createCookers()");
         /*
@@ -962,28 +963,28 @@ public class MainPage
            cooker.add( cc );
        }
        */
-        ArrayList<Cooker> alc = result.getCookerList();
+        ArrayList<Cooker> alc = cookerList.getCookerList();
        if ( alc.size() == 0 )
        {
            presentConfigScreen();
        }
        else
        {
-            for ( Cooker c : alc )
+            for ( Cooker cooker : alc )
             {
-                CookerComponent cc = new CookerComponent(stokerService, properties);
+                CookerComponent cookerComponent = new CookerComponent(stokerService, properties);
                 
-                vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
+                vpCookers.add( cookerComponent );  // This needs to be done before sending the data so the graph window size is correct.
     
                 vpCookers.setWidth("100%");
     
-                int numProbes = CookerHelper.getProbeCount(c);
+                int numProbes = CookerHelper.getProbeCount(cooker);
                 // Debug ***
                 Log.debug("numProbes is [" + numProbes + "]");
                 if ( numProbes > 3 )
-                   cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
-                cc.init( c );
-                cooker.add(cc);
+                   cookerComponent.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
+                cookerComponent.init( cooker );
+                componentList.add(cookerComponent);
             }
        }        
     }

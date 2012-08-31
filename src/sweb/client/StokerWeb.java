@@ -33,6 +33,7 @@ public class StokerWeb implements EntryPoint
     public void onModuleLoad()
     {
      
+        
         /*
          * Install an UncaughtExceptionHandler which will produce <code>FATAL</code> log messages
          */

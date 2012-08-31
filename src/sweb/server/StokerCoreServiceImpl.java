@@ -538,6 +538,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        // Controller.getInstance().getStokerConfiguration().update( asd );
      //  m_Controller.updateSettings(asd); 
 // TODO: write this
+       m_StokerWebConfig.
 
         return new Integer(1);
     }

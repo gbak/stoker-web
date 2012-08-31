@@ -19,9 +19,11 @@
 package sweb.shared.model.stoker;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 public class StokerPitSensor extends StokerProbe implements Serializable
@@ -115,5 +117,34 @@ public class StokerPitSensor extends StokerProbe implements Serializable
         
         return false;
         
+    }
+    
+    public void update( StokerPitSensor sps )
+    {
+       super.update( (StokerProbe) sps );
+       
+       // Compare to see if the fan is the same
+       if ( sfan.getID() == sps.getFanDevice().getID() )
+       {
+           sfan.update(sps.getFanDevice());
+       }
+       else
+       {
+       sfan = sps.getFanDevice();
+       }
+    }
+    
+    public void update( ArrayList<SDevice> arsd )
+    {
+        for ( SDevice sd : arsd )
+        {
+            if ( sd.getID() == this.getID() )
+            {
+                if ( sd instanceof StokerPitSensor )
+                   update( (StokerPitSensor) sd );
+                else
+                    update( (StokerProbe) sd );  // not sure if we'll ever run into this case.
+            }
+        }
     }
 }

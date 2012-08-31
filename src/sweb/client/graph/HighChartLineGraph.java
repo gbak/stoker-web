@@ -42,8 +42,11 @@ import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Window;
 
 
 public class HighChartLineGraph extends StokerLineGraph
@@ -51,24 +54,34 @@ public class HighChartLineGraph extends StokerLineGraph
 {
     private HashMap<String,Series>  mapSeries = new HashMap<String,Series>();
     String fanID = new String();
-    Chart chart = null;
+  
+    final Chart chart = new Chart();
+
 
     private HighChartLineGraph()
     {
 
     }
-
+    
     public static native void setHighchartTimezone() /*-{
     $wnd.Highcharts.setOptions({
         global: {
-           useUTC: false        }
+           useUTC: false,        
+         
+           }
+           
          });
     }-*/;
 
+    public void setNewSize(int width, int height)
+    {
+        chart.setSize( width, height, false );
+    }
+    
     public HighChartLineGraph(int iWidth, int iHeight, ArrayList<SDevice> listDeviceList)
     {
-        chart = new Chart();
-
+        
+       
         chart.setZoomType(Chart.ZoomType.X);
         chart.setToolTip(new ToolTip().setShared(true));
         //chart.setLegend(new Legend().setEnabled(false));
@@ -79,18 +92,17 @@ public class HighChartLineGraph extends StokerLineGraph
             .setFloating(false)
             .setBorderWidth(0)
            );
-        //chart.setHeight(iHeight - 5);
-       // chart.setWidth( iWidth );
+        chart.setHeight(iHeight - 5);
+        chart.setWidth( iWidth );
         
         chart.setChartTitleText(null);
 
         chart.setReflow(true);
         
-        chart.setHeight100();
-        chart.setWidth100( );
-      //  chart.setOption("/chart/width", "100%");
-      //  chart.setOption("/chart/height", "100%");
-        
+      //  chart.setHeight100();
+        //chart.setHeight(400);
+      ///  chart.setWidth100( );
+   
         setHighchartTimezone();
 
       // chart.setOption("/global/useUTC", "false");

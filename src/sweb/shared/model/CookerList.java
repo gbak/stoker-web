@@ -24,5 +24,12 @@ public class CookerList  implements Serializable
         this.cookerList = cookerList;
     }
     
+    public  void update( ArrayList<SDevice> arsd )
+    {
+        for ( Cooker cooker : cookerList )
+        {
+            cooker.update( arsd );
+        }
+    }
 
 }

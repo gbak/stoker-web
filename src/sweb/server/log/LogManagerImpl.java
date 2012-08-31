@@ -35,6 +35,7 @@ import org.jfree.util.Log;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.controller.events.BlowerEvent;
@@ -70,16 +71,19 @@ public class LogManagerImpl implements LogManager
     private PitMonitor m_pitMonitor;
     private EventBus   eventBus;
     private StokerWebConfiguration stokerWebConfiguration;
+    private Provider<StokerFile> stokerFileProvider;
     
     private static final Logger logger = Logger.getLogger(LogManagerImpl.class.getName());
     
     @Inject
     public LogManagerImpl(PitMonitor pit, EventBus eventBus,
-                           StokerWebConfiguration swc)
+                           StokerWebConfiguration swc,
+                           Provider<StokerFile> stokerFileProvider )
     {
         this.m_pitMonitor = pit;
         this.eventBus = eventBus;
         this.stokerWebConfiguration = swc;
+        this.stokerFileProvider = stokerFileProvider;
         
         eventBus.register(this);
         
@@ -209,7 +213,10 @@ public class LogManagerImpl implements LogManager
     public void startLog( LogItem logItem ) throws LogExistsException
     {
         if ( fileLogList.containsKey(logItem.getLogName())) throw new LogExistsException(logItem.getLogName());
-        StokerFile sf = new StokerFile( logItem );
+        
+        StokerFile sf = stokerFileProvider.get(); //new StokerFile( logItem );
+        sf.init( logItem );  
+     
         fileLogList.put( logItem.getLogName(), sf );
         Log.info("Starting log: [" + logItem.getLogName() + "]");
         sf.start();
@@ -254,7 +261,8 @@ public class LogManagerImpl implements LogManager
             if ( ! selectedLog.contains("Default"))
             {
                 //String logName = fileName.substring(fileName.lastIndexOf("_")).replace(".log", "");
-                StokerFile sfNew = new StokerFile(cookerName, fileName );
+                StokerFile sfNew = stokerFileProvider.get(); // new StokerFile(cookerName, fileName );
+                sfNew.init( cookerName, fileName );
                 sfNew.start();
                 logger.info("Attached to existing log file");
 
