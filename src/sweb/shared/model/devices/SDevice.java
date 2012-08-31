@@ -26,38 +26,38 @@ public class SDevice  implements Serializable
 {
 
     private static final long serialVersionUID = -2040954508382938760L;
-    private String strID;
-    private String strName;
+    protected String m_ID;
+    private String m_Name;
 
    protected SDevice( String id, String name )
    {
-      strID = id.toUpperCase();
-      strName = name;
+      m_ID = id.toUpperCase();
+      m_Name = name;
    }
 
    public boolean equals( SDevice sd )
    {
-       return strID.compareToIgnoreCase(sd.getID()) == 0;
+       return m_ID.compareToIgnoreCase(sd.getID()) == 0;
    }
    protected SDevice()  { }
 
    public String getID()
    {
-       return strID;
+       return m_ID;
    }
    
    public void setID(String id)
    {
-       strID = id.toUpperCase();
+       m_ID = id.toUpperCase();
    }
 
    public void setName(String name)
    {
-       strName = name;
+       m_Name = name;
    }
    public String getName()
    {
-       return strName;
+       return m_Name;
    }
 
    // Dummy method for Jackson.  Can't use the annotations because of gwt.
@@ -72,7 +72,7 @@ public class SDevice  implements Serializable
 
    public String debugString()
    {
-       return "\nID: [" + strID + "] Name: [" + strName + "] ";
+       return "\nID: [" + m_ID + "] Name: [" + m_Name + "] ";
    }
 
    public DeviceType getProbeType()
@@ -87,7 +87,7 @@ public class SDevice  implements Serializable
    
    public void update( SDevice sd )
    {
-       strName = sd.getName();
+       m_Name = sd.getName();
    }
  
 }

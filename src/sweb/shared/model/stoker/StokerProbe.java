@@ -19,6 +19,7 @@
 package sweb.shared.model.stoker;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
@@ -210,5 +211,19 @@ public class StokerProbe extends SDevice implements Serializable
         upperTempAlarm = sp.getUpperTempAlarm();
         alarm = sp.getAlarmEnabled();
         
+    }
+    
+    public void update( ArrayList<SDevice> arsd )
+    {
+        for ( SDevice sp : arsd )
+        {
+            if ( sp.getID().compareToIgnoreCase(m_ID) == 0)
+            {
+                if ( sp instanceof StokerProbe )
+                   update( (StokerProbe) sp );
+                else
+                    update( sp );
+            }
+        }
     }
 }

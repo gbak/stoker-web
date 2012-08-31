@@ -95,7 +95,7 @@ public class Cooker implements Serializable
         pitSensor.update( arsd );
         for ( StokerProbe sp : probeList )
         {
-           // sp.update( arsd );
+            sp.update( arsd );
             // TODO: update me
         }
         
