@@ -168,8 +168,12 @@ public class ProbeComponent extends Composite
 
        VerticalPanel vp1 = new VerticalPanel();
        
-       Label lName = new Label( sd1.getName());
+      // Label lName = new Label( sd1.getName());
+       TextBox lName = new TextBox( );
+       lName.setText(sd1.getName());
+    //   lName.setWidth("100%");
        lName.setStylePrimaryName("label-GaugeName");
+      // lName.setStylePrimaryName("label-GaugeName");
 
        if (sd1.getFanDevice() != null )
        {

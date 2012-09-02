@@ -171,20 +171,22 @@ public class StokerWebConfiguration
     public void updateConfig( ArrayList<SDevice> arsd)
     {
        m_cookerList.update( arsd );
+       save();
+      
        
     }
     
-    public void saveConfig(CookerList cookerList)
+    private void save()
     {
         try 
         {  
             ObjectMapper mapper = new ObjectMapper();
             BufferedWriter out = new BufferedWriter(new FileWriter(strConfigFile));
 
-            mapper.writeValue(out, cookerList);
+            mapper.writeValue(out, m_cookerList );
             
             out.close();
-            this.m_cookerList = cookerList;
+
             ArrayList<SDevice> arAllDevices = new ArrayList<SDevice>();
             for ( Cooker c : m_cookerList.getCookerList())
             {
@@ -199,6 +201,12 @@ public class StokerWebConfiguration
         {
             logger.error("Error writing " + strConfigFile + "\n" + e.getStackTrace() );
         }
+    }
+    
+    public void saveConfig(CookerList cookerList)
+    {
+        this.m_cookerList = cookerList;
+        this.save();
     }
     
     public boolean loadConfig() 

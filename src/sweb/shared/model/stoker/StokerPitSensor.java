@@ -119,12 +119,17 @@ public class StokerPitSensor extends StokerProbe implements Serializable
         
     }
     
+    /**
+     * Updates the current StokerPitSensor with the setting of the pit sensor pass in.  This does
+     * not assign the old object to the new, but copies the settings.
+     * @param sps
+     */
     public void update( StokerPitSensor sps )
     {
        super.update( (StokerProbe) sps );
        
        // Compare to see if the fan is the same
-       if ( sfan.getID() == sps.getFanDevice().getID() )
+       if ( sfan.getID().compareToIgnoreCase(sps.getFanDevice().getID()) == 0 )
        {
            sfan.update(sps.getFanDevice());
        }
@@ -134,11 +139,18 @@ public class StokerPitSensor extends StokerProbe implements Serializable
        }
     }
     
+    /**
+     * Updates the current StokerPitSensor with the settings from the device in the array
+     * with a matching ID.
+     * 
+     * @param arsd list of SDevice objects, SDevice objects are cast to the correct type
+     * when the settings are copied.
+     */
     public void update( ArrayList<SDevice> arsd )
     {
         for ( SDevice sd : arsd )
         {
-            if ( sd.getID() == this.getID() )
+            if ( sd.getID().compareToIgnoreCase(this.getID() ) == 0 )
             {
                 if ( sd instanceof StokerPitSensor )
                    update( (StokerPitSensor) sd );

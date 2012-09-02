@@ -236,9 +236,12 @@ h1 {
 .label-GaugeName {
  font-size: 2em;
 	text-align: center;
+	border: 0px;
 	/*font-weight: bold; */
 	color: #333333;
     font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    padding: 0px 0px 0px 0px;
+    width: 210px;
 }
 
 .panel-CookerType {
@@ -249,6 +252,13 @@ h1 {
 .panel-CookerType .label-Cooker {
 	font-size: 2em;
 	color: #333333;
+}
+.panel-CookerType .textBox-CookerName {
+	font-size: 2em;
+	border: 0px;
+	color: #FF9900;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	padding: 0px 0px 0px 8px;
 }
 
 .panel-CookerType .label-Status {

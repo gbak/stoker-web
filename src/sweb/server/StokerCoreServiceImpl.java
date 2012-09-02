@@ -98,7 +98,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     WeatherChangeEventListener m_wcel = null;
     WeatherController m_WeatherController = null;
     ClientMessenger m_ClientMessenger = null;
- //   Controller m_Controller = null;
     PitMonitor m_pitMonitor = null;
     AlertsManagerImpl m_alertsManager = null;
     LogManager m_logManager = null;
@@ -193,17 +192,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        // return Controller.getInstance().getDataOrchestrator().getLastDPs();
 
     }
-
-   /* private void removeControllerEvents()
-    {
-        logger.info("Removing event listeners!");
-       // m_Controller.removeTempListener(m_dcel);
-        m_Controller.removeStateChangeListener(m_dcel);
-        m_Controller.removeConfigChangeListener(m_ccel);
-       // Controller.getInstance().removeDataEventListener( m_dcel );
-       // m_ConfigurationController.removeEventListener(m_ccel);
-        m_WeatherController.removeEventListener(m_wcel);
-    }*/
 
     @Subscribe
     public void handleDataPointEvents( DataPointEvent dpe )
@@ -418,6 +406,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        session.setAttribute("user", user);
        return session.getId();
     }
+    
     private User getUserAlreadyFromSession()
     {
 
@@ -529,16 +518,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     }
 
 
-    public Integer updateSettings(ArrayList<SDevice> asd)
+    public Integer updateTempSettings(ArrayList<SDevice> asd)
             throws IllegalArgumentException
     {
        if ( ! loginGuard() )
           return -1;
 
-       // Controller.getInstance().getStokerConfiguration().update( asd );
-     //  m_Controller.updateSettings(asd); 
-// TODO: write this
-       m_StokerWebConfig.
+
+       m_StokerWebConfig.updateConfig(asd);
 
         return new Integer(1);
     }

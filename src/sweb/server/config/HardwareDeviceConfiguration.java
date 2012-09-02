@@ -38,7 +38,7 @@ import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 public abstract class HardwareDeviceConfiguration
 {
     
-    HashMap<String,SDevice> m_HWConfig = new HashMap<String,SDevice>();
+    protected HashMap<String,SDevice> m_HWConfig = new HashMap<String,SDevice>();
     private volatile boolean bisUpToDate = false;
 
     private static final Logger logger = Logger.getLogger(HardwareDeviceConfiguration.class.getName());

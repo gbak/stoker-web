@@ -43,7 +43,7 @@ public interface StokerCoreServiceAsync
     void getStokerWebConfiguration(AsyncCallback<CookerList> callback )
             throws IllegalArgumentException;
     
-    void updateSettings( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)
+    void updateTempSettings( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)
            throws IllegalArgumentException;
     
     void updateStokerWebConfig( CookerList cookerList, AsyncCallback<Integer> callback )

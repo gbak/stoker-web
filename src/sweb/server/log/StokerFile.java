@@ -194,9 +194,7 @@ public class StokerFile
 
                 // Blower device
                 SBlowerDataPoint bdp = de.getSBlowerDataPoint();
-                if (bdp != null && !de.isTimedEvent()) // don't log the
-                                                       // blower timed
-                                                       // events
+                if (bdp != null && !de.isTimedEvent()) // don't log the blower timed events
                 {
                     output.write(LogFileFormatter.logBlowerDate(bdp
                             .getCollectedDate()));

@@ -338,7 +338,7 @@ public class MainPage
                         alUpdates.addAll( cc.getConfigUpdates());
                         
                     }
-                    stokerService.updateSettings( alUpdates, new AsyncCallback<Integer>() {
+                    stokerService.updateTempSettings( alUpdates, new AsyncCallback<Integer>() {
 
                         public void onFailure(Throwable caught)
                         {

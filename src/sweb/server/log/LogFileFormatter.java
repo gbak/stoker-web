@@ -119,7 +119,7 @@ public class LogFileFormatter
         // write c lines  ( cookers)
   //      ArrayList<Integer> cookers = getUniqueCookers(arSD);
 
-        formatter.format(strCookerFormat,1,strCookerName);  //TODO: get Cooker Name
+        formatter.format(strCookerFormat,1,strCookerName);
 
 
         for ( SDevice sd : arSD )
@@ -158,7 +158,7 @@ public class LogFileFormatter
 
         }
 
-        sb.append("#start\n");
+     //   sb.append("#start\n");
         return sb.toString();
 
     }
@@ -453,9 +453,6 @@ public class LogFileFormatter
                 sd = null;
 
         }
-     //   sd.setDeviceLogNum(strDeviceNum );  //TODO:  This was removed when deviceNum was removed from SDevice
-                                              //       I don't think it is necessary
-
         return sd;
 
     }

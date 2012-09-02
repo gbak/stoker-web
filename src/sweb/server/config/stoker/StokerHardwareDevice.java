@@ -611,6 +611,21 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
            for ( int i = 0; i < stokerDeviceList.size(); i++ )
            {
                SDevice sd = stokerDeviceList.get( i );
+               SDevice hwDevice = m_HWConfig.get( sd.getID() );
+               if ( hwDevice instanceof StokerPitSensor )
+               {
+                   
+                   ((StokerPitSensor)hwDevice).update((StokerPitSensor) sd );
+               }
+               else if ( hwDevice instanceof StokerProbe )
+               {
+                   ((StokerProbe)hwDevice).update((StokerProbe) sd );
+               }
+               else if ( hwDevice instanceof StokerFan )
+               {
+                   ((StokerFan)hwDevice).update((StokerFan)sd );
+               }
+               
                postData.append( getPostData( sd ));
                if ( i < size - 1)
                    postData.append("&");

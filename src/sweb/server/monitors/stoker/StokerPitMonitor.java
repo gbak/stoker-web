@@ -53,17 +53,11 @@ public class StokerPitMonitor implements PitMonitor, DataController
                             StokerTelnetController stc,
                             StokerWebConfiguration swc )
     {
-    
-        
         this.m_eventBus = eventBus;
         this.m_StokerHardware = (StokerHardwareDevice)stokerHardwareDevice;
         this.m_DataController = stc;
         
         this.m_eventBus.register(this);
-       
-
-        // TODO: need to start stokerTelnet here.
-       // start();
     
     }
     
@@ -399,7 +393,6 @@ public class StokerPitMonitor implements PitMonitor, DataController
     public SDevice getDeviceByID(String ID)
     {
         return m_StokerHardware.getDevice(ID);
-        // return m_CookerList.getDeviceByID(ID);
     }
 
 
