@@ -65,74 +65,70 @@ import com.google.gwt.visualization.client.visualizations.Gauge;
  */
 public class ProbeComponent extends Composite
 {
-   String strGaugeName = "";
-   FlexTable layout = null;
-   DecoratorPanel decPan = null;
+   FlexTable m_layout = null;
+   DecoratorPanel m_decPan = null;
    
-   InstantTempDisplay ist = null;
+   InstantTempDisplay m_instantTempDisplay = null;
   // HorizontalPanel fanStatusHorizontalPanel = null;
-   SimplePanel fanStatusPanel = null;
-   SimplePanel tempPanel = null;
-   DisclosurePanel dp = null;
-   Button buttonAlertSettings = null;
-   CheckBox alarmSelectedCheckBox = null;
+   SimplePanel m_fanStatusPanel = null;
+   SimplePanel m_tempPanel = null;
+   DisclosurePanel m_dp = null;
+   Button m_buttonAlertSettings = null;
+   CheckBox m_alarmSelectedCheckBox = null;
 
-   TextBox targtTempTextBox = null;
-   TextBox alarmHighTextBox = null;
-   TextBox alarmLowTextBox = null;
+   TextBox m_targtTempTextBox = null;
+   TextBox m_alarmHighTextBox = null;
+   TextBox m_alarmLowTextBox = null;
+   TextBox m_probeNameTextBox = null;
 
-   HTML htmlTargetTemperature = null;
-   HTML htmlAlarmType = null;
-   HTML htmlHighAlarm = null;
-   HTML htmlLowAlarm = null;
+   HTML m_htmlTargetTemperature = null;
+   HTML m_htmlAlarmType = null;
+   HTML m_htmlHighAlarm = null;
+   HTML m_htmlLowAlarm = null;
 
-   ListBox alarmTypeListBox = null;
-
-   private static final String strFanOnURL = new String("fanOn_s.png");
-   private static final String strFanOffURL = new String("fanOff_s.png");
-   
+   ListBox m_alarmTypeListBox = null;
+  
    public static enum Alignment { SINGLE, MULTIPLE };
 
-   Image fanImage = new Image(strFanOffURL);
-   FanStatusBinder fsb = null;
+   FanStatusBinder m_fanStatusBinder = null;
 
-   StokerProbe stokerProbe = null;
-   boolean deviceConfigChanged = false;
+   StokerProbe m_stokerProbe = null;
+   boolean m_deviceConfigChanged = false;
 
-   HashMap<String,String> properties = null;
-   Alignment alignment;
+   HashMap<String,String> m_properties = null;
+   Alignment m_alignment;
 
    public ProbeComponent(StokerProbe sd1, Alignment align, HashMap<String,String> p )
    {
        //GaugeComponent gc = new GaugeComponent();
 
-       properties = p;
-       alignment = align;
+       m_properties = p;
+       m_alignment = align;
        CellPanel cellp = null;
 
-       stokerProbe = sd1;
+       m_stokerProbe = sd1;
 
-       alarmSelectedCheckBox = new CheckBox();
+       m_alarmSelectedCheckBox = new CheckBox();
 
        if ( sd1.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
-           alarmSelectedCheckBox.setValue( false );
+           m_alarmSelectedCheckBox.setValue( false );
        else
-           alarmSelectedCheckBox.setValue( true );
+           m_alarmSelectedCheckBox.setValue( true );
 
-       tempPanel = new SimplePanel();
+       m_tempPanel = new SimplePanel();
     
-       String tempDisplayType = properties.get("client.tempDisplayType");
+       String tempDisplayType = m_properties.get("client.tempDisplayType");
        if ( tempDisplayType == null )
            tempDisplayType = "gauge";
        
        
        if ( tempDisplayType.equalsIgnoreCase("text") )
        {
-           ist = new DigitDisplayBinder();
-           ist.init(stokerProbe);
+           m_instantTempDisplay = new DigitDisplayBinder();
+           m_instantTempDisplay.init(m_stokerProbe);
            
-           tempPanel.add((Widget) ist );
-           ist.setAlarmRange(stokerProbe);
+           m_tempPanel.add((Widget) m_instantTempDisplay );
+           m_instantTempDisplay.setAlarmRange(m_stokerProbe);
        }
        else
        {
@@ -140,11 +136,11 @@ public class ProbeComponent extends Composite
            {
                public void run()
                {
-                   ist = new GaugeDisplay(properties);
-                   ist.init( stokerProbe );
+                   m_instantTempDisplay = new GaugeDisplay(m_properties);
+                   m_instantTempDisplay.init( m_stokerProbe );
                    
-                   tempPanel.add((Widget) ist );
-                   ist.setAlarmRange(stokerProbe);
+                   m_tempPanel.add((Widget) m_instantTempDisplay );
+                   m_instantTempDisplay.setAlarmRange(m_stokerProbe);
                }
 
            };
@@ -152,7 +148,7 @@ public class ProbeComponent extends Composite
 
        }
        
-       layout = new FlexTable();
+       m_layout = new FlexTable();
        
        cellp = new VerticalPanel();
        
@@ -161,63 +157,64 @@ public class ProbeComponent extends Composite
 
 
        
-       fanStatusPanel = new SimplePanel();
-       decPan = new DecoratorPanel();
-       dp = new DisclosurePanel("Settings");
-       dp.setVisible(false);
+       m_fanStatusPanel = new SimplePanel();
+       m_decPan = new DecoratorPanel();
+       m_dp = new DisclosurePanel("Settings");
+       m_dp.setVisible(false);
 
        VerticalPanel vp1 = new VerticalPanel();
        
       // Label lName = new Label( sd1.getName());
-       TextBox lName = new TextBox( );
-       lName.setText(sd1.getName());
+       m_probeNameTextBox = new TextBox( );
+       m_probeNameTextBox.setText(sd1.getName());
     //   lName.setWidth("100%");
-       lName.setStylePrimaryName("label-GaugeName");
+       m_probeNameTextBox.setStylePrimaryName("label-GaugeName");
+       m_probeNameTextBox.addChangeHandler(settingsChangeHandlerName());
       // lName.setStylePrimaryName("label-GaugeName");
 
        if (sd1.getFanDevice() != null )
        {
-           fsb = new FanStatusBinder();
-           fanStatusPanel.add( fsb );
+           m_fanStatusBinder = new FanStatusBinder();
+           m_fanStatusPanel.add( m_fanStatusBinder );
        }
        else
        {
-           fanStatusPanel.setHeight("25px");
+           m_fanStatusPanel.setHeight("25px");
        }
  
        FlexTable ft = getSettingsPanel(sd1.getFanDevice() != null ? true : false);
 
        ft.addStyleName("sweb-flexGauge");
 
-       dp.setContent( ft );
-       dp.setAnimationEnabled(true);
+       m_dp.setContent( ft );
+       m_dp.setAnimationEnabled(true);
 
-       vp1.add(lName);
-       vp1.add(tempPanel); 
-       vp1.setCellHorizontalAlignment(tempPanel, VerticalPanel.ALIGN_CENTER);
-       vp1.setCellVerticalAlignment(tempPanel, VerticalPanel.ALIGN_MIDDLE);
+       vp1.add(m_probeNameTextBox);
+       vp1.add(m_tempPanel); 
+       vp1.setCellHorizontalAlignment(m_tempPanel, VerticalPanel.ALIGN_CENTER);
+       vp1.setCellVerticalAlignment(m_tempPanel, VerticalPanel.ALIGN_MIDDLE);
 
-       vp1.add( fanStatusPanel );
+       vp1.add( m_fanStatusPanel );
    //    vp2.setCellHorizontalAlignment( fanStatusPanel, HasHorizontalAlignment.ALIGN_CENTER);
 
-       if ( alignment == Alignment.SINGLE)
+       if ( m_alignment == Alignment.SINGLE)
        {
           vp1.add( ft );
           cellp.addStyleName("sweb-panelGaugeTall");
        }
        else
        {
-           vp1.add( dp );
-           vp1.setCellHorizontalAlignment(dp, VerticalPanel.ALIGN_LEFT); 
+           vp1.add( m_dp );
+           vp1.setCellHorizontalAlignment(m_dp, VerticalPanel.ALIGN_LEFT); 
            cellp.addStyleName("sweb-panelGaugeShort");
        }
        
        cellp.add( vp1 );
        
-       decPan.setWidget( cellp );
+       m_decPan.setWidget( cellp );
 
        changeVisibility(LoginStatus.getInstance().getLoginStatus());
-       initWidget( decPan );
+       initWidget( m_decPan );
    }
    
 
@@ -245,12 +242,14 @@ public class ProbeComponent extends Composite
 
    public void changeVisibility( boolean b )
    {
-       dp.setVisible(b);
-       targtTempTextBox.setEnabled(b);
-       System.out.println("Style: " + targtTempTextBox.getStyleName());
-       alarmHighTextBox.setEnabled(b);
-       alarmLowTextBox.setEnabled(b);
-       alarmTypeListBox.setEnabled(b);
+       m_dp.setVisible(b);
+       m_targtTempTextBox.setEnabled(b);
+       System.out.println("Style: " + m_targtTempTextBox.getStyleName());
+       m_alarmHighTextBox.setEnabled(b);
+       m_alarmLowTextBox.setEnabled(b);
+       m_alarmTypeListBox.setEnabled(b);
+       m_probeNameTextBox.setEnabled(b);
+       
 
    }
 
@@ -265,27 +264,27 @@ public class ProbeComponent extends Composite
     */
    public void draw()
    {
-       if ( ist != null)
-          ist.draw();
+       if ( m_instantTempDisplay != null)
+          m_instantTempDisplay.draw();
    }
 
    private FlexTable getSettingsPanel(boolean bPitSensor)
    {
-       targtTempTextBox = new TextBox();
-       alarmHighTextBox = new TextBox();;
-       alarmLowTextBox = new TextBox();
-       alarmTypeListBox = new ListBox();
+       m_targtTempTextBox = new TextBox();
+       m_alarmHighTextBox = new TextBox();;
+       m_alarmLowTextBox = new TextBox();
+       m_alarmTypeListBox = new ListBox();
 
-       targtTempTextBox.setText(new Integer(stokerProbe.getTargetTemp()).toString());
-       alarmHighTextBox.setText(new Integer(stokerProbe.getUpperTempAlarm()).toString());
-       alarmLowTextBox.setText(new Integer(stokerProbe.getLowerTempAlarm()).toString());
+       m_targtTempTextBox.setText(new Integer(m_stokerProbe.getTargetTemp()).toString());
+       m_alarmHighTextBox.setText(new Integer(m_stokerProbe.getUpperTempAlarm()).toString());
+       m_alarmLowTextBox.setText(new Integer(m_stokerProbe.getLowerTempAlarm()).toString());
 
-       alarmTypeListBox.addItem("None");
-       alarmTypeListBox.addItem("Food");
-       alarmTypeListBox.addItem("Fire");
+       m_alarmTypeListBox.addItem("None");
+       m_alarmTypeListBox.addItem("Food");
+       m_alarmTypeListBox.addItem("Fire");
 
 
-       alarmTypeListBox.setSelectedIndex(stokerProbe.getAlarmEnabled().ordinal());
+       m_alarmTypeListBox.setSelectedIndex(m_stokerProbe.getAlarmEnabled().ordinal());
 
        FlexTable ft = new FlexTable();
 
@@ -298,44 +297,44 @@ public class ProbeComponent extends Composite
        ft.getFlexCellFormatter().setColSpan(0, 1, 1);
        ft.getFlexCellFormatter().setColSpan(1, 1, 2);
 
-       htmlTargetTemperature = new HTML("Target Temperature", true);
-       htmlTargetTemperature.setStyleName("html-SettingsText");
-       ft.setWidget(0, 0, htmlTargetTemperature);
-       ft.setWidget(0,1, targtTempTextBox);
-       targtTempTextBox.setStyleName("temp-TextBox");
+       m_htmlTargetTemperature = new HTML("Target Temperature", true);
+       m_htmlTargetTemperature.setStyleName("html-SettingsText");
+       ft.setWidget(0, 0, m_htmlTargetTemperature);
+       ft.setWidget(0,1, m_targtTempTextBox);
+       m_targtTempTextBox.setStyleName("temp-TextBox");
      //  targtTempTextBox.addMouseOverHandler(settingsTextBoxMouseOverHandler());
      //  targtTempTextBox.addMouseOutHandler(settingsTextBoxMouseOutHandler());
 
 
 
-       htmlAlarmType = new HTML("Alarm Type");
-       htmlAlarmType.setStyleName("html-SettingsText");
-       ft.setWidget(1,0, htmlAlarmType );
-       alarmTypeListBox.setStyleName("alarmType-TextBox");
-       ft.setWidget(1,1, alarmTypeListBox);
+       m_htmlAlarmType = new HTML("Alarm Type");
+       m_htmlAlarmType.setStyleName("html-SettingsText");
+       ft.setWidget(1,0, m_htmlAlarmType );
+       m_alarmTypeListBox.setStyleName("alarmType-TextBox");
+       ft.setWidget(1,1, m_alarmTypeListBox);
 
-       htmlLowAlarm = new HTML("Low Alarm Temp:");
-       htmlLowAlarm.setStyleName("html-SettingsText");
-       ft.setWidget(2,0, htmlLowAlarm );
+       m_htmlLowAlarm = new HTML("Low Alarm Temp:");
+       m_htmlLowAlarm.setStyleName("html-SettingsText");
+       ft.setWidget(2,0, m_htmlLowAlarm );
        cellFormatter.setColSpan(2, 0, 2);
-       ft.setWidget(2,1, alarmLowTextBox);
-       alarmLowTextBox.setStyleName("temp-TextBox");
+       ft.setWidget(2,1, m_alarmLowTextBox);
+       m_alarmLowTextBox.setStyleName("temp-TextBox");
 
-       htmlHighAlarm = new HTML("High Alarm Temp");
-       htmlHighAlarm.setStyleName("html-SettingsText");
-       ft.setWidget( 3,0, htmlHighAlarm );
+       m_htmlHighAlarm = new HTML("High Alarm Temp");
+       m_htmlHighAlarm.setStyleName("html-SettingsText");
+       ft.setWidget( 3,0, m_htmlHighAlarm );
        cellFormatter.setColSpan(3, 0, 2);
-       ft.setWidget(3,1, alarmHighTextBox);
-       alarmHighTextBox.setStyleName("temp-TextBox");
+       ft.setWidget(3,1, m_alarmHighTextBox);
+       m_alarmHighTextBox.setStyleName("temp-TextBox");
 
 
 
-       alarmTypeListBox.addChangeHandler(alarmTypeChangeHandler());
+       m_alarmTypeListBox.addChangeHandler(alarmTypeChangeHandler());
 
-       alarmTypeListBox.addChangeHandler( settingsChangeHandlerAlarm() );
-       targtTempTextBox.addChangeHandler( settingsChangeHandlerTarget() );
-       alarmHighTextBox.addChangeHandler( settingsChangeHandlerHigh() );
-       alarmLowTextBox.addChangeHandler( settingsChangeHandlerLow() );
+       m_alarmTypeListBox.addChangeHandler( settingsChangeHandlerAlarm() );
+       m_targtTempTextBox.addChangeHandler( settingsChangeHandlerTarget() );
+       m_alarmHighTextBox.addChangeHandler( settingsChangeHandlerHigh() );
+       m_alarmLowTextBox.addChangeHandler( settingsChangeHandlerLow() );
 
 
        setSettingsVisibility();
@@ -350,8 +349,8 @@ public class ProbeComponent extends Composite
 
    public SDevice getConfigUpdates()
    {
-       SDevice s = deviceConfigChanged ? s = stokerProbe : null;
-       deviceConfigChanged = false;
+       SDevice s = m_deviceConfigChanged ? s = m_stokerProbe : null;
+       m_deviceConfigChanged = false;
        return s;
    }
 
@@ -389,43 +388,43 @@ public class ProbeComponent extends Composite
    private void setSettingsVisibility()
    {
 
-       if ( alarmTypeListBox.getSelectedIndex() == 0 )
+       if ( m_alarmTypeListBox.getSelectedIndex() == 0 )
        {
            boolean b = true;
-           if ( stokerProbe.getFanDevice() == null)
+           if ( m_stokerProbe.getFanDevice() == null)
               b = false;
 
-           htmlTargetTemperature.setVisible(b);
-           targtTempTextBox.setVisible(b);
+           m_htmlTargetTemperature.setVisible(b);
+           m_targtTempTextBox.setVisible(b);
 
-           htmlHighAlarm.setVisible(false);
-           alarmHighTextBox.setVisible(false);
+           m_htmlHighAlarm.setVisible(false);
+           m_alarmHighTextBox.setVisible(false);
 
-           htmlLowAlarm.setVisible(false);
-           alarmLowTextBox.setVisible(false);
+           m_htmlLowAlarm.setVisible(false);
+           m_alarmLowTextBox.setVisible(false);
 
        }
-       else if (alarmTypeListBox.getSelectedIndex() == 1 )
+       else if (m_alarmTypeListBox.getSelectedIndex() == 1 )
        {
-           htmlTargetTemperature.setVisible(true);
-           targtTempTextBox.setVisible(true);
+           m_htmlTargetTemperature.setVisible(true);
+           m_targtTempTextBox.setVisible(true);
 
-           htmlHighAlarm.setVisible(false);
-           alarmHighTextBox.setVisible(false);
+           m_htmlHighAlarm.setVisible(false);
+           m_alarmHighTextBox.setVisible(false);
 
-           htmlLowAlarm.setVisible(false);
-           alarmLowTextBox.setVisible(false);
+           m_htmlLowAlarm.setVisible(false);
+           m_alarmLowTextBox.setVisible(false);
        }
-       else if (alarmTypeListBox.getSelectedIndex() == 2 )
+       else if (m_alarmTypeListBox.getSelectedIndex() == 2 )
        {
-           htmlTargetTemperature.setVisible(true);
-           targtTempTextBox.setVisible(true);
+           m_htmlTargetTemperature.setVisible(true);
+           m_targtTempTextBox.setVisible(true);
 
-           htmlHighAlarm.setVisible(true);
-           alarmHighTextBox.setVisible(true);
+           m_htmlHighAlarm.setVisible(true);
+           m_alarmHighTextBox.setVisible(true);
 
-           htmlLowAlarm.setVisible(true);
-           alarmLowTextBox.setVisible(true);
+           m_htmlLowAlarm.setVisible(true);
+           m_alarmLowTextBox.setVisible(true);
        }
 
    }
@@ -438,31 +437,45 @@ public class ProbeComponent extends Composite
 
            public void onChange(ChangeEvent event)
            {
-               stokerProbe.setAlarmEnabled(StokerProbe.getAlarmTypeForString(alarmTypeListBox.getItemText(alarmTypeListBox.getSelectedIndex())));
-               deviceConfigChanged = true;
+               m_stokerProbe.setAlarmEnabled(StokerProbe.getAlarmTypeForString(m_alarmTypeListBox.getItemText(m_alarmTypeListBox.getSelectedIndex())));
+               m_deviceConfigChanged = true;
                // TODO: fire flag update event;
            }
        };
     return cl;
    }
 
+   private ChangeHandler settingsChangeHandlerName()
+   {
+       ChangeHandler cl = new ChangeHandler(){
+
+           public void onChange(ChangeEvent event)
+           {
+               m_stokerProbe.setName(m_probeNameTextBox.getText());
+               System.out.println("Name change detected in Target "  );
+               m_deviceConfigChanged = true;
+            // TODO: fire flag update event;
+           }
+       };
+    return cl;
+   }
    private ChangeHandler settingsChangeHandlerTarget()
    {
        ChangeHandler cl = new ChangeHandler(){
 
            public void onChange(ChangeEvent event)
            {
-               Integer i = FieldVerifier.getValidTemp(targtTempTextBox.getText());
+               Integer i = FieldVerifier.getValidTemp(m_targtTempTextBox.getText());
                if ( i == null)
                {
                    new GeneralMessageDialog("Error", "Invalid Temperature Entered").center();
-                   targtTempTextBox.setText(new Integer(stokerProbe.getTargetTemp()).toString());
+                   m_targtTempTextBox.setText(new Integer(m_stokerProbe.getTargetTemp()).toString());
                    return;
                }
-               stokerProbe.setTargetTemp(i);
+               m_stokerProbe.setTargetTemp(i);
                System.out.println("Change detected in Target "  );
-               ist.setAlarmRange(stokerProbe);
-               deviceConfigChanged = true;
+               m_instantTempDisplay.setAlarmRange(m_stokerProbe);
+               m_deviceConfigChanged = true;
             // TODO: fire flag update event;
            }
        };
@@ -476,16 +489,16 @@ public class ProbeComponent extends Composite
 
            public void onChange(ChangeEvent event)
            {
-               Integer i = FieldVerifier.getValidTemp(alarmHighTextBox.getText());
+               Integer i = FieldVerifier.getValidTemp(m_alarmHighTextBox.getText());
                if ( i == null)
                {
                    new GeneralMessageDialog("Error", "Invalid Temperature Entered").center();
-                   alarmHighTextBox.setText(new Integer(stokerProbe.getUpperTempAlarm()).toString());
+                   m_alarmHighTextBox.setText(new Integer(m_stokerProbe.getUpperTempAlarm()).toString());
                    return;
                }
-               stokerProbe.setUpperTempAlarm(i);
-               ist.setAlarmRange(stokerProbe);
-               deviceConfigChanged = true;
+               m_stokerProbe.setUpperTempAlarm(i);
+               m_instantTempDisplay.setAlarmRange(m_stokerProbe);
+               m_deviceConfigChanged = true;
             // TODO: fire flag update event;
            }
        };
@@ -497,16 +510,16 @@ public class ProbeComponent extends Composite
 
            public void onChange(ChangeEvent event)
            {
-               Integer i = FieldVerifier.getValidTemp(alarmLowTextBox.getText());
+               Integer i = FieldVerifier.getValidTemp(m_alarmLowTextBox.getText());
                if ( i == null)
                {
                    new GeneralMessageDialog("Error", "Invalid Temperature Entered").center();
-                   alarmLowTextBox.setText(new Integer(stokerProbe.getLowerTempAlarm()).toString());
+                   m_alarmLowTextBox.setText(new Integer(m_stokerProbe.getLowerTempAlarm()).toString());
                    return;
                }
-               stokerProbe.setLowerTempAlarm(i);  // TODO: need integer validation
-               ist.setAlarmRange(stokerProbe);
-               deviceConfigChanged = true;
+               m_stokerProbe.setLowerTempAlarm(i);  // TODO: need integer validation
+               m_instantTempDisplay.setAlarmRange(m_stokerProbe);
+               m_deviceConfigChanged = true;
                // TODO: fire flag update event;
            }
        };
@@ -525,22 +538,22 @@ public class ProbeComponent extends Composite
 
    public void updateCurrentTemp( float f )
    {
-       stokerProbe.setCurrentTemp(f);
+       m_stokerProbe.setCurrentTemp(f);
        updateFanStatus();
-       if ( ist != null)
+       if ( m_instantTempDisplay != null)
        {
-           ist.setTemp(f);
+           m_instantTempDisplay.setTemp(f);
            //ist.setAlarmRange(stokerProbe);
        }
    }
    public void updateData( StokerProbe sp )
    {
       //sp.getCurrentTemp();
-      stokerProbe = sp;
+      m_stokerProbe = sp;
       updateFanStatus();
-      if ( ist != null )
+      if ( m_instantTempDisplay != null )
       {
-         ist.setTemp( sp.getCurrentTemp());
+         m_instantTempDisplay.setTemp( sp.getCurrentTemp());
         // ist.setAlarmRange(sp);
       }
    }
@@ -555,17 +568,17 @@ public class ProbeComponent extends Composite
            if ( ((SBlowerDataPoint)dp).getTotalRuntime() < 0 )  // dummy point, ignore
                return;
            
-           stokerProbe.getFanDevice().update(dp);
+           m_stokerProbe.getFanDevice().update(dp);
            updateFanStatus();
        }
        else
        {
-          stokerProbe.setCurrentTemp(((SProbeDataPoint)dp).getTempF());
-          if ( ist != null )
+          m_stokerProbe.setCurrentTemp(((SProbeDataPoint)dp).getTempF());
+          if ( m_instantTempDisplay != null )
           {
             // ist.setAlarmRange(stokerProbe);
-              ist.checkAlarms((int)stokerProbe.getCurrentTemp());
-             ist.setTemp(stokerProbe.getCurrentTemp());
+              m_instantTempDisplay.checkAlarms((int)m_stokerProbe.getCurrentTemp());
+             m_instantTempDisplay.setTemp(m_stokerProbe.getCurrentTemp());
           }
 
           
@@ -574,19 +587,19 @@ public class ProbeComponent extends Composite
 
    private void updateFanStatus()
    {
-       StokerFan sf = stokerProbe.getFanDevice();
+       StokerFan sf = m_stokerProbe.getFanDevice();
 
        if ( sf != null )
        {
            if ( sf.isFanOn() )
            {
-               fsb.fanOn(stokerProbe.getFanDevice().getTotalRuntime());
+               m_fanStatusBinder.fanOn(m_stokerProbe.getFanDevice().getTotalRuntime());
                //fanImage.setUrl(strFanOnURL);
                
            }
            else
            {
-               fsb.fanOff(stokerProbe.getFanDevice().getTotalRuntime());
+               m_fanStatusBinder.fanOff(m_stokerProbe.getFanDevice().getTotalRuntime());
                //fanImage.setUrl(strFanOffURL);
            }
            // Fan icon not switching correctly.

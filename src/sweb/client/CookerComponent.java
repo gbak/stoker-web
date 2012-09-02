@@ -773,6 +773,10 @@ public class CookerComponent extends Composite
 
     }
 
+    /** 
+     * Update cooker sub-components with new data.
+     * @param sdp
+     */
     public void updateGauges( SDataPoint sdp )
     {
 
