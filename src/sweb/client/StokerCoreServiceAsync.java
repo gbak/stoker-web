@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
@@ -37,7 +38,7 @@ public interface StokerCoreServiceAsync
     void getNewGraphDataPoints(String input, AsyncCallback<ArrayList<SDataPoint>> callback)
             throws IllegalArgumentException;
 
-    void getDeviceConfiguration(AsyncCallback<HashMap<String,SDevice>> callback)
+    void getDeviceConfiguration(AsyncCallback<ConfigurationSettings> callback)
             throws IllegalArgumentException;
 
     void getStokerWebConfiguration(AsyncCallback<CookerList> callback )

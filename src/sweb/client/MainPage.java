@@ -28,6 +28,7 @@ import sweb.client.weather.WeatherComponent;
 import sweb.client.widgets.Configuration;
 import sweb.client.widgets.handlers.ConfigUpdateHandler;
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.CookerHelper;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.CallBackRequestType.RequestType;
@@ -71,6 +72,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.smartgwt.client.widgets.events.CloseClickEvent;
 import com.smartgwt.client.widgets.events.CloseClickHandler;
 import sweb.shared.model.CookerList;
+
 public class MainPage
 {
     /**
@@ -106,7 +108,7 @@ public class MainPage
     Button statusFauxButton = new Button();
     Button testButton = new Button();  // Test various functions.
 
-    boolean requiresUpdate = true;  // TODO: hardcoding this to so the button stays enabled.
+    boolean requiresUpdate = true;  // TODO: hard coding this to so the button stays enabled.
 
     boolean bConnected = false;
     
@@ -174,7 +176,7 @@ public class MainPage
 
     private void presentConfigScreen()
     {
-        stokerService.getDeviceConfiguration(new AsyncCallback<HashMap<String, SDevice>>() 
+        stokerService.getDeviceConfiguration(new AsyncCallback<ConfigurationSettings>() 
          {
 
             public void onFailure(Throwable caught)
@@ -184,10 +186,11 @@ public class MainPage
                         .println("Client configuration failure");
             }
 
-            public void onSuccess( HashMap<String, SDevice> result)
+            public void onSuccess( ConfigurationSettings result)
             {
                 Log.info("Opening configuration window");
-                ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
+                //ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
+                
               /*  final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
                 window.setTitle("Cooker Configuration");
                // window.setHeaderControls(HeaderControls.CLOSE_BUTTON );
@@ -213,7 +216,7 @@ public class MainPage
                 ccfg.addCloseHandler( ccl );
                 window.addCloseClickHandler( ccl );
                 window.draw();*/
-                Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
+                Configuration ccfg = new sweb.client.widgets.Configuration(result) ;
                 
                 ArrayList<Cooker> cookerList = new ArrayList<Cooker>();
                 

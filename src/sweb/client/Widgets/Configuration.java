@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.lang.model.type.TypeVisitor;
 
 import sweb.client.widgets.handlers.ConfigUpdateHandler;
+import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
@@ -39,10 +40,11 @@ public class Configuration extends Dialog
     
     private ConfigUpdateHandler configHandler;
     
-    public Configuration(ArrayList<SDevice> arsd)
+    public Configuration(ConfigurationSettings settings)
     {
         Log.debug("Configuration constructor");
-        stokerConf = arsd;
+        stokerConf = settings.getAvailableDevices();
+        cookerList = settings.getCookerList();
         
         HLayout hStack = new HLayout(20);
        // hStack.setHeight(400); 

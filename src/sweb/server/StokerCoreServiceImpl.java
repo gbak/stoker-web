@@ -54,6 +54,7 @@ import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
@@ -128,16 +129,17 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         
     }
     
-    public HashMap<String,SDevice> getDeviceConfiguration()
+    public ConfigurationSettings getDeviceConfiguration()
             throws IllegalArgumentException
     {
 
-        HashMap<String,SDevice> hm = new HashMap<String,SDevice>();
+        /*HashMap<String,SDevice> hm = new HashMap<String,SDevice>();
         for ( SDevice s : m_pitMonitor.getRawDevices() )
         {
             hm.put( s.getID(), s);
-        }
-        return hm;
+        }*/
+        
+        return new ConfigurationSettings( m_StokerWebConfig.getCookerList(), m_pitMonitor.getRawDevices() );
             
 
     }

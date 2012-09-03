@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
@@ -41,7 +42,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface StokerCoreService extends RemoteService
 {
     ArrayList<SDataPoint> getNewGraphDataPoints(String name) throws IllegalArgumentException;
-    HashMap<String,SDevice> getDeviceConfiguration() throws IllegalArgumentException;
+    ConfigurationSettings getDeviceConfiguration() throws IllegalArgumentException;
     CookerList getStokerWebConfiguration() throws IllegalArgumentException;
     
     Integer updateTempSettings( ArrayList<SDevice> asd) throws IllegalArgumentException;
