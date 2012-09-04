@@ -44,6 +44,7 @@ import sweb.server.controller.events.DataPointEvent;
 import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.weather.WeatherController;
+import sweb.server.log.LogFileFormatter.LineType;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.data.SBlowerDataPoint;
@@ -470,7 +471,7 @@ public class StokerFile
         HashMap<String,ArrayList<SDataPoint>> hmDeviceSilos =  new HashMap<String,ArrayList<SDataPoint>>();
 
         // This instance knows the details of the file already,
-        // we can start reading datapoints.
+        // we can start reading data points.
         HashMap<String,String> hm = new HashMap<String,String>();
 
         // Reverse the key value pairs in the hashmap so we can
@@ -488,10 +489,29 @@ public class StokerFile
         {
             BufferedReader in = new BufferedReader(new FileReader(m_strLogFileName));
             String str;
-            while ((str = in.readLine()) != null) {
-               // LogFileFormatter.parseLogDataLine( str, hm, arDP );
+            
+            // Create a map to store the name of the probe as the log is read.  If a new config
+            // line appears, then update the name in the map.
+            HashMap<String,String> currentProbeNameMap = new HashMap<String,String>();
+            
+            while ((str = in.readLine()) != null) 
+            {
+                // Test the line type, if it is a config line, check to see if the
+                // name of the probe, for the specific DeviceID is the same as it was 
+                // before.  If it is not or the probe does not exist in the map,then add it.
+                
+                LineType type = LogFileFormatter.getLineType(str.substring(0, 2));
+                if ( type == LineType.CONFIG && type != LineType.CONFIG )
+                {
+                    SDevice sdConfig = LogFileFormatter.parseLogConfigLine(str);
+                    String name = currentProbeNameMap.get(sdConfig.getID());
+                    if (( name == null) || (name.compareTo(sdConfig.getName()) != 0 ))
+                        currentProbeNameMap.put( sdConfig.getID(), sdConfig.getName());
+                }
+                
                 for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hm ))
                 {
+                    sdp.setDeviceName( currentProbeNameMap.get( sdp.getDeviceID() ));
                     hmDeviceSilos.get(sdp.getDeviceID()).add(sdp);
                 }
             }

@@ -77,6 +77,11 @@ public class StokerWebConfiguration
         m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));
     }
     
+    public SDevice getDeviceByID( String id )
+    {
+       return m_deviceConfiguration.getDevice(id);
+    }
+    
     private void reconcile()
     {
         /* This method checks to see if the devices listed in the saved stoker-web

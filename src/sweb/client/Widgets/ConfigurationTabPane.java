@@ -81,7 +81,8 @@ public class ConfigurationTabPane extends VLayout
             
         });
 
-        pitProbeRecord.setData( getDataFromCooker( cooker, "pit"));
+        if ( cooker != null)
+           pitProbeRecord.setData( getDataFromCooker( cooker, "pit"));
         
         vp.addMember( tabNameForm );
         vp.addMember(pit);
@@ -118,13 +119,16 @@ public class ConfigurationTabPane extends VLayout
             
         });
         
-        blowerProbe.setData(getDataFromCooker( cooker, "blower"));
+        if ( cooker != null )
+           blowerProbe.setData(getDataFromCooker( cooker, "blower"));
         
         Label food = new Label("Food Probes: ");
         food.setHeight(25);
         food.setWidth100();
         tempProbes = new ConfigurationListGrid("temp");
-        tempProbes.setData( getDataFromCooker( cooker, "food"));
+       
+        if ( cooker != null )
+           tempProbes.setData( getDataFromCooker( cooker, "food"));
 
         tempProbes.setShowHeader(false);
         tempProbes.setHeight(115);

@@ -78,9 +78,14 @@ public class HighChartLineGraph extends StokerLineGraph
         chart.setSize( width, height, false );
     }
     
-    public HighChartLineGraph(int iWidth, int iHeight, ArrayList<SDevice> listDeviceList)
+    public HighChartLineGraph(int iWidth, int iHeight, ArrayList<SDevice> listDeviceList, ArrayList<ArrayList<SDataPoint>> initData )
     {
         
+       HashMap<String,SDevice> deviceMap = new HashMap<String,SDevice>();
+       for ( SDevice device: listDeviceList )
+       {
+           deviceMap.put( device.getID(), device);
+       }
        
         chart.setZoomType(Chart.ZoomType.X);
         chart.setToolTip(new ToolTip().setShared(true));
@@ -176,46 +181,30 @@ public class HighChartLineGraph extends StokerLineGraph
              
             .setLabels(new YAxisLabels().setEnabled(false));
         
+        
+        for ( ArrayList<SDataPoint> dpList : initData)
+        {
+            if ( dpList.size() > 0 )
+            {
+                String deviceID = dpList.get(0).getDeviceID();
+                SDevice sd = deviceMap.get( deviceID );
+                Series s = chart.createSeries();
+                s.setPoints( convertToArray(dpList));
+                addNewSeries( sd,s );
+                deviceMap.remove(deviceID );  // Remove this so it does not get added below
+            }
+        }
 
-        for ( SDevice sd : listDeviceList)
+        // Loop over the remaining items in the device map and add a series for them.
+        // only the probes that did not have data should be in the list.
+        
+        for ( SDevice sd : deviceMap.values())
         {
             Series s = chart.createSeries();
             
             mapSeries.put( sd.getID(), s);
 
-            if ( sd.getProbeType() == DeviceType.BLOWER )
-            {
-                chart.addSeries(s
-                        .setName(sd.getName())
-                        .setType(Series.Type.LINE)
-                        .setOption("step", true )
-                        
-                        );
-            }
-            else
-            {
-            chart.addSeries(s
-                    .setName(sd.getName())
-                    .setType(Series.Type.SPLINE)
-                    
-                    );
-            }
-            //  .setPlotOptions(new SplinePlotOptions()
-            //      .setColor("#89A54E")
-              //));
-
-            if ( sd.isProbe() )
-            {
-                s.setYAxis(0);
-            }
-            else
-            {
-                if ( sd instanceof StokerFan )
-                {
-                    fanID = sd.getID();
-                }
-                s.setYAxis(1);
-            }
+            addNewSeries( sd, s );
 
         }
 
@@ -223,6 +212,41 @@ public class HighChartLineGraph extends StokerLineGraph
     }
 
 
+    private void addNewSeries( SDevice sd, Series s )
+    {
+        if ( sd.getProbeType() == DeviceType.BLOWER )
+        {
+            chart.addSeries(s
+                    .setName(sd.getName())
+                    .setType(Series.Type.LINE)
+                    .setOption("step", true )
+                    
+                    );
+        }
+        else
+        {
+        chart.addSeries(s
+                .setName(sd.getName())
+                .setType(Series.Type.SPLINE)
+                
+                );
+        }    
+        
+        if ( sd.isProbe() )
+        {
+            s.setYAxis(0);
+        }
+        else
+        {
+            if ( sd instanceof StokerFan )
+            {
+                fanID = sd.getID();
+            }
+            s.setYAxis(1);
+        }
+        
+    }
+    
     private long getTime(String date) {
         return dateTimeFormat.parse(date).getTime();
     }
@@ -230,6 +254,19 @@ public class HighChartLineGraph extends StokerLineGraph
     static final DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("yyyy-MM-dd");
 
 
+    private Number[][] convertToArray( ArrayList<SDataPoint> data )
+    {
+        Number[][] number = new Long[data.size()][2];
+        int i = 0;
+        for ( SDataPoint sdp : data )
+        {
+            number[i][0] = sdp.getCollectedDate().getTime();
+            number[i][1] = sdp.getData();
+            i++;
+        }
+        
+        return number;
+    }
 
     public void addData( SDataPoint sdp, boolean refresh )
     {

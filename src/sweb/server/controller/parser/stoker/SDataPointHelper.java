@@ -104,7 +104,7 @@ public class SDataPointHelper
           if ( bHasFan )  // TODO: stokerconfiguration( HardwareDeviceConfiguration) is returning null, since we have not scraped the stoker yet.
           {
               
-              SDevice pitDevice = CookerHelper.getDeviceByID(configuration.getCookerList(), deviceID);
+              SDevice pitDevice = configuration.getDeviceByID(deviceID);
               if ( pitDevice instanceof StokerPitSensor )
               {
                   SDevice fanDevice = ((StokerPitSensor) pitDevice).getFanDevice();

@@ -626,7 +626,66 @@ public class CookerComponent extends Composite
 
     }
 
-    private void addGraph()
+    private void addGraph() 
+    {
+        int index = logListBox.getSelectedIndex();
+        if ( index < 0 )
+            return;   // not ready for data points yet.
+                
+        final String strLogName = logListBox.getItemText(index);
+
+        
+        stokerService.getAllGraphDataPoints( strLogName, new AsyncCallback<ArrayList<ArrayList<SDataPoint>>>() {
+            public void onFailure(Throwable caught)
+             {
+                 caught.printStackTrace();
+                 System.out.println("refreshGraphData failure");
+
+             }
+
+             public void onSuccess(ArrayList<ArrayList<SDataPoint>> result)
+             {
+
+                 graphStoker = new HighChartLineGraph(m_Width, m_Height, hmLogItems.get( strLogName ).getLogItems(), result);
+
+                 Window.addResizeHandler(new ResizeHandler()
+                 {
+                    public void onResize( ResizeEvent event )
+                    {
+                        hpStokerElements.setWidth(event.getWidth() - 20 + "px");
+                        if ( alignment == Alignment.SINGLE)
+                        {
+                            m_Width = hpStokerElements.getOffsetWidth() - m_gaugePanelWidth - 10;
+                            sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                        }
+                        else
+                        {
+                            m_Height = 325;
+                            m_Width = hpStokerElements.getOffsetWidth()- 20;
+                            sGraphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                        }
+                         
+                        graphStoker.setPixelSize(m_Width-5, m_Height);
+                       
+                       graphStoker.setNewSize(m_Width - 5, m_Height );
+
+                      // c.redraw();
+                    }
+                 });
+                 
+
+                 refreshGraphData(strLogName);
+
+                 Widget w = sGraphPanel.getWidget();
+                 if ( w != null )
+                    sGraphPanel.remove(w);
+                 
+                 sGraphPanel.add(graphStoker);
+
+             }
+         });
+    }
+    /*private void addGraph()
     {
         int index = logListBox.getSelectedIndex();
         if ( index < 0 )
@@ -672,7 +731,7 @@ public class CookerComponent extends Composite
         
         sGraphPanel.add(graphStoker);
 
-    }
+    }*/
 
     private void createNewLog( String newLogName, ArrayList<SDevice> arSD )
     {
@@ -834,6 +893,7 @@ public class CookerComponent extends Composite
 
     }
 
+    
     /**
      * Calls server and gets all data points for the requested graph
      * @param logName Log name for which to get the data points for

@@ -40,7 +40,7 @@ public class Configuration extends Dialog
     private ArrayList<SDevice> stokerConfAvailable = null;
     private ArrayList<SDevice> stokerConf = null;
     private TabSet tabSet = null;
-    CookerList cookerList = new CookerList();
+    CookerList cookerList = null;
     
     private ConfigUpdateHandler configHandler;
     
@@ -49,6 +49,9 @@ public class Configuration extends Dialog
         Log.debug("Configuration constructor");
         stokerConf = settings.getAvailableDevices();
         cookerList = settings.getCookerList();
+        
+        if ( cookerList == null )
+            cookerList = new CookerList();
         
         removeAlreadyAssignedDevices();
         
@@ -148,14 +151,17 @@ public class Configuration extends Dialog
         buttonLayout.addMember(cancelButton);
 
         // Added existing cookers...
-        for ( Cooker cooker : cookerList.getCookerList())
+        if ( cookerList != null )
         {
-            final Tab tTab = new Tab(cooker.getCookerName());  
-            
-            tTab.setCanClose(true);  
-          
-            tTab.setPane(new ConfigurationTabPane( cooker, getTabTitleChangeHander(tTab)));  
-            tabSet.addTab(tTab);  
+            for ( Cooker cooker : cookerList.getCookerList())
+            {
+                final Tab tTab = new Tab(cooker.getCookerName());  
+                
+                tTab.setCanClose(true);  
+              
+                tTab.setPane(new ConfigurationTabPane( cooker, getTabTitleChangeHander(tTab)));  
+                tabSet.addTab(tTab);  
+            }
         }
         
         
@@ -210,28 +216,31 @@ public class Configuration extends Dialog
             deviceHash.put( sd.getID(),sd);
         }
         
-        for ( Cooker cooker : cookerList.getCookerList() )
+        if ( cookerList != null )
         {
-            StokerPitSensor pit = cooker.getPitSensor();
-            if ( pit != null )
+            for ( Cooker cooker : cookerList.getCookerList() )
             {
-                if ( deviceHash.containsKey(pit.getID()))
+                StokerPitSensor pit = cooker.getPitSensor();
+                if ( pit != null )
                 {
-                   deviceHash.remove(pit.getID());    
+                    if ( deviceHash.containsKey(pit.getID()))
+                    {
+                       deviceHash.remove(pit.getID());    
+                    }
+                    
+                    String fanID =pit.getFanDevice().getID();;
+                    if ( deviceHash.containsKey( fanID ))
+                    {
+                        deviceHash.remove(fanID);
+                    }
+                    
                 }
-                
-                String fanID =pit.getFanDevice().getID();;
-                if ( deviceHash.containsKey( fanID ))
+                for ( StokerProbe sp : cooker.getProbeList() )
                 {
-                    deviceHash.remove(fanID);
-                }
-                
-            }
-            for ( StokerProbe sp : cooker.getProbeList() )
-            {
-                if ( deviceHash.containsKey(sp.getID()))
-                {
-                    deviceHash.remove( sp.getID());
+                    if ( deviceHash.containsKey(sp.getID()))
+                    {
+                        deviceHash.remove( sp.getID());
+                    }
                 }
             }
         }

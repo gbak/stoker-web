@@ -189,33 +189,7 @@ public class MainPage
             public void onSuccess( ConfigurationSettings result)
             {
                 Log.info("Opening configuration window");
-                //ArrayList<SDevice> arsd = new ArrayList<SDevice>(result.values());
-                
-              /*  final com.smartgwt.client.widgets.Window window = new com.smartgwt.client.widgets.Window();
-                window.setTitle("Cooker Configuration");
-               // window.setHeaderControls(HeaderControls.CLOSE_BUTTON );
-                window.setWidth(900);
-                window.setHeight(420);
-                window.setCanDragReposition(true);
-                window.setCanDragResize(true);
-                sweb.client.widgets.Configuration ccfg = new sweb.client.widgets.Configuration(arsd) ;
-                window.addItem( ccfg );
-                window.centerInPage();
-              //  window.setShowMinimizeButton(false);
-               
-                CloseClickHandler ccl = new CloseClickHandler() {  
-
-                    @Override
-                    public void onCloseClick(
-                            CloseClickEvent event)
-                    {
-                       window.destroy(); 
-                    }  
-                };  
-                
-                ccfg.addCloseHandler( ccl );
-                window.addCloseClickHandler( ccl );
-                window.draw();*/
+ 
                 Configuration ccfg = new sweb.client.widgets.Configuration(result) ;
                 
                 ArrayList<Cooker> cookerList = new ArrayList<Cooker>();
@@ -238,8 +212,6 @@ public class MainPage
                                 Throwable caught)
                         {
                             Log.error("unable to update StokerWebConfig");
-                            
-                            
                         }
 
                         @Override
@@ -248,14 +220,9 @@ public class MainPage
                             Log.info("Successfully called save ");
                             
                         } 
-                           
-                           // updateStokerWebConfig( CookerList cookerList, new AsyncCallback<Integer>() ) {
-                           
+                         
                        });
-                       // TODO: Save config to ini
-                        //      Update Stoker
-                        //      Restart stoker server
-                        //      Refresh Browser
+
                         Log.debug("Config update fired");
                         
                     }
@@ -966,13 +933,13 @@ public class MainPage
            cooker.add( cc );
        }
        */
-        ArrayList<Cooker> alc = cookerList.getCookerList();
-       if ( alc.size() == 0 )
+       if ( cookerList == null || cookerList.getCookerList().size() == 0)
        {
            presentConfigScreen();
        }
        else
        {
+           ArrayList<Cooker> alc = cookerList.getCookerList();
             for ( Cooker cooker : alc )
             {
                 CookerComponent cookerComponent = new CookerComponent(stokerService, properties);

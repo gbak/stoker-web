@@ -142,6 +142,7 @@ public class LogManagerImpl implements LogManager
         }
         return new ArrayList<ArrayList<SDataPoint>>();
     }
+    
     @Override
     public ArrayList<SDevice> getConfigSettings( String logName )
     {

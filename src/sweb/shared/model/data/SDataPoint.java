@@ -27,9 +27,12 @@ public abstract class SDataPoint  implements Serializable
 
     private static final long serialVersionUID = -3544817415196333092L;
     private String  m_deviceID;
+    private String  m_deviceName;
     private Date    m_collectedTime;
     private boolean m_bTimedEvent = false;
 
+    // name field is optional, it is needed when creating the graph since the name field can
+    // change over time and the current cooker state will only return the current probe name.
 
    public SDataPoint()
    {
@@ -40,16 +43,46 @@ public abstract class SDataPoint  implements Serializable
    public SDataPoint( SDataPoint sdp )
    {
        m_deviceID = sdp.getDeviceID();
+       m_deviceName = sdp.getDeviceName();
        m_collectedTime = sdp.getCollectedDate();
        m_bTimedEvent = sdp.isTimedEvent();
    }
 
-   public SDataPoint( String d, Date date )
+   public SDataPoint( String device, Date date )
    {
-       m_deviceID = d;
+       m_deviceID = device;
+       m_collectedTime = date;
+   }
+   
+   public SDataPoint( String device, String name, Date date )
+   {
+       m_deviceID = device;
+       m_deviceName = name;
        m_collectedTime = date;
    }
 
+   public String getDeviceName()
+   {
+       return m_deviceName;
+   }
+   
+   public void setDeviceName(String name)
+   {
+       m_deviceName = name;
+   }
+   
+   /**
+    * Test to see if the name field exists in the datapoint
+    * @return true of name is not null and lengh > 0
+    */
+   public boolean hasName()
+   {
+       if ( m_deviceName == null  || m_deviceName.length() == 0 )
+           return false;
+       
+       return true;
+   }
+   
    public String getDeviceID()
    {
        return m_deviceID;
