@@ -27,7 +27,6 @@ import java.util.HashMap;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.jfree.util.Log;
@@ -38,17 +37,15 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import sweb.server.config.StokerWebConfiguration;
-import sweb.server.controller.events.BlowerEvent;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.log.exceptions.LogExistsException;
 import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerHelper;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.data.SBlowerDataPoint;
+
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogNote;

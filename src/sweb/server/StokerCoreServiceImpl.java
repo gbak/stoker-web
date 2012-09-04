@@ -37,14 +37,10 @@ import sweb.client.StokerCoreService;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.controller.alerts.AlertsManagerImpl;
 import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.StateChangeEvent;
-import sweb.server.controller.events.StateChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
-import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.server.controller.weather.WeatherController;
 import sweb.server.log.ListLogFiles;
 import sweb.server.log.LogManager;
@@ -92,11 +88,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private boolean haveDataConnection = false;
 
     private Timer readTimeDataTimer = null;
-    private DataPointEventListener m_DPEL= null;
 
-    StateChangeEventListener m_dcel = null;
-    ConfigChangeEventListener m_ccel = null;
-    WeatherChangeEventListener m_wcel = null;
     WeatherController m_WeatherController = null;
     ClientMessenger m_ClientMessenger = null;
     PitMonitor m_pitMonitor = null;

@@ -788,9 +788,12 @@ public class CookerComponent extends Composite
             {
                 if ( sdp instanceof SBlowerDataPoint )
                 {
-                    ProbeComponent pc = mapGuages.get(cooker.getPitSensor().getID());
-                    if ( pc != null )
-                       pc.updateData(sdp);
+                    if ( cooker.getPitSensor() != null)
+                    {
+                        ProbeComponent pc = mapGuages.get(cooker.getPitSensor().getID());
+                        if ( pc != null )
+                           pc.updateData(sdp);
+                    }
                 }
                 else
                 {

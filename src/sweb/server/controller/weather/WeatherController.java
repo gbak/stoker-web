@@ -41,24 +41,25 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.events.WeatherChangeEvent;
-import sweb.server.controller.events.WeatherChangeEventListener;
 import sweb.shared.model.weather.WeatherData;
 
 public class WeatherController
 {
-    ArrayList<WeatherChangeEventListener> arListener = new ArrayList<WeatherChangeEventListener>();
     Timer updateTimer = null;
     WeatherData wd = null;
+    EventBus eventBus = null;
 
     private static final Logger logger = Logger.getLogger(WeatherController.class.getName());
     
     @Inject
-    public WeatherController()
+    public WeatherController(EventBus eventBus)
     {
+        this.eventBus = eventBus;
         start();
     }
     
@@ -197,45 +198,13 @@ public class WeatherController
        return sb.toString();
     }
 
-    public void addEventListener( WeatherChangeEventListener listener )
-    {
-        synchronized ( this)
-        {
-           arListener.add( listener );
-
-           WeatherChangeEvent wce = new WeatherChangeEvent( this, getWeather() );
-           listener.weatherUpdated(wce);
-        }
-
-    }
-
-    public void removeEventListener( WeatherChangeEventListener listener )
-    {
-        synchronized ( this)
-        {
-           arListener.remove( listener );
-        }
-
-    }
-
-    protected void fireActionPerformed( WeatherChangeEvent ce )
-    {
-        synchronized ( this)
-        {
-            for ( WeatherChangeEventListener listener : arListener )
-            {
-                listener.weatherUpdated(ce);
-            }
-        }
-    }
-
     private void updateWeatherAndFireEvent()
     {
         logger.info("Fetching Weather");
         wd = fetchWeather();
         logger.info("Weather fetch complete");
         WeatherChangeEvent wce = new WeatherChangeEvent(this,wd);
-        fireActionPerformed( wce );
+        eventBus.post(wce);
     }
 
     public void start()

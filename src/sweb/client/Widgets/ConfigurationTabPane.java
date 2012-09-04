@@ -8,6 +8,7 @@ import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.VerticalAlignment;
@@ -35,7 +36,7 @@ public class ConfigurationTabPane extends VLayout
     private final ConfigurationListGrid tempProbes;
     private TextItem nameTextItem;
     
-    ConfigurationTabPane(ChangedHandler tabChangedHandler )
+    ConfigurationTabPane(Cooker cooker, ChangedHandler tabChangedHandler )
     {
         vp.setAlign(VerticalAlignment.TOP);
         vp.setHeight100();
@@ -80,6 +81,8 @@ public class ConfigurationTabPane extends VLayout
             
         });
 
+        pitProbeRecord.setData( getDataFromCooker( cooker, "pit"));
+        
         vp.addMember( tabNameForm );
         vp.addMember(pit);
         vp.addMember(pitProbeRecord);
@@ -115,10 +118,13 @@ public class ConfigurationTabPane extends VLayout
             
         });
         
+        blowerProbe.setData(getDataFromCooker( cooker, "blower"));
+        
         Label food = new Label("Food Probes: ");
         food.setHeight(25);
         food.setWidth100();
         tempProbes = new ConfigurationListGrid("temp");
+        tempProbes.setData( getDataFromCooker( cooker, "food"));
 
         tempProbes.setShowHeader(false);
         tempProbes.setHeight(115);
@@ -162,6 +168,43 @@ public class ConfigurationTabPane extends VLayout
         
         
         return discardList;
+    }
+    
+    private RecordList getDataFromCooker(Cooker cooker, String type)
+    {
+        RecordList rl = new RecordList();
+        
+        if ( type.compareToIgnoreCase( "pit" ) == 0)
+        {
+            SDevice sd = cooker.getPitSensor();
+            if ( sd != null )
+            {
+               ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), "Temp" );
+               rl.add( r );
+            }
+        }
+        else if ( type.compareToIgnoreCase("food") == 0)
+        {
+            if ( cooker.getProbeList() != null )
+            {
+                for ( SDevice sd : cooker.getProbeList() )
+                {
+                    ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), "Temp" );
+                    rl.add( r );
+                }
+            }
+        }
+        else if ( type.compareToIgnoreCase("blower") == 0)
+        {
+            if ( cooker.getPitSensor() != null && cooker.getPitSensor().getFanDevice() != null )
+            {
+                SDevice sd = cooker.getPitSensor().getFanDevice();
+                ProbeRecord r = new ProbeRecord(sd.getID(), sd.getName(), "Blower" );
+                rl.add( r );
+            }
+        }
+        
+        return rl;
     }
     
     public Cooker getCooker(ArrayList<SDevice> stokerConf )

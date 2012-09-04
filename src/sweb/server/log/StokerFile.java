@@ -41,7 +41,6 @@ import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
 import sweb.server.controller.events.StateChangeEvent.EventType;
 import sweb.server.controller.events.WeatherChangeEvent;
 import sweb.server.controller.weather.WeatherController;

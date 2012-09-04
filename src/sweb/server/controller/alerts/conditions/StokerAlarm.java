@@ -3,7 +3,6 @@ package sweb.server.controller.alerts.conditions;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,14 +12,11 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.controller.alerts.AlertManager;
 import sweb.server.controller.alerts.delivery.Messenger;
 import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEventListener;
 import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
-import sweb.server.log.LogManagerImpl;
+
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;

@@ -1,17 +1,14 @@
 package sweb.server;
 
 import com.google.common.eventbus.EventBus;
-import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
-import sweb.server.StokerInit;
 import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.config.stoker.StokerHardwareDevice;
 import sweb.server.controller.alerts.AlertManager;
 import sweb.server.controller.alerts.AlertsManagerImpl;
 import sweb.server.controller.data.telnet.StokerTelnetController;
-import sweb.server.controller.parser.stoker.SDataPointHelper;
 import sweb.server.controller.weather.WeatherController;
 import sweb.server.log.LogManager;
 import sweb.server.log.LogManagerImpl;

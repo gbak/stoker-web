@@ -1,6 +1,7 @@
 package sweb.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.lang.model.type.TypeVisitor;
 
@@ -10,6 +11,8 @@ import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
+import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.stoker.StokerProbe;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.user.client.ui.Widget;
@@ -34,6 +37,7 @@ import com.smartgwt.client.widgets.tab.events.TabCloseClickEvent;
 public class Configuration extends Dialog
 {
 
+    private ArrayList<SDevice> stokerConfAvailable = null;
     private ArrayList<SDevice> stokerConf = null;
     private TabSet tabSet = null;
     CookerList cookerList = new CookerList();
@@ -45,6 +49,8 @@ public class Configuration extends Dialog
         Log.debug("Configuration constructor");
         stokerConf = settings.getAvailableDevices();
         cookerList = settings.getCookerList();
+        
+        removeAlreadyAssignedDevices();
         
         HLayout hStack = new HLayout(20);
        // hStack.setHeight(400); 
@@ -109,7 +115,7 @@ public class Configuration extends Dialog
                     }  
                 };
                 
-                tTab.setPane(new ConfigurationTabPane(tabTitleChangeHandler));  
+                tTab.setPane( new ConfigurationTabPane(null, tabTitleChangeHandler));  
                 tabSet.addTab(tTab);  
                 
             }  
@@ -141,6 +147,17 @@ public class Configuration extends Dialog
         
         buttonLayout.addMember(cancelButton);
 
+        // Added existing cookers...
+        for ( Cooker cooker : cookerList.getCookerList())
+        {
+            final Tab tTab = new Tab(cooker.getCookerName());  
+            
+            tTab.setCanClose(true);  
+          
+            tTab.setPane(new ConfigurationTabPane( cooker, getTabTitleChangeHander(tTab)));  
+            tabSet.addTab(tTab);  
+        }
+        
         
         VLayout tabPane = new VLayout();
         tabPane.addMember( tabSet );
@@ -180,6 +197,61 @@ public class Configuration extends Dialog
     
     }
     
+    /**
+     * This removes all devices from the stokerConf list that have already been assigned to a cooker.
+     * 
+     */
+    private void removeAlreadyAssignedDevices()
+    {
+        HashMap<String,SDevice> deviceHash = new HashMap<String,SDevice>();
+       
+        for ( SDevice sd : stokerConf)
+        {
+            deviceHash.put( sd.getID(),sd);
+        }
+        
+        for ( Cooker cooker : cookerList.getCookerList() )
+        {
+            StokerPitSensor pit = cooker.getPitSensor();
+            if ( pit != null )
+            {
+                if ( deviceHash.containsKey(pit.getID()))
+                {
+                   deviceHash.remove(pit.getID());    
+                }
+                
+                String fanID =pit.getFanDevice().getID();;
+                if ( deviceHash.containsKey( fanID ))
+                {
+                    deviceHash.remove(fanID);
+                }
+                
+            }
+            for ( StokerProbe sp : cooker.getProbeList() )
+            {
+                if ( deviceHash.containsKey(sp.getID()))
+                {
+                    deviceHash.remove( sp.getID());
+                }
+            }
+        }
+        stokerConfAvailable = new ArrayList<SDevice>(deviceHash.values());
+    }
+    
+    private ChangedHandler getTabTitleChangeHander(Tab tab)
+    {
+        final Tab tTab = tab;
+        ChangedHandler tabTitleChangeHandler = new ChangedHandler() {  
+    
+            public void onChanged(ChangedEvent event) {  
+                String newTitle = (event.getValue() == null ? "" : (String)event.getValue());  
+               tabSet.setTabTitle(tTab, newTitle);  
+                
+            }  
+        };
+        return tabTitleChangeHandler;
+    }
+
     private void buildCooker()
     {
         ArrayList<Cooker> clist = new ArrayList<Cooker>();
@@ -205,7 +277,7 @@ public class Configuration extends Dialog
     private RecordList getData(String type)
     {
         RecordList rl = new RecordList();
-        for ( SDevice sd : stokerConf )
+        for ( SDevice sd : stokerConfAvailable )
         {
             DeviceType dt = sd.getProbeType();
             String deviceTypeString;
