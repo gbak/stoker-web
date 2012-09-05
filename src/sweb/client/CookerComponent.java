@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.jfree.util.Log;
+import com.allen_sauer.gwt.log.client.Log;
 
 import sweb.client.dialog.AlertsSettingsDialog;
 import sweb.client.dialog.GeneralMessageDialog;
