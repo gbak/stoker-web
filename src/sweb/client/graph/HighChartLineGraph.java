@@ -42,11 +42,9 @@ import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
+
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.client.Window;
 
 
 public class HighChartLineGraph extends StokerLineGraph

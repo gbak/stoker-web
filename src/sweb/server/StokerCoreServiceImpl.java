@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 
 import sweb.client.StokerCoreService;
 import sweb.server.config.StokerWebConfiguration;
@@ -76,25 +77,16 @@ import com.google.inject.Inject;
  * The server side implementation of the RPC service.
  */
 @SuppressWarnings("serial")
-public class StokerCoreServiceImpl extends RemoteServiceServlet implements
-        StokerCoreService, HttpSessionListener 
+public class StokerCoreServiceImpl extends RemoteServiceServlet implements StokerCoreService, 
+                                                                           HttpSessionListener 
 {
 
-    //private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
-    
-
-    private static int i =0;
-   
-    private boolean haveDataConnection = false;
-
-    private Timer readTimeDataTimer = null;
-
-    WeatherController m_WeatherController = null;
-    ClientMessenger m_ClientMessenger = null;
-    PitMonitor m_pitMonitor = null;
-    AlertsManagerImpl m_alertsManager = null;
-    LogManager m_logManager = null;
     EventBus m_eventBus = null;
+    PitMonitor m_pitMonitor = null;
+    LogManager m_logManager = null;
+    ClientMessenger m_ClientMessenger = null;
+    WeatherController m_WeatherController = null;
+    AlertsManagerImpl m_alertsManager = null;
     StokerWebConfiguration m_StokerWebConfig = null;
     
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
@@ -108,7 +100,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
                                   WeatherController wc,
                                   EventBus bus)
     {
-       // this.m_Controller = c;
         this.m_StokerWebConfig = config;
         this.m_pitMonitor = pm;
         this.m_ClientMessenger = cm;
@@ -124,16 +115,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public ConfigurationSettings getDeviceConfiguration()
             throws IllegalArgumentException
     {
-
-        /*HashMap<String,SDevice> hm = new HashMap<String,SDevice>();
-        for ( SDevice s : m_pitMonitor.getRawDevices() )
-        {
-            hm.put( s.getID(), s);
-        }*/
-        
         return new ConfigurationSettings( m_StokerWebConfig.getCookerList(), m_pitMonitor.getRawDevices() );
-            
-
     }
 
     
@@ -144,47 +126,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
       // CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
 
        m_ClientMessenger.addSession( httpSession );
-       
-      // handleControllerEvents();
-/*
-       if ( m_DPEL == null)
-       {
-           logger.info("Creating new listener.");
-           m_DPEL = new DataPointEventListener() {
-
-               public void stateChange(DataPointEvent dpe)
-                {
-                   ArrayList<SProbeDataPoint> aldp = dpe.getSProbeDataPoints();
-                   if ( aldp != null)
-                   {
-                       for ( SProbeDataPoint sdp : aldp)
-                       {
-                           m_ClientMessenger.push(sdp);
-                       }
-                   }
-
-                   // The new data point here is a dummy, it is needed to create the sharp
-                   // steps in the blower graph.
-                   SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
-                   if ( bdp != null  )
-                   {
-                       m_ClientMessenger.push(bdp);
-                   }
-
-                }
-
-           };
-           m_Controller.addTempListener(m_DPEL);
-          // Controller.getInstance().getDataOrchestrator().addListener( m_DPEL );
-       }
-       */
     }
 
     public ArrayList<SDataPoint> getNewGraphDataPoints(String input) throws IllegalArgumentException
     {
         return m_pitMonitor.getCurrentTemps();
-       // return Controller.getInstance().getDataOrchestrator().getLastDPs();
-
     }
 
     @Subscribe
@@ -199,15 +145,13 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             }
         }
 
-        // The new data point here is a dummy, it is needed to create the sharp
-        // steps in the blower graph.
         SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
         if ( bdp != null  )
         {
             m_ClientMessenger.push(bdp);
         }
-
     }
+    
     @Subscribe
     public void handleStateChangeEvents( StateChangeEvent ce)
     {
@@ -258,88 +202,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
             m_ClientMessenger.push(wd);
     }
     
-    /*
-    private void handleControllerEvents()
-    {
 
-        if (m_dcel == null)
-        {
-            m_dcel = new StateChangeEventListener() {
-
-                public void actionPerformed(StateChangeEvent ce)
-                {
-                    switch (ce.getEventType())
-                    {
-                        case CONNECTION_ESTABLISHED:
-                            m_ClientMessenger
-                                    .push(new ControllerEventLight(
-                                            EventTypeLight.CONNECTION_ESTABLISHED));
-                            break;
-                        case NONE:
-                            break;
-                        case LOST_CONNECTION:
-                            m_ClientMessenger.push(
-                                    new ControllerEventLight(
-                                            EventTypeLight.LOST_CONNECTION));
-                            break;
-                        default:
-
-                    }
-                    if (ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
-                    {
-
-                    }
-                }
-
-            };
-
-            m_Controller.addStateChangeListener(m_dcel);
-           // Controller.getInstance().addDataEventListener(m_dcel);
-
-        }
-
-        if (m_ccel == null)
-        {
-            m_ccel = new ConfigChangeEventListener() {
-
-                public void actionPerformed(ConfigChangeEvent ce)
-                {
-                    switch (ce.getEventType())
-                    {
-                        case NONE:
-                            break;
-                        case CONFIG_UPDATE:
-                            m_ClientMessenger.push(
-                                    new ControllerEventLight(
-                                            EventTypeLight.CONFIG_UPDATE));
-                            break;
-                        default:
-                    }
-                }
-
-            };
-
-            m_Controller.addConfigChangeListener(m_ccel);
-          //  m_ConfigurationController.addEventListener(m_ccel);
-        }
-
-        if (m_wcel == null)
-        {
-            m_wcel = new WeatherChangeEventListener() {
-
-                public void weatherUpdated(WeatherChangeEvent wce)
-                {
-                    WeatherData wd = wce.getWeatherData();
-                    if ( wd != null )
-                        m_ClientMessenger.push(wd);
-                }
-
-            };
-
-            m_WeatherController.addEventListener(m_wcel);
-        }
-    }
-    */
     public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
     {
        m_alertsManager.setConfiguration(alertBaseList);
@@ -435,24 +298,27 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     public Long countDownServer() throws IllegalArgumentException
     {
-        // TODO Auto-generated method stub
+        // TODO Count down timer logic.  Countdown the time until the telnet controller
+        // will reconnect to the server.  This is only applicable if the stoker is 
+        // disconnected.  The timer works and is implemented, but i'd be nice to display
+        // this on the browser as well as a connect now button.
         return null;
     }
 
     public ArrayList<ArrayList<SDataPoint>> getAllGraphDataPoints(String logName)
             throws IllegalArgumentException
     {
-
-        //return Controller.getInstance().getDataOrchestrator().getAllDataPoints( logName );
         return m_logManager.getAllDataPoints(logName);
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
     {
-       // return Controller.getInstance().getDataOrchestrator().getLogList();
         return m_logManager.getLogList();
     }
 
+    /**
+     * Begin a new log
+     */
     public Integer startLog(String strCookerName, String strLogName, ArrayList<SDevice> arSD ) throws IllegalArgumentException
     {
        if ( ! loginGuard() )
@@ -496,7 +362,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         }
         catch (LogNotFoundException e)
         {
-            // TODO Auto-generated catch block
+            Log.error("stopLog: provided log not found");
             e.printStackTrace();
         }
         return ret;
@@ -512,7 +378,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     }
 
 
-    public Integer updateTempSettings(ArrayList<SDevice> asd)
+    public Integer updateTempAndAlarmSettings(ArrayList<SDevice> asd)
             throws IllegalArgumentException
     {
        if ( ! loginGuard() )

@@ -25,10 +25,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 

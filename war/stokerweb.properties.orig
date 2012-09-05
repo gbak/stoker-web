@@ -6,8 +6,8 @@ stoker_pass=tini
 
 stokerweb_logs_dir=stokerweblogs
 
-# Associate the Serial ID of each blower to a Cooker Name
-230000002a55c305=Large Egg
+
+
 
 
 ########### Client Settings ######################
@@ -19,6 +19,9 @@ client.tempDisplayGauge.gaugeMax=400
 client.tempDisplayGauge.gaugeMin=0
 client.tempDisplayGauge.gaugeStepping=50
 
+# use alarm settings from 'local' file or 'stoker'.
+# local settings will disable stoker alarms
+alarmSettings_location=local
 
 # Mail settings
 mail.sendTo=xxx@gmail.com

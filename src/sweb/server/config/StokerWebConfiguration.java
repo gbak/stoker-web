@@ -1,3 +1,21 @@
+/**
+ *  Stoker-web
+ *
+ *  Copyright (C) 2012  Gary Bak
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+
 package sweb.server.config;
 
 import java.io.BufferedReader;
@@ -9,22 +27,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.controller.events.ConfigChangeEvent;
 import sweb.server.controller.events.ConfigChangeEvent.EventType;
-
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerHelper;
 import sweb.shared.model.CookerList;
@@ -32,6 +44,11 @@ import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.stoker.StokerProbe.AlarmType;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 
 public class StokerWebConfiguration
 {
@@ -77,6 +94,14 @@ public class StokerWebConfiguration
         m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));
     }
     
+    /**
+     * Gets the SDevice by its ID.  This method will query the hardware controller
+     * directly since the configuration may be incomplete if the .json file is missing
+     * or can't be read.  
+     * 
+     * @param id String ID of requested device
+     * @return Returns device requested, null if it does not exist.
+     */
     public SDevice getDeviceByID( String id )
     {
        return m_deviceConfiguration.getDevice(id);
@@ -98,7 +123,7 @@ public class StokerWebConfiguration
             hmStoker.put( sd.getID().toUpperCase(),sd);
         }
        
-        m_deviceConfiguration.getAllDevices();
+    //    m_deviceConfiguration.getAllDevices();
        
         logger.debug("Looping over cookers");
        for ( Cooker cooker : m_cookerList.getCookerList() )
@@ -151,6 +176,7 @@ public class StokerWebConfiguration
               }
            }
            
+           // Remove probes from Cooker that do not exist on the hardware device.
            ArrayList<String> removeProbes = new ArrayList<String>();
            
            for ( SDevice cookerProbe : cooker.getProbeList() )
@@ -198,6 +224,7 @@ public class StokerWebConfiguration
                
                arAllDevices.addAll(CookerHelper.getDeviceList( c ));
             }
+            removeAlarmsIfLocal( arAllDevices );
             m_deviceConfiguration.update(arAllDevices);
             m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_SAVED) );
             
@@ -206,6 +233,17 @@ public class StokerWebConfiguration
         {
             logger.error("Error writing " + strConfigFile + "\n" + e.getStackTrace() );
         }
+    }
+    
+    private void removeAlarmsIfLocal( ArrayList<SDevice> deviceList )
+    {
+        String alarmLocation = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_ALARM_SETTINGS_LOCATION);
+        
+        if ( alarmLocation.compareToIgnoreCase("local") == 0)
+            for ( SDevice sd : deviceList )
+                if ( sd.isProbe() )
+                    ((StokerProbe)sd).setAlarmEnabled(AlarmType.NONE);
+
     }
     
     public void saveConfig(CookerList cookerList)
@@ -230,7 +268,7 @@ public class StokerWebConfiguration
         }
         catch (FileNotFoundException e)
         {
-            // TODO Auto-generated catch block
+            logger.error("Stokerweb config file [" + strConfigFile + "] was not found");
             e.printStackTrace();
         }
         catch (JsonParseException e)
@@ -244,7 +282,7 @@ public class StokerWebConfiguration
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
+            logger.error("IO Exception reading stokerweb config file [" + strConfigFile + "]");
             e.printStackTrace();
         }
         

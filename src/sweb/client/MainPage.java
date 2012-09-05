@@ -1,21 +1,33 @@
+/**
+ *  Stoker-web
+ *
+ *  Copyright (C) 2012  Gary Bak
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+
 package sweb.client;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import net.zschech.gwt.comet.client.CometClient;
 import net.zschech.gwt.comet.client.CometListener;
 import net.zschech.gwt.comet.client.CometSerializer;
 import net.zschech.gwt.comet.client.SerialTypes;
-//import sweb.client.StokerWeb.LoadedPage;
-//import sweb.client.StokerWeb.StokerCometSerializer;
-import sun.security.krb5.internal.ccache.CCacheInputStream;
 import sweb.client.dialog.AlertDialog;
 import sweb.client.dialog.GeneralMessageDialog;
 import sweb.client.dialog.LogFileChooser;
@@ -28,10 +40,12 @@ import sweb.client.weather.WeatherComponent;
 import sweb.client.widgets.Configuration;
 import sweb.client.widgets.handlers.ConfigUpdateHandler;
 import sweb.shared.model.CallBackRequestType;
-import sweb.shared.model.ConfigurationSettings;
-import sweb.shared.model.CookerHelper;
-import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.CallBackRequestType.RequestType;
+import sweb.shared.model.ConfigurationSettings;
+import sweb.shared.model.Cooker;
+import sweb.shared.model.CookerHelper;
+import sweb.shared.model.CookerList;
+import sweb.shared.model.HardwareDeviceStatus;
 import sweb.shared.model.HardwareDeviceStatus.Status;
 import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.BrowserAlarmModel;
@@ -40,22 +54,15 @@ import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.events.ControllerEventLight;
-import sweb.shared.model.events.LogEvent;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
+import sweb.shared.model.events.LogEvent;
 import sweb.shared.model.logfile.LogDir;
-import sweb.shared.model.stoker.StokerProbe;
-import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.weather.WeatherData;
-import sweb.shared.model.Cooker;
-import sweb.shared.model.CookerHelper;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
@@ -69,52 +76,46 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.smartgwt.client.widgets.events.CloseClickEvent;
-import com.smartgwt.client.widgets.events.CloseClickHandler;
-import sweb.shared.model.CookerList;
 
 public class MainPage
 {
-    /**
-     * The message displayed to the user when the server cannot be reached or
-     * returns an error.
-     */
+
     private static final String SERVER_ERROR = "An error occurred while "
             + "attempting to contact the server. Please check your network "
             + "connection and try again.";
 
 
-    private final StokerCoreServiceAsync stokerService = GWT.create(StokerCoreService.class);
+    private final StokerCoreServiceAsync m_stokerService = GWT.create(StokerCoreService.class);
+    private final String m_cookieID = "sid";
 
     private static enum LoadedPage { NONE, CONNECTED_PAGE, NOT_CONNECTED_PAGE };
-    EventBus eb;
     
+    LoadedPage m_currentPage = LoadedPage.NONE;
+
+    ArrayList<CookerComponent> m_cookerList = new ArrayList<CookerComponent>();
+    WeatherData m_weatherData = new WeatherData();
+    WeatherComponent m_weatherComponent = null;
+
+    EventTypeLight m_eventState = EventTypeLight.NONE;
+
+    DockPanel m_outerDocPanel = new DockPanel(); // Outermost panel
+    HorizontalPanel m_HeaderHP = new HorizontalPanel();
+    VerticalPanel m_cookerVP = new VerticalPanel(); // For Multiple cookers
     
-    LoadedPage currentPage = LoadedPage.NONE;
+    Button m_loginButton = new Button();
+    Button m_updateButton = new Button();
+    Button m_reportsButton = new Button();
+    Button m_configButton = new Button();
+    Button m_statusFauxButton = new Button();
+    Button m_testButton = new Button();  // Test various functions.
 
-    ArrayList<CookerComponent> alCookers = new ArrayList<CookerComponent>();
-    WeatherData weatherData = new WeatherData();
-    WeatherComponent wc = null;
+    boolean m_requiresUpdate = true;  // TODO: hard coding this to so the button stays enabled.
 
-    EventTypeLight eventState = EventTypeLight.NONE;
-
-    DockPanel dp = new DockPanel(); // Outermost panel
-    HorizontalPanel hp = new HorizontalPanel();
-    VerticalPanel vpCookers = new VerticalPanel(); // For Multiple cookers
-    Button loginButton = new Button();
-    Button updateButton = new Button();
-    Button reportsButton = new Button();
-    Button configButton = new Button();
-    Button statusFauxButton = new Button();
-    Button testButton = new Button();  // Test various functions.
-
-    boolean requiresUpdate = true;  // TODO: hard coding this to so the button stays enabled.
-
-    boolean bConnected = false;
+    boolean m_bConnected = false;
     
-    String httpSessionID = "";
+    String m_httpSessionID = "";
     
-    HashMap<String,String> properties = null;
+    HashMap<String,String> m_properties = null;
 
 
     @SerialTypes(
@@ -138,19 +139,16 @@ public class MainPage
     void makeCallBackRequest( CallBackRequestType crt )
     {
 
-        stokerService.cometRequest( crt, new AsyncCallback<Void>() {
+        m_stokerService.cometRequest( crt, new AsyncCallback<Void>() {
 
             public void onFailure(Throwable caught)
             {
                 Log.error("Failure calling makeCometRequest()");
-
             }
 
             public void onSuccess(Void result)
             {
                 Log.debug("makeCallBackRequest cometRequest success");
-
-
             }
 
         });
@@ -160,7 +158,7 @@ public class MainPage
     private void initNotConnectedPage(Date d)
     {
         Log.debug("initNotConnectedPage");
-        if ( currentPage != LoadedPage.NOT_CONNECTED_PAGE )
+        if ( m_currentPage != LoadedPage.NOT_CONNECTED_PAGE )
         {
             Log.info("Stoker not connected, setting up not connected page");
            RootPanel.get().clear();
@@ -169,14 +167,14 @@ public class MainPage
            HTML ht = new HTML("Stoker not connected!");
            dpDisconnected.add( ht, DockPanel.NORTH);
 
-           currentPage = LoadedPage.NOT_CONNECTED_PAGE;
+           m_currentPage = LoadedPage.NOT_CONNECTED_PAGE;
            RootPanel.get().add( dpDisconnected );
         }
     }
 
     private void presentConfigScreen()
     {
-        stokerService.getDeviceConfiguration(new AsyncCallback<ConfigurationSettings>() 
+        m_stokerService.getDeviceConfiguration(new AsyncCallback<ConfigurationSettings>() 
          {
 
             public void onFailure(Throwable caught)
@@ -205,7 +203,7 @@ public class MainPage
                     @Override
                     public void onUpdate( CookerList cookerList)
                     {
-                       stokerService.updateStokerWebConfig(cookerList, new AsyncCallback<Integer>() {
+                       m_stokerService.updateStokerWebConfig(cookerList, new AsyncCallback<Integer>() {
 
                         @Override
                         public void onFailure(
@@ -222,276 +220,80 @@ public class MainPage
                         } 
                          
                        });
-
                         Log.debug("Config update fired");
-                        
                     }
-                    
                 });
-                
                 ccfg.draw();
-                
             }
-
         });
     }
     
     private void initStokerPage(Date d)
     {
         Log.debug("initStokerPage()");
-        if ( currentPage != LoadedPage.CONNECTED_PAGE )
+        if ( m_currentPage != LoadedPage.CONNECTED_PAGE )
         {
             RootPanel.get().clear();
 
-            dp.setWidth("100%");
-            dp.setHeight("100%");
+            m_outerDocPanel.setWidth("100%");
+            m_outerDocPanel.setHeight("100%");
 
-            hp.add( new Image( "stokerweb5.png"));
-            hp.setWidth("100%");
+            m_HeaderHP.add( new Image( "stokerweb5.png"));
+            m_HeaderHP.setWidth("100%");
 
-            final String sessionID = Cookies.getCookie("sid");
-            
-            if ( sessionID != null )
-            {
-                Log.info("Found sessionID: " + sessionID);
-                stokerService.validateSession( sessionID, new AsyncCallback<Integer>() {
-                    public void onFailure(Throwable caught)
-                    {
-                        // TODO Auto-generated method stub
-                        Log.error("Failure attempting to validate session");
-                    }
+            final String sessionID = Cookies.getCookie(m_cookieID);
+            validateSessionAndToggleSettings( sessionID );
 
-                    public void onSuccess(Integer result)
-                    {
-                        if ( result.intValue() == 1)
-                        {
-                            Log.info("Session validated successfully");
-                           httpSessionID = sessionID;
-                           userLoggedIn( true );
-                           loginButton.setText(getLoginButtonText());
-                        }
-                    }
-                });
-            }
-            else
-            {
-                Log.info("no session found for user.");
-                userLoggedIn( false );
-            }
-
-            testButton = new Button( "Test", new ClickHandler() {
-
-                public void onClick(ClickEvent event)
-                {
-/*                    SoundController soundController = new SoundController();
-                    Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_WAV_PCM,
-                        "Alarm1.wav");
-                    LoadState s = sound.getLoadState();
-                    
-                    sound.play();
-*/
-                    
-                }
-
-            });
-
-            
-            updateButton = new Button( getUpdateButtonText(), new ClickHandler() {
-
-                public void onClick(ClickEvent event)
-                {
-                    Log.info("Updating Stoker settings");
-                    ArrayList<SDevice> alUpdates = new ArrayList<SDevice>();
-                    for ( CookerComponent cc : alCookers )
-                    {
-                        Log.debug("Getting config updates from cooker: " + cc.getName());
-                        alUpdates.addAll( cc.getConfigUpdates());
-                        
-                    }
-                    stokerService.updateTempSettings( alUpdates, new AsyncCallback<Integer>() {
-
-                        public void onFailure(Throwable caught)
-                        {
-                            // TODO Auto-generated method stub
-                            Log.error("updateConfiguration Failure");
-
-                        }
-
-                        public void onSuccess(Integer result)
-                        {
-                            Log.info("Update Configuration success");
-                            if ( result.intValue() == 1 )
-                            {
-                                new GeneralMessageDialog( "Success", "New Settings saved to Stoker").center();
-                            }
-
-                        }
-
-                    } );
-
-
-                }
-
-            });
-
-            configButton = new Button("Configuration", new ClickHandler() 
-            {
-
-                @Override
-                public void onClick(ClickEvent event)
-                {
-
-                    Log.debug("Configuration button clicked");
-                    presentConfigScreen();
-                    
-                }
-            });
-
-            
-            reportsButton = new Button( "Reports", new ClickHandler() {
-
-                public void onClick(ClickEvent event)
-                {
-                    Log.info("Opening reports log chooser");
-                    Log.debug("Reports button clicked");
-                    stokerService.getLogFileNames(new AsyncCallback<LogDir>() {
-
-                        public void onFailure(Throwable caught)
-                        {
-                            caught.printStackTrace();
-                            System.out.println("Failed to retreive LogFileNames");
-
-                        }
-
-                        public void onSuccess(LogDir result)
-                        {
-                           new LogFileChooser( result, new LogFileChooserHandler() {
-
-                               public void onReturn(String st)
-                               {
-                                   if ( st != null)
-                                   {
-                                       Log.info("Generating Selected Report: " + st);
-                                       String url = new String( GWT.getModuleBaseURL() + "report" + "?logFile=" + st );
-                                       Window.open( url, "_blank", "enabled" );
-                                       
-                                   //    new DownloadIFrame(url);
-                                   }
-                                   else
-                                   {
-
-                                   }
-                               }
-                           }).center();
-                        }
-                    });
-                }
-            });
-            
-            loginButton = new Button(getLoginButtonText(), new ClickHandler() {
-
-                public void onClick(ClickEvent event)
-                {
-                    //Integer loginStatus;
-                    Log.debug("Login button selected");
-                    if ( LoginStatus.getInstance().getLoginStatus())
-                    {
-                        Log.info("Calling logout");
-                        stokerService.logout(new AsyncCallback<Void>() {
-
-                            public void onFailure(Throwable caught)
-                            {
-                                // TODO Auto-generated method stub
-
-                            }
-
-                            public void onSuccess(Void result)
-                            {
-                                Log.info("Logout success");
-                                LoginStatus.getInstance().setLoginStatus(false);
-                                userLoggedIn(false );
-                                loginButton.setText(getLoginButtonText());
-                                Cookies.removeCookie("sid");
-                            }
-
-                        });
-                    }
-                    else
-                    {
-                            new LoginDialog(stokerService,new LoginDialogHandler() {
-
-                            public void onLoginReturn(String st)
-                            {
-                                if ( st != null)
-                                {
-                                    Log.info("Login success");
-                                    httpSessionID = st;
-                                    userLoggedIn( true );
-                                    loginButton.setText(getLoginButtonText());
-
-                                    final long DURATION = 1000 * 60 * 60 * 24 * 1;  // TODO: make this a parameter  ( 1 day )
-                                    Date expires = new Date(System.currentTimeMillis() + DURATION);
-                                    Cookies.setCookie("sid", httpSessionID, expires, null, "/", false);
-                                }
-                                else
-                                {
-                                    Log.info("Login failure");
-                                    userLoggedIn(false );
-                                    loginButton.setText(getLoginButtonText());
-                                }
-
-                            }
-
-                        }).center();
-                    }
-                }
-
-            });
+            m_testButton = new Button( "Test", testButtonClickHandler() );
+            m_updateButton = new Button( getUpdateButtonText(), updateButtonClickHandler() );
+            m_configButton = new Button("Configuration",  configButtonClickHandler() );
+            m_reportsButton = new Button( "Reports", reportButtonClickHandler() );
+            m_loginButton = new Button(getLoginButtonText(), loginButtonClickHandler() );
             
            // testButton.setEnabled(true);
            // hp.add( testButton);
              
           //  hp.setBorderWidth(1);
-            statusFauxButton.setEnabled(false);
-            statusFauxButton.setStyleName("sweb-ConnectionButton");
-            statusFauxButton.setText("No Connection");
+            m_statusFauxButton.setEnabled(false);
+            m_statusFauxButton.setStyleName("sweb-ConnectionButton");
+            m_statusFauxButton.setText("No Connection");
             
-            hp.add( statusFauxButton );
+            m_HeaderHP.add( m_statusFauxButton );
             
-            configButton.setEnabled(false);
-            configButton.setStyleName("sweb-MenuButton");
-            hp.add( configButton );
-            hp.setCellHorizontalAlignment(configButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            hp.setCellVerticalAlignment(configButton, HasVerticalAlignment.ALIGN_BOTTOM);
+            m_configButton.setEnabled(false);
+            m_configButton.setStyleName("sweb-MenuButton");
+            m_HeaderHP.add( m_configButton );
+            m_HeaderHP.setCellHorizontalAlignment(m_configButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            m_HeaderHP.setCellVerticalAlignment(m_configButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
-            reportsButton.setEnabled(false);
-            reportsButton.setStyleName("sweb-MenuButton");
-            hp.add( reportsButton );
-            hp.setCellHorizontalAlignment(reportsButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            hp.setCellVerticalAlignment(reportsButton, HasVerticalAlignment.ALIGN_BOTTOM);
+            m_reportsButton.setEnabled(false);
+            m_reportsButton.setStyleName("sweb-MenuButton");
+            m_HeaderHP.add( m_reportsButton );
+            m_HeaderHP.setCellHorizontalAlignment(m_reportsButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            m_HeaderHP.setCellVerticalAlignment(m_reportsButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
-            updateButton.setEnabled(false);
-            updateButton.setStyleName("sweb-MenuButton");
-            hp.add( updateButton );
-            hp.setCellHorizontalAlignment(updateButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            hp.setCellVerticalAlignment(updateButton, HasVerticalAlignment.ALIGN_BOTTOM);
+            m_updateButton.setEnabled(false);
+            m_updateButton.setStyleName("sweb-MenuButton");
+            m_HeaderHP.add( m_updateButton );
+            m_HeaderHP.setCellHorizontalAlignment(m_updateButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            m_HeaderHP.setCellVerticalAlignment(m_updateButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
-            loginButton.setStyleName("sweb-MenuButton");
-            hp.add( loginButton );
+            m_loginButton.setStyleName("sweb-MenuButton");
+            m_HeaderHP.add( m_loginButton );
 
-            hp.setCellHorizontalAlignment(loginButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            hp.setCellVerticalAlignment(loginButton, HasVerticalAlignment.ALIGN_BOTTOM);
+            m_HeaderHP.setCellHorizontalAlignment(m_loginButton, HasHorizontalAlignment.ALIGN_RIGHT);
+            m_HeaderHP.setCellVerticalAlignment(m_loginButton, HasVerticalAlignment.ALIGN_BOTTOM);
            
-            dp.add( hp, DockPanel.NORTH );
+            m_outerDocPanel.add( m_HeaderHP, DockPanel.NORTH );
 
-            dp.add( vpCookers, DockPanel.CENTER );
+            m_outerDocPanel.add( m_cookerVP, DockPanel.CENTER );
 
-            wc = new WeatherComponent( weatherData );
+            m_weatherComponent = new WeatherComponent( m_weatherData );
 
-            dp.add( wc, DockPanel.SOUTH );
+            m_outerDocPanel.add( m_weatherComponent, DockPanel.SOUTH );
             
             Log.debug("Getting client properties");
-            stokerService.getClientProperties(new AsyncCallback<HashMap<String,String>>() {
+            m_stokerService.getClientProperties(new AsyncCallback<HashMap<String,String>>() {
 
                 public void onFailure(Throwable caught)
                 {
@@ -502,7 +304,7 @@ public class MainPage
                 public void onSuccess(HashMap<String,String> hm)
                 {
                     Log.debug("Client properties received");
-                    properties = hm;
+                    m_properties = hm;
                     getStokerConfiguration();
                 }
 
@@ -525,16 +327,186 @@ public class MainPage
                 } 
           }); 
             
-            currentPage = LoadedPage.CONNECTED_PAGE;
-            RootPanel.get().add( dp );
+            m_currentPage = LoadedPage.CONNECTED_PAGE;
+            RootPanel.get().add( m_outerDocPanel );
         }
 
     }
 
+    private ClickHandler loginButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+                //Integer loginStatus;
+                Log.debug("Login button selected");
+                if ( LoginStatus.getInstance().getLoginStatus())
+                {
+                    Log.info("Calling logout");
+                    m_stokerService.logout(new AsyncCallback<Void>() {
+
+                        public void onFailure(Throwable caught)
+                        {
+                            // TODO Auto-generated method stub
+
+                        }
+
+                        public void onSuccess(Void result)
+                        {
+                            Log.info("Logout success");
+                            LoginStatus.getInstance().setLoginStatus(false);
+                            userLoggedIn(false );
+                            m_loginButton.setText(getLoginButtonText());
+                            Cookies.removeCookie("sid");
+                        }
+
+                    });
+                }
+                else
+                {
+                        new LoginDialog(m_stokerService,new LoginDialogHandler() {
+
+                        public void onLoginReturn(String st)
+                        {
+                            if ( st != null)
+                            {
+                                Log.info("Login success");
+                                m_httpSessionID = st;
+                                userLoggedIn( true );
+                                m_loginButton.setText(getLoginButtonText());
+
+                                final long DURATION = 1000 * 60 * 60 * 24 * 1;  // TODO: make this a parameter  ( 1 day )
+                                Date expires = new Date(System.currentTimeMillis() + DURATION);
+                                Cookies.setCookie("sid", m_httpSessionID, expires, null, "/", false);
+                            }
+                            else
+                            {
+                                Log.info("Login failure");
+                                userLoggedIn(false );
+                                m_loginButton.setText(getLoginButtonText());
+                            }
+
+                        }
+
+                    }).center();
+                }
+            }
+
+        };
+    }
+    private ClickHandler reportButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+                Log.info("Opening reports log chooser");
+                Log.debug("Reports button clicked");
+                m_stokerService.getLogFileNames(new AsyncCallback<LogDir>() {
+
+                    public void onFailure(Throwable caught)
+                    {
+                        caught.printStackTrace();
+                        System.out.println("Failed to retreive LogFileNames");
+
+                    }
+
+                    public void onSuccess(LogDir result)
+                    {
+                       new LogFileChooser( result, new LogFileChooserHandler() {
+
+                           public void onReturn(String st)
+                           {
+                               if ( st != null)
+                               {
+                                   Log.info("Generating Selected Report: " + st);
+                                   String url = new String( GWT.getModuleBaseURL() + "report" + "?logFile=" + st );
+                                   Window.open( url, "_blank", "enabled" );
+                                   
+                               //    new DownloadIFrame(url);
+                               }
+                               else
+                               {
+
+                               }
+                           }
+                       }).center();
+                    }
+                });
+            }
+        };
+    }
+    private ClickHandler configButtonClickHandler()
+    {
+       return new ClickHandler() 
+        {
+            @Override
+            public void onClick(ClickEvent event)
+            {
+                Log.debug("Configuration button clicked");
+                presentConfigScreen();
+            }
+        };
+    }
+    
+    private ClickHandler updateButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+                Log.info("Updating Stoker settings");
+                ArrayList<SDevice> alUpdates = new ArrayList<SDevice>();
+                for ( CookerComponent cc : m_cookerList )
+                {
+                    Log.debug("Getting config updates from cooker: " + cc.getName());
+                    alUpdates.addAll( cc.getConfigUpdates());
+                    
+                }
+                m_stokerService.updateTempAndAlarmSettings( alUpdates, new AsyncCallback<Integer>() {
+
+                    public void onFailure(Throwable caught)
+                    {
+                        Log.error("updateConfiguration Failure");
+                    }
+
+                    public void onSuccess(Integer result)
+                    {
+                        Log.info("Update Configuration success");
+                        if ( result.intValue() == 1 )
+                        {
+                            new GeneralMessageDialog( "Success", "New Settings saved to Stoker").center();
+                        }
+                    }
+                } );
+            }
+        };
+    }
+    private ClickHandler testButtonClickHandler()
+    {
+        return new ClickHandler() {
+
+            public void onClick(ClickEvent event)
+            {
+/*                    SoundController soundController = new SoundController();
+                Sound sound = soundController.createSound(Sound.MIME_TYPE_AUDIO_WAV_PCM,
+                    "Alarm1.wav");
+                LoadState s = sound.getLoadState();
+                
+                sound.play();
+*/   
+            }
+        };
+    }
+    /**
+     * Initializes and controls the comet call back connection.  Any unsolicited and requests made on the comet connection
+     * will come through this method. 
+     */
     private void initCallBack()
     {
         
-          stokerService.setupCallBack(new AsyncCallback<Void>() {
+          m_stokerService.setupCallBack(new AsyncCallback<Void>() {
 
                     public void onSuccess(Void result) {
                             Log.info("setupCallBacked returned Success");
@@ -578,7 +550,7 @@ public class MainPage
                                         Log.trace("Datapoint received, " + message.toString());
                                         SDataPoint sdp = (SDataPoint) message;
 
-                                        for ( CookerComponent cc : alCookers )
+                                        for ( CookerComponent cc : m_cookerList )
                                         {
                                             boolean bUpdateGraph = false;
                                             setConnected( true );
@@ -601,8 +573,8 @@ public class MainPage
                                         {
                                             case LOST_CONNECTION:   // Add this code
                                                 Log.info("Lost connection to Stoker");
-                                                eventState = EventTypeLight.LOST_CONNECTION;
-                                                for ( CookerComponent cc : alCookers )
+                                                m_eventState = EventTypeLight.LOST_CONNECTION;
+                                                for ( CookerComponent cc : m_cookerList )
                                                 {
                                                     cc.setConnected(false);
                                                     setConnected(false);
@@ -610,13 +582,13 @@ public class MainPage
                                                 break;
                                             case CONNECTION_ESTABLISHED:
                                                 Log.info("Connection to Stoker established");
-                                                eventState = EventTypeLight.CONNECTION_ESTABLISHED;
-                                                if ( currentPage != LoadedPage.CONNECTED_PAGE )
+                                                m_eventState = EventTypeLight.CONNECTION_ESTABLISHED;
+                                                if ( m_currentPage != LoadedPage.CONNECTED_PAGE )
                                                 {
                                                     initStokerPage(null);  // TODO: implement date
                                                     makeCallBackRequest( new CallBackRequestType( RequestType.FORCE_DATA_PUSH ));
                                                 }
-                                                for ( CookerComponent cc : alCookers )
+                                                for ( CookerComponent cc : m_cookerList )
                                                 {
                                                     cc.setConnected(true);
                                                     setConnected( true );
@@ -624,7 +596,7 @@ public class MainPage
                                                 break;
                                             case CONFIG_UPDATE:
                                                 Log.info("Configuration update received from server");
-                                                if ( currentPage != LoadedPage.CONNECTED_PAGE )
+                                                if ( m_currentPage != LoadedPage.CONNECTED_PAGE )
                                                 {
                                                     initStokerPage(null);  // TODO: implement date
                                                     makeCallBackRequest( new CallBackRequestType( RequestType.FORCE_DATA_PUSH ));
@@ -640,8 +612,8 @@ public class MainPage
                                     else if ( message instanceof WeatherData )
                                     {
                                         Log.info("New weather information received");
-                                        if ( wc != null)
-                                           wc.update((WeatherData) message);
+                                        if ( m_weatherComponent != null)
+                                           m_weatherComponent.update((WeatherData) message);
                                     }
                                     else if ( message instanceof HardwareDeviceStatus )  // GET_STATUS
                                     {
@@ -670,7 +642,7 @@ public class MainPage
                                         //       until Alarm condition is gone
                                         //       forever ( remove alarm )
                                         BrowserAlarmModel bam = (BrowserAlarmModel) message;
-                                        new AlertDialog(stokerService, bam, new AlertDialogHandler() {
+                                        new AlertDialog(m_stokerService, bam, new AlertDialogHandler() {
 
                                             @Override
                                             public void onReturn( BrowserAlarmModel bam)
@@ -687,7 +659,7 @@ public class MainPage
                                        LogEvent le = (LogEvent) message;
                                        
                                        
-                                       for ( CookerComponent cc : alCookers )
+                                       for ( CookerComponent cc : m_cookerList )
                                        {
                                            if ( cc.getName().compareTo(le.getCookerName()) == 0)
                                            {
@@ -725,7 +697,7 @@ public class MainPage
                                     }
                                 }
                                  // Draw here
-                                for ( CookerComponent cc : alCookers )
+                                for ( CookerComponent cc : m_cookerList )
                                 {
                                     Log.trace("Calling draw for cooker: " + cc.getName());
                                     cc.draw();
@@ -745,28 +717,69 @@ public class MainPage
             });
     }
 
+    /**
+     * Validate sessionID from cookie with the server.  Toggle visibility of adjustable settings
+     * and buttons depending on the return from the server validation.
+     * 
+     * @param sessionID Session ID to be validated
+     */
+    private void validateSessionAndToggleSettings( final String sessionID )
+    {
+        if ( sessionID != null )
+        {
+            Log.info("Found sessionID: " + sessionID);
+            m_stokerService.validateSession( sessionID, new AsyncCallback<Integer>() {
+                public void onFailure(Throwable caught)
+                {
+                    Log.error("Failure attempting to validate session");
+                }
+
+                public void onSuccess(Integer result)
+                {
+                    if ( result.intValue() == 1)
+                    {
+                        Log.info("Session validated successfully");
+                       m_httpSessionID = sessionID;
+                       userLoggedIn( true );
+                       m_loginButton.setText(getLoginButtonText());
+                    }
+                }
+            });
+        }
+        else
+        {
+            Log.info("no session found for user.");
+            userLoggedIn( false );
+        }
+    }
+    
+    
+    /** 
+     * Sets the connection on the screen based on the boolean value.
+     * @param connected boolean value for connection state
+     */
     private void setConnected(boolean connected)
     {
-        if ( bConnected == connected )
+        if ( m_bConnected == connected )
             return;
         
         if ( !connected )
         {
-           statusFauxButton.setStyleName("sweb-ConnectionButton");
-           statusFauxButton.setText("No Connection");
-           bConnected = false;
+           m_statusFauxButton.setStyleName("sweb-ConnectionButton");
+           m_statusFauxButton.setText("No Connection");
+           m_bConnected = false;
         }
         else
         {
-            statusFauxButton.setStyleName("sweb-ConnectionButtonOn");
-            statusFauxButton.setText("  Connected  ");
-            bConnected = true;
+            m_statusFauxButton.setStyleName("sweb-ConnectionButtonOn");
+            m_statusFauxButton.setText("  Connected  ");
+            m_bConnected = true;
         }
     }
     
     private String getUpdateButtonText()
     {
-        if ( requiresUpdate == true )
+        if ( m_requiresUpdate == true )
         {
             return "Update";
         }
@@ -780,47 +793,20 @@ public class MainPage
         else
             return "Sign in";
     }
-/*
+
+    /**
+     * Gets configuration information from the server and calls createCookers to create the cooker
+     * components.  
+     */
     private void getStokerConfiguration()
     {
         Log.debug("getStokerConfiguration()");
-        stokerService.getDeviceConfiguration(new AsyncCallback<HashMap<String,SDevice>>() {
+        m_stokerService.getStokerWebConfiguration(new AsyncCallback<CookerList>() {
 
             public void onFailure(Throwable caught)
             {
                 caught.printStackTrace();
                 Log.error("Client configuration failure");
-
-            }
-
-            public void onSuccess(HashMap<String,SDevice> result)
-            {
-                System.out.println("getConfiguration complete.");
-
-                Log.info("Successfully retreived stoker configuration from server");
-                createCookers( result, alCookers );
-
-                for ( CookerComponent cc : alCookers)
-                {
-                    Log.trace("Calling draw for cooker: " + cc.getName());
-                   cc.draw();
-                }
-
-            }
-
-        });
-    }
-    */
-    private void getStokerConfiguration()
-    {
-        Log.debug("getStokerConfiguration()");
-        stokerService.getStokerWebConfiguration(new AsyncCallback<CookerList>() {
-
-            public void onFailure(Throwable caught)
-            {
-                caught.printStackTrace();
-                Log.error("Client configuration failure");
-
             }
 
             public void onSuccess(CookerList result)
@@ -828,9 +814,9 @@ public class MainPage
                 System.out.println("getConfiguration complete.");
 
                 Log.info("Successfully retreived stoker configuration from server");
-                createCookers( result, alCookers );
+                createCookers( result, m_cookerList );
 
-                for ( CookerComponent cc : alCookers)
+                for ( CookerComponent cc : m_cookerList)
                 {
                     Log.trace("Calling draw for cooker: " + cc.getName());
                    cc.draw();
@@ -841,98 +827,11 @@ public class MainPage
         });
     }
 
-    /*
-    private void getLogList()
-    {
-
-        stokerService.getLogList(new AsyncCallback<ArrayList<LogItem>>() {
-
-            public void onFailure(Throwable caught)
-            {
-                caught.printStackTrace();
-                System.out.println("Failed to retreive LogList");
-
-            }
-
-            public void onSuccess(ArrayList<LogItem> result)
-            {
-                for ( CookerComponent cc : alCookers)
-                {
-                    cc.updateLogList(result);
-                }
-
-            }
-
-        });
-
-    }
-    */
-
-
-
+ 
     private void createCookers(CookerList cookerList, ArrayList<CookerComponent> componentList )
     {
         Log.debug("createCookers()");
-        /*
-       ArrayList<SDevice> alDevices = new ArrayList<SDevice>(result.values());
-
-       Collections.sort(alDevices, new Comparator<SDevice>() {
-
-            public int compare(SDevice o1, SDevice o2)
-            {
-
-                int iNum = o1.getCookerNum() - o2.getCookerNum();
-                if ( iNum != 0 )
-                    return iNum;
-
-                if ( o1.isProbe() == true)
-                {
-                    StokerProbe o3 = (StokerProbe) o1;
-                    if ( o3.getFanDevice() != null )
-                        return -1;
-                    else
-                        return 1;
-
-                }
-
-                return 0;
-            }
-
-           });
-
-       int iNumCookers = getNumCookers( alDevices );
-       Log.debug("Found [" + iNumCookers + "] cookers");
-
-       int iCooker = 0;
-       for ( int i = 1; i <= iNumCookers; i++ )
-       {
-           // Create a CookerComponent for each cooker.  This is a pit probe with a blower association
-           CookerComponent cc = new CookerComponent(stokerService, properties);
-           
-
-           vpCookers.add( cc );  // This needs to be done before sending the data so the graph window size is correct.
-
-           vpCookers.setWidth("100%");
-
-           int numProbes = getNumProbesForCooker( i, alDevices );
-           // Debug ***
-           Log.debug("numProbes is [" + numProbes + "]");
-           if ( numProbes > 3 )
-              cc.setOrientation( Alignment.MULTIPLE );   // The default is Single, so only multiple needs to be set
-           
-           Iterator<SDevice> deviceIter = alDevices.iterator();
-           while (deviceIter.hasNext())
-           {
-               SDevice sd = deviceIter.next();
-               if ( sd.getCookerNum() == i)
-               {
-                   cc.addDevice( sd );
-               }
-           }
-           cc.init();
-           cooker.add( cc );
-       }
-       */
+   
        if ( cookerList == null || cookerList.getCookerList().size() == 0)
        {
            presentConfigScreen();
@@ -942,11 +841,11 @@ public class MainPage
            ArrayList<Cooker> alc = cookerList.getCookerList();
             for ( Cooker cooker : alc )
             {
-                CookerComponent cookerComponent = new CookerComponent(stokerService, properties);
+                CookerComponent cookerComponent = new CookerComponent(m_stokerService, m_properties);
                 
-                vpCookers.add( cookerComponent );  // This needs to be done before sending the data so the graph window size is correct.
+                m_cookerVP.add( cookerComponent );  // This needs to be done before sending the data so the graph window size is correct.
     
-                vpCookers.setWidth("100%");
+                m_cookerVP.setWidth("100%");
     
                 int numProbes = CookerHelper.getProbeCount(cooker);
                 // Debug ***
@@ -959,45 +858,15 @@ public class MainPage
        }        
     }
 
-    /*
-    @Deprecated
-    private int getNumProbesForCooker( int cookerNum,  ArrayList<SDevice> alDevices )
-    {
-        int i = 0;
-        Iterator<SDevice> deviceIter = alDevices.iterator();
-        while (deviceIter.hasNext())
-        {
-            SDevice sd = deviceIter.next();
-            if (( sd.getProbeType() == DeviceType.PIT || sd.getProbeType() == DeviceType.FOOD) && sd.getCookerNum() == cookerNum)
-            {
-               i++;
-            }
-        }
-        return i;
-    }
-    */
-   /* private int getNumCookers( ArrayList<SDevice> sda )
-    {
-        int iMax = 1;
-        Iterator<SDevice> deviceIter = sda.iterator();
-        while (deviceIter.hasNext())
-        {
-            SDevice sd = deviceIter.next();
-            if ( sd.getCookerNum() > iMax )
-                iMax = sd.getCookerNum();
-        }
-        return iMax;
-    }*/
-
     private void userLoggedIn( boolean b )
     {
         Log.info("Setting login status: " + b );
         LoginStatus.getInstance().setLoginStatus(b);
 
-        updateButton.setEnabled(b);
-        reportsButton.setEnabled(b);
-        configButton.setEnabled(b);
-        for ( CookerComponent cc : alCookers)
+        m_updateButton.setEnabled(b);
+        m_reportsButton.setEnabled(b);
+        m_configButton.setEnabled(b);
+        for ( CookerComponent cc : m_cookerList)
         {
            cc.loginEvent();
         }

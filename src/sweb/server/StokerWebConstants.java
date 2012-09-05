@@ -33,6 +33,7 @@ public class StokerWebConstants
     public static final String PROPS_LOGS_DIR =    "stokerweb_logs_dir";
     public static final String PROPS_LOG_FILE_PERIOD = "stokerweb_log_file_period";
     public static final String PROPS_STOKERWEB_DIR   = "stokerweb_dir";
+    public static final String PROPS_ALARM_SETTINGS_LOCATION = "alarmSettings_location";
     
     public static final String PROPS_WEATHER_ZIPCODE =          "weather_zipcode";
     public static final String PROPS_WEATHER_WOEID_URL =        "weather_woeid_url";
