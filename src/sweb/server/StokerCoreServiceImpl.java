@@ -700,13 +700,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     {      
         // Save Cooker to property file as JSON
         m_StokerWebConfig.saveConfig(cookerList);
-        //m_eventBus.post( cookerList );
-        //m_pitMonitor.updateCooker(cookerList);
-        
-        
-        // TODO:  Update Stoker
-        // Restart necessary Server objects to reflect updated config
-        // send refresh over comet stream to refresh clients.
+
         m_ClientMessenger.push(
                 new ControllerEventLight(
                         EventTypeLight.CONFIG_UPDATE_REFRESH));
@@ -717,7 +711,6 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     public CookerList getStokerWebConfiguration()
             throws IllegalArgumentException
     {
-        //return m_pitMonitor.getCookers();
         return m_StokerWebConfig.getCookerList();
     }
     

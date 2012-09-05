@@ -256,7 +256,7 @@ public class HighChartLineGraph extends StokerLineGraph
 
     private Number[][] convertToArray( ArrayList<SDataPoint> data )
     {
-        Number[][] number = new Long[data.size()][2];
+        Number[][] number = new Number[data.size()][2];
         int i = 0;
         for ( SDataPoint sdp : data )
         {

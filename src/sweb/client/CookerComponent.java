@@ -674,7 +674,7 @@ public class CookerComponent extends Composite
                  });
                  
 
-                 refreshGraphData(strLogName);
+         //        refreshGraphData(strLogName);
 
                  Widget w = sGraphPanel.getWidget();
                  if ( w != null )

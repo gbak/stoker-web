@@ -408,10 +408,8 @@ public class StokerFile
 
     public void stop()
     {
-        //logTimer.cancel();
-        
-        // TODO: removed for EventBus
-        //m_controller.removeTempListener(m_dl);
+
+        eventBus.unregister(this);
 
     }
 

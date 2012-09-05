@@ -60,7 +60,7 @@ public class LogManagerImpl implements LogManager
 {
   //  ConcurrentHashMap<String,SDataPoint> hmLatestData = new ConcurrentHashMap<String,SDataPoint>();
 
-    HashMap<String,StokerFile> fileLogList = new HashMap<String,StokerFile>();
+    HashMap<String,StokerFile> m_fileLogList = new HashMap<String,StokerFile>();
  //   ArrayList<BlowerEventListener> m_arListener = new ArrayList<BlowerEventListener>();
  //   private Set<DataPointEventListener> m_dpListener = Collections.newSetFromMap(new ConcurrentHashMap<DataPointEventListener,Boolean>());
 
@@ -134,7 +134,7 @@ public class LogManagerImpl implements LogManager
             if ( logName == null || logName.length() == 0)
                 logName = "Default";
 
-            return fileLogList.get(logName).readAllDataPoints();
+            return m_fileLogList.get(logName).readAllDataPoints();
         }
         catch (IOException e)
         {
@@ -146,7 +146,7 @@ public class LogManagerImpl implements LogManager
     @Override
     public ArrayList<SDevice> getConfigSettings( String logName )
     {
-       return fileLogList.get(logName).getConfigFromFile();    
+       return m_fileLogList.get(logName).getConfigFromFile();    
     }
     
    /* public Set<Entry<String, SDataPoint>> getData()
@@ -163,7 +163,7 @@ public class LogManagerImpl implements LogManager
     {
         ArrayList<LogItem> li = new ArrayList<LogItem>();
 
-        for ( StokerFile sf : fileLogList.values() )
+        for ( StokerFile sf : m_fileLogList.values() )
         {
             LogItem l = new LogItem(sf.getCookerName(),sf.getName(), sf.getDeviceList());
             li.add(l);
@@ -185,19 +185,19 @@ public class LogManagerImpl implements LogManager
     @Override
     public String getLogFilePath(String strLogName )
     {
-        StokerFile sf = fileLogList.get(strLogName);
+        StokerFile sf = m_fileLogList.get(strLogName);
         return sf.getFilePath();
     }
     @Override
     public String getLogFileName(String strLogName )
     {
-        StokerFile sf = fileLogList.get(strLogName);
+        StokerFile sf = m_fileLogList.get(strLogName);
         return sf.getFileName();
     }
     @Override
     public boolean isLogRunning( String strLogName )
     {
-       return fileLogList.containsKey(strLogName);
+       return m_fileLogList.containsKey(strLogName);
     }
     @Override
     public void startLog(String strCookerName, String strLogName) throws LogExistsException
@@ -210,12 +210,12 @@ public class LogManagerImpl implements LogManager
     @Override
     public void startLog( LogItem logItem ) throws LogExistsException
     {
-        if ( fileLogList.containsKey(logItem.getLogName())) throw new LogExistsException(logItem.getLogName());
+        if ( m_fileLogList.containsKey(logItem.getLogName())) throw new LogExistsException(logItem.getLogName());
         
         StokerFile sf = stokerFileProvider.get(); //new StokerFile( logItem );
         sf.init( logItem );  
      
-        fileLogList.put( logItem.getLogName(), sf );
+        m_fileLogList.put( logItem.getLogName(), sf );
         Log.info("Starting log: [" + logItem.getLogName() + "]");
         sf.start();
 
@@ -224,10 +224,10 @@ public class LogManagerImpl implements LogManager
     @Override
     public void stopLog( String strLogName ) throws LogNotFoundException
     {
-        StokerFile sf = fileLogList.get(strLogName);
+        StokerFile sf = m_fileLogList.get(strLogName);
         if ( sf ==  null ) throw new LogNotFoundException( strLogName );
-        fileLogList.remove(sf);
         sf.stop();
+        m_fileLogList.remove(sf);
         logger.info("Log stopped: " + strLogName );
     }
 
@@ -235,7 +235,7 @@ public class LogManagerImpl implements LogManager
     @Override
     public void stopAllLogs()
     {
-       for ( StokerFile sf : fileLogList.values() )
+       for ( StokerFile sf : m_fileLogList.values() )
        {
            sf.stop();
        }
@@ -248,7 +248,7 @@ public class LogManagerImpl implements LogManager
         // to the given file.
         Integer returnVar = new Integer( 0 );
 
-        StokerFile sf = fileLogList.get( selectedLog );
+        StokerFile sf = m_fileLogList.get( selectedLog );
         if ( sf != null )
         {
            sf.attachToExistingLog( ListLogFiles.getFullPathForFile(fileName) );
@@ -274,7 +274,7 @@ public class LogManagerImpl implements LogManager
     @Override
     public ArrayList<LogNote> getNotes(String logName)
     {
-        return fileLogList.get( logName ).readAllNotes();
+        return m_fileLogList.get( logName ).readAllNotes();
     }
     
     @Override
@@ -283,7 +283,7 @@ public class LogManagerImpl implements LogManager
         logger.info("Adding note to log: " + note );
         for ( String logName: logList )
         {
-            StokerFile sf = fileLogList.get( logName );
+            StokerFile sf = m_fileLogList.get( logName );
             sf.addNote( note );
         }
     }
@@ -297,7 +297,7 @@ public class LogManagerImpl implements LogManager
         switch( cce.getEventType() )
         {
             case CONFIG_SAVED:
-                
+                rectifyLogs();
                 break;
             case CONFIG_LOADED:
                 logger.info("LogManagerImpl:detectConfigChange() CONFIG_LOADED");
@@ -310,26 +310,79 @@ public class LogManagerImpl implements LogManager
         }
     }
     
+    /**
+     * Check for running logs that may no longer have a cooker named for them.
+     * Configuration changes, manly cooker name changes, can orphan log files and make
+     * them no longer accessible.  The method will also start a default log if none exists
+     * for the cooker.
+     */
+    private void rectifyLogs()
+    {
+        HashMap<String,Cooker> hmCooker = new HashMap<String,Cooker>();
+        for ( Cooker cooker : stokerWebConfiguration.getCookerList().getCookerList())
+        {
+            hmCooker.put( cooker.getCookerName(), cooker);
+        }
+        
+       
+        ArrayList<String> addList = new ArrayList<String>();
+        
+        for ( StokerFile f : m_fileLogList.values() )
+        {
+            String cookerName = f.getCookerName();
+            if ( ! hmCooker.containsKey(cookerName))
+            {
+                try
+                {
+                    stopLog( f.getName() );
+                }
+                catch (LogNotFoundException e)
+                {
+                    // Doubt we'll ever get here...
+                    e.printStackTrace();
+                }
+            }
+           
+            
+        }
+        
+        for ( Cooker cooker : hmCooker.values() )
+        {
+            String strDefaultName = "Default_" + cooker.getCookerName();
+            if ( ! m_fileLogList.containsKey( strDefaultName ))
+            {
+               startDefaultLog(cooker);    
+            }
+        }
+        
+        
+        
+    }
     
     private void startDefaultLogs()
     {
          for ( Cooker cooker : stokerWebConfiguration.getCookerList().getCookerList() )
          {
-             String strDefaultName = "Default_" + cooker.getCookerName();
-             if ( ! isLogRunning(strDefaultName ))
-             {
-                 try
-                 {
-                     LogItem li = new LogItem(cooker.getCookerName(), strDefaultName, CookerHelper.getDeviceList(cooker));
-                     startLog(li);
-                 }
-                 catch (LogExistsException e)
-                 {
-                     logger.error( "LogExistsException: [" + strDefaultName + "]");
-                     try { stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
-                 }
-             }
+             startDefaultLog( cooker );
          }
+    }
+    
+    private void startDefaultLog( Cooker cooker )
+    {
+        String strDefaultName = "Default_" + cooker.getCookerName();
+        if ( ! isLogRunning(strDefaultName ))
+        {
+            try
+            {
+                LogItem li = new LogItem(cooker.getCookerName(), strDefaultName, CookerHelper.getDeviceList(cooker));
+                startLog(li);
+            }
+            catch (LogExistsException e)
+            {
+                logger.error( "LogExistsException: [" + strDefaultName + "]");
+                try { stopLog(strDefaultName); } catch (LogNotFoundException e1) { }
+            }
+        }
     }
     
     
