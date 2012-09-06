@@ -20,7 +20,7 @@ package sweb.client.gauge;
 
 import java.util.HashMap;
 
-import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerProbe;
 
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;

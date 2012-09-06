@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.shared.model.stoker;
+package sweb.shared.model.devices.stoker;
 
 import java.io.Serializable;
 

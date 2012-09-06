@@ -40,7 +40,7 @@ import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.alerts.StokerAlarmAlertModel;
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerProbe;
 
 
 public class StokerAlarm extends AlertCondition

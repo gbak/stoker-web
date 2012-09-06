@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.shared.model.stoker;
+package sweb.shared.model.devices.stoker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -126,18 +126,17 @@ public class StokerPitSensor extends StokerProbe implements Serializable
      */
     public void update( StokerPitSensor sps )
     {
-       super.update( (StokerProbe) sps );
-       
-       // Compare to see if the fan is the same
-       if ( sfan.getID().compareToIgnoreCase(sps.getFanDevice().getID()) == 0 )
-       {
-           sfan.update(sps.getFanDevice());
-       }
-       else
-       {
-       sfan = sps.getFanDevice();
-       }
-    }
+        super.update( (StokerProbe) sps );
+        
+        // Compare to see if the fan is the same
+        if ( sfan.getID().compareToIgnoreCase(sps.getFanDevice().getID()) == 0 )
+        {
+            sfan.update(sps.getFanDevice());
+        }
+        else
+        {
+            sfan = sps.getFanDevice();
+        }    }
     
     /**
      * Updates the current StokerPitSensor with the settings from the device in the array

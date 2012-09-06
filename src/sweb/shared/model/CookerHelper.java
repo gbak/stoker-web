@@ -25,8 +25,8 @@ import java.util.ArrayList;
 
 
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerPitSensor;
-import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
 
 public class CookerHelper  implements Serializable
 {

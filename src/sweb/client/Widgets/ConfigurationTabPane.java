@@ -23,9 +23,9 @@ import java.util.HashMap;
 
 import sweb.shared.model.Cooker;
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerFan;
-import sweb.shared.model.stoker.StokerPitSensor;
-import sweb.shared.model.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerFan;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
 
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.VerticalAlignment;

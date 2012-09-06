@@ -27,8 +27,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerFan;
-import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerFan;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 /**

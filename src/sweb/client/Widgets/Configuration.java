@@ -26,9 +26,9 @@ import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.stoker.StokerPitSensor;
-import sweb.shared.model.stoker.StokerProbe;
 
 import com.allen_sauer.gwt.log.client.Log;
 import com.smartgwt.client.data.RecordList;

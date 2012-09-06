@@ -37,7 +37,7 @@ import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
 /*
  *  Helper class to SDataPoint since GWT did not like the complex set of classes
  *  in the shared section.

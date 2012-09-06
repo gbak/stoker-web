@@ -58,10 +58,10 @@ import sweb.server.monitors.stoker.config.json.Stoker;
 import sweb.server.monitors.stoker.config.json.StokerOuter;
 
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerFan;
-import sweb.shared.model.stoker.StokerPitSensor;
-import sweb.shared.model.stoker.StokerProbe;
-import sweb.shared.model.stoker.StokerProbe.AlarmType;
+import sweb.shared.model.devices.stoker.StokerFan;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 
 
 import net.htmlparser.jericho.*;
@@ -453,8 +453,15 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
    {
       if ( sd instanceof StokerProbe )
       {
+          String alarmLocation = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_ALARM_SETTINGS_LOCATION);
+          
+          if ( alarmLocation != null && alarmLocation.compareToIgnoreCase("local") == 0)
             return "al" + URLEncoder.encode(sd.getID().toUpperCase(), "UTF-8") + "=" +
-                            URLEncoder.encode( new Integer(((StokerProbe) sd).getAlarmEnabled().ordinal()).toString(), "UTF-8");
+                          URLEncoder.encode( new Integer(AlarmType.NONE.ordinal()).toString(), "UTF-8");
+          
+            return "al" + URLEncoder.encode(sd.getID().toUpperCase(), "UTF-8") + "=" +
+                          URLEncoder.encode( new Integer(((StokerProbe) sd).getAlarmEnabled().ordinal()).toString(), "UTF-8");
+                           
 
       }
       return "";

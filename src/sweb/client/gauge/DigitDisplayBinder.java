@@ -18,8 +18,8 @@
 
 package sweb.client.gauge;
 
-import sweb.shared.model.stoker.StokerProbe;
-import sweb.shared.model.stoker.StokerProbe.AlarmType;
+import sweb.shared.model.devices.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;

@@ -39,7 +39,7 @@ import org.moxieapps.gwt.highcharts.client.plotOptions.SplinePlotOptions;
 
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.stoker.StokerFan;
+import sweb.shared.model.devices.stoker.StokerFan;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 
@@ -190,6 +190,7 @@ public class HighChartLineGraph extends StokerLineGraph
                 s.setPoints( convertToArray(dpList));
                 addNewSeries( sd,s );
                 deviceMap.remove(deviceID );  // Remove this so it does not get added below
+                mapSeries.put( sd.getID(), s);
             }
         }
 

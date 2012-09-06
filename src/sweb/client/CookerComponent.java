@@ -44,8 +44,8 @@ import sweb.shared.model.alerts.AlertModel;
 import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.logfile.LogDir;
-import sweb.shared.model.stoker.StokerProbe;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;

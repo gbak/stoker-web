@@ -37,11 +37,11 @@ import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.SDeviceBase;
+import sweb.shared.model.devices.stoker.StokerFan;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.logfile.LogNote;
 import sweb.shared.model.stoker.StokerDeviceTypes;
-import sweb.shared.model.stoker.StokerFan;
-import sweb.shared.model.stoker.StokerPitSensor;
-import sweb.shared.model.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 import sweb.shared.model.weather.WeatherData;
 

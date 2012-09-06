@@ -16,13 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **/
 
-package sweb.shared.model.stoker;
+package sweb.shared.model.devices.stoker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.stoker.StokerDeviceTypes;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 public class StokerProbe extends SDevice implements Serializable
@@ -202,15 +203,17 @@ public class StokerProbe extends SDevice implements Serializable
 
         return AlarmType.NONE;
     }
+   
     
     public void update( StokerProbe sp )
     {
         super.update( (SDevice) sp );
         targetTemp = sp.getTargetTemp();
+
         lowerTempAlarm = sp.getLowerTempAlarm();
         upperTempAlarm = sp.getUpperTempAlarm();
         alarm = sp.getAlarmEnabled();
-        
+
     }
     
     public void update( ArrayList<SDevice> arsd )

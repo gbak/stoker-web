@@ -41,10 +41,10 @@ import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerHelper;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
+import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
-import sweb.shared.model.stoker.StokerPitSensor;
-import sweb.shared.model.stoker.StokerProbe;
-import sweb.shared.model.stoker.StokerProbe.AlarmType;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -224,7 +224,7 @@ public class StokerWebConfiguration
                
                arAllDevices.addAll(CookerHelper.getDeviceList( c ));
             }
-            removeAlarmsIfLocal( arAllDevices );
+          //  removeAlarmsIfLocal( arAllDevices );
             m_deviceConfiguration.update(arAllDevices);
             m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_SAVED) );
             
@@ -238,6 +238,9 @@ public class StokerWebConfiguration
     private void removeAlarmsIfLocal( ArrayList<SDevice> deviceList )
     {
         String alarmLocation = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_ALARM_SETTINGS_LOCATION);
+        
+        if ( alarmLocation == null )
+            return;
         
         if ( alarmLocation.compareToIgnoreCase("local") == 0)
             for ( SDevice sd : deviceList )

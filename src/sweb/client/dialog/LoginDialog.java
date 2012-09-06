@@ -73,9 +73,9 @@ public class LoginDialog extends DialogBox implements ClickHandler
        loginPanel.setWidget(1, 1, userTextBox );
        loginPanel.setWidget(2, 0, passHTML );
        loginPanel.setWidget(2, 1, passTextBox );
-       loginPanel.setWidget(3, 0, loginButton );
+       loginPanel.setWidget(3, 0, cancelButton );
        loginPanel.setWidget(3, 1, loginMessage );
-       loginPanel.setWidget(3, 2, cancelButton );
+       loginPanel.setWidget(3, 2, loginButton );
        loginPanel.getRowFormatter().addStyleName(3,"login-buttonRow");
        loginPanel.getFlexCellFormatter().setColSpan(0, 0, 3);
       // loginPanel.getFlexCellFormatter().setColSpan(3, 0, 3);
