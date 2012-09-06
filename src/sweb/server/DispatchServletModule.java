@@ -21,18 +21,19 @@ package sweb.server;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
+
+import sweb.server.alerts.AlertManager;
+import sweb.server.alerts.AlertsManagerImpl;
 import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.config.stoker.StokerHardwareDevice;
-import sweb.server.controller.alerts.AlertManager;
-import sweb.server.controller.alerts.AlertsManagerImpl;
-import sweb.server.controller.data.telnet.StokerTelnetController;
-import sweb.server.controller.weather.WeatherController;
+import sweb.server.data.telnet.StokerTelnetController;
 import sweb.server.log.LogManager;
 import sweb.server.log.LogManagerImpl;
 import sweb.server.log.StokerFile;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.monitors.stoker.StokerPitMonitor;
+import sweb.server.weather.WeatherController;
 
 public class DispatchServletModule extends ServletModule
 {

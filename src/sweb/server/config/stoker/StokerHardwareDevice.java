@@ -51,7 +51,7 @@ import com.google.inject.Inject;
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
 import sweb.server.config.HardwareDeviceConfiguration;
-import sweb.server.controller.events.ConfigChangeEvent;
+import sweb.server.events.ConfigChangeEvent;
 import sweb.server.monitors.stoker.config.json.Blower;
 import sweb.server.monitors.stoker.config.json.Sensor;
 import sweb.server.monitors.stoker.config.json.Stoker;

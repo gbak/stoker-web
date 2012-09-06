@@ -37,8 +37,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 
 import sweb.server.config.StokerWebConfiguration;
-import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.DataPointEvent;
+import sweb.server.events.ConfigChangeEvent;
+import sweb.server.events.DataPointEvent;
 import sweb.server.log.exceptions.LogExistsException;
 import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.server.monitors.PitMonitor;

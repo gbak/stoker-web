@@ -35,8 +35,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.ConfigChangeEvent.EventType;
+import sweb.server.events.ConfigChangeEvent;
+import sweb.server.events.ConfigChangeEvent.EventType;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerHelper;
 import sweb.shared.model.CookerList;

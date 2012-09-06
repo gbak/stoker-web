@@ -23,7 +23,6 @@ import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.ConfigurationSettings;
-import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
 import sweb.shared.model.alerts.AlertModel;

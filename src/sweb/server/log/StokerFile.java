@@ -39,9 +39,9 @@ import org.apache.log4j.Logger;
 
 import sweb.server.StokerWebConstants;
 import sweb.server.StokerWebProperties;
-import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.WeatherChangeEvent;
+import sweb.server.events.ConfigChangeEvent;
+import sweb.server.events.DataPointEvent;
+import sweb.server.events.WeatherChangeEvent;
 import sweb.server.log.LogFileFormatter.LineType;
 import sweb.server.monitors.PitMonitor;
 import sweb.shared.model.LogItem;

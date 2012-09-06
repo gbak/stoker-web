@@ -26,8 +26,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
-import sweb.server.controller.events.ConfigChangeEvent;
-import sweb.server.controller.events.StateChangeEvent;
+import sweb.server.events.ConfigChangeEvent;
+import sweb.server.events.StateChangeEvent;
 import sweb.server.log.LogManager;
 import sweb.server.security.LoginProperties;
 
