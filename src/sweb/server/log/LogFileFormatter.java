@@ -89,6 +89,10 @@ public class LogFileFormatter
     
     public static enum LineType  { CONFIG, BLOWER, DATA, WEATHER, NOTE, NONE };
 
+    public static String getDeviceNumber( String line )
+    {
+        return line.substring(2, 4);
+    }
 
     public static LineType getLineType( String prefix )
     {

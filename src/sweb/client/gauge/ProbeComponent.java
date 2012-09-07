@@ -566,8 +566,13 @@ public class ProbeComponent extends Composite
            if ( ((SBlowerDataPoint)dp).getTotalRuntime() < 0 )  // dummy point, ignore
                return;
            
-           m_stokerProbe.getFanDevice().update(dp);
-           updateFanStatus();
+           // You ask how the fan device can be null if we have a blower data point?
+           // the blower may have been removed from device while the current log is running
+           if ( m_stokerProbe.getFanDevice() != null )
+           {
+              m_stokerProbe.getFanDevice().update(dp);
+              updateFanStatus();
+           }
        }
        else
        {

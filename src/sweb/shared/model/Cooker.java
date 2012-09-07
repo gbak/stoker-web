@@ -95,7 +95,6 @@ public class Cooker implements Serializable
         return probeList;
     }
 
-    
     public void removeStokerProbe( String probeID )
     {
         for ( StokerProbe sp : probeList )

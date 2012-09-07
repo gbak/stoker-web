@@ -241,11 +241,13 @@ public class Configuration extends Dialog
                     {
                        deviceHash.remove(pit.getID());    
                     }
-                    
-                    String fanID =pit.getFanDevice().getID();;
-                    if ( deviceHash.containsKey( fanID ))
+                    if ( pit != null && pit.getFanDevice() != null )
                     {
-                        deviceHash.remove(fanID);
+                        String fanID =pit.getFanDevice().getID();;
+                        if ( deviceHash.containsKey( fanID ))
+                        {
+                            deviceHash.remove(fanID);
+                        }
                     }
                     
                 }

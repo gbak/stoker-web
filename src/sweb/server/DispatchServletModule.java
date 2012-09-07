@@ -33,6 +33,7 @@ import sweb.server.log.LogManagerImpl;
 import sweb.server.log.StokerFile;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.monitors.stoker.StokerPitMonitor;
+import sweb.server.report.ReportData;
 import sweb.server.weather.WeatherController;
 
 public class DispatchServletModule extends ServletModule
@@ -66,6 +67,8 @@ public class DispatchServletModule extends ServletModule
 
       bind(WeatherController.class).asEagerSingleton();
       bind(ClientMessenger.class).to(CometMessenger.class).in(Singleton.class);
+      
+      bind(ReportData.class);
       
       bind(StokerFile.class);
       

@@ -249,13 +249,14 @@ public class ReportData
                     case DATA:
                         for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hmByLogDevNumAndDeviceID ))
                         {
-                             TimeSeries ts = mapProbeChartPoints.get(sdp.getDeviceID());
+                            String deviceName = hmByDeviceIDAndSDevice.get(sdp.getDeviceID()).getName();
+                             TimeSeries ts = mapProbeChartPoints.get(sdp.getDeviceID() + deviceName);
                              if ( ts == null )
                              {
-                                 String deviceName = hmByDeviceIDAndSDevice.get(sdp.getDeviceID()).getName();
+                                 
                                  logger.debug("Creating new TimeSeries for device: [" + deviceName + "]");
                                  ts = new TimeSeries(deviceName, Second.class );
-                                 mapProbeChartPoints.put( sdp.getDeviceID(), ts);
+                                 mapProbeChartPoints.put( sdp.getDeviceID() + deviceName, ts);
                                  
                              }
                              RegularTimePeriod s = new Second( sdp.getCollectedDate() );
@@ -285,7 +286,8 @@ public class ReportData
                     
                     case CONFIG:
                         SDevice sd = LogFileFormatter.parseLogConfigLine( str );
-                        hmByLogDevNumAndDeviceID.put("1", sd.getID() );
+                        String deviceNumInLog = LogFileFormatter.getDeviceNumber(str);
+                        hmByLogDevNumAndDeviceID.put(deviceNumInLog, sd.getID() );
                         hmByDeviceIDAndSDevice.put(sd.getID(), sd );
                         break;
                 

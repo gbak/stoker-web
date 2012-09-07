@@ -58,6 +58,12 @@ public class ConfigurationTabPane extends VLayout
         
         DynamicForm tabNameForm = new DynamicForm();  
         nameTextItem = new TextItem();  
+        
+        if ( cooker != null )
+        {
+            nameTextItem.setValue(cooker.getCookerName());
+        }
+        
         nameTextItem.setTitle("Cooker Name");  
         nameTextItem.addChangedHandler(tabChangedHandler);  
         tabNameForm.setFields( nameTextItem );
