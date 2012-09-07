@@ -44,6 +44,9 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import sweb.server.report.ReportData;
 
 public class ReportServlet extends HttpServlet
@@ -51,6 +54,16 @@ public class ReportServlet extends HttpServlet
    private static final long serialVersionUID = 4044185269678824532L;
    private static final Logger logger = Logger.getLogger(ReportServlet.class.getName());
 
+   private Provider<ReportData> reportDataProvider;
+   
+   @Inject
+   ReportServlet(Provider<ReportData> reportDataProvider)
+   {
+      this.reportDataProvider = reportDataProvider;
+      
+   }
+   
+   
    protected void doGet(HttpServletRequest request, HttpServletResponse response)
          throws ServletException, IOException
    {
@@ -68,7 +81,9 @@ public class ReportServlet extends HttpServlet
           String strReportName = queryString.substring(8);
           logger.info("Report Name selected: " + strReportName );
           
-          ReportData reportData = new ReportData( strReportName );
+          //ReportData reportData = new ReportData( strReportName );
+          ReportData reportData = reportDataProvider.get();
+          reportData.init( strReportName );
           
           JRDataSource dataSource = new JRMapCollectionDataSource( reportData.getReportDataSource().getReportData() );
           

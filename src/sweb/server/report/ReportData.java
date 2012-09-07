@@ -36,9 +36,12 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
+import com.google.inject.Inject;
+
 import sweb.server.log.ListLogFiles;
 import sweb.server.log.LogFileFormatter;
 import sweb.server.log.LogFileFormatter.LineType;
+import sweb.server.log.LogManager;
 import sweb.server.log.exceptions.LogNotFoundException;
 import sweb.server.log.exceptions.LogReadErrorException;
 import sweb.server.report.JasperReportConstants.ReportConstants;
@@ -65,13 +68,20 @@ public class ReportData
     HashMap<String,TimeSeries> mapProbeChartPoints = new HashMap<String,TimeSeries>();
     
     String strBlowerID = new String();
-    
+    private LogManager logManager = null;
     
     String strLogFilePath = null;
     
     private static final Logger logger = Logger.getLogger(ReportData.class.getName());
     
-    public ReportData( String name ) throws LogNotFoundException, LogReadErrorException
+    @Inject
+    private ReportData(LogManager logManager ) 
+    { 
+        this.logManager = logManager;
+        
+    }
+    
+    public void init( String name ) throws LogNotFoundException, LogReadErrorException
     {
         String strLogNameShort;
         
@@ -85,10 +95,9 @@ public class ReportData
         }
         else
         {
-            // TODO: removed these to eliminate a compile error.  Not sure what the case is for.
             logger.debug("Log file does not end in .log");
-           strLogFilePath = ""; //Controller.getInstance().getDataOrchestrator().getLogFilePath(name);
-           strLogNameShort = ""; //Controller.getInstance().getDataOrchestrator().getLogFileName(name);
+           strLogFilePath = logManager.getLogFilePath(name); //Controller.getInstance().getDataOrchestrator().getLogFilePath(name);
+           strLogNameShort = logManager.getLogFileName(name); //Controller.getInstance().getDataOrchestrator().getLogFileName(name);
         }
         logger.debug("Full path is: " + strLogFilePath );
         logger.debug("Short log name: " + strLogNameShort );
