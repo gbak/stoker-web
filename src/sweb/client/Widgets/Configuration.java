@@ -31,6 +31,7 @@ import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 import com.allen_sauer.gwt.log.client.Log;
+import com.oracle.net.Sdp;
 import com.smartgwt.client.data.RecordList;
 import com.smartgwt.client.types.Alignment;
 import com.smartgwt.client.types.DragDataAction;
@@ -306,8 +307,15 @@ public class Configuration extends Dialog
         {
             DeviceType dt = sd.getProbeType();
             String deviceTypeString;
-            if (( dt.toString().compareToIgnoreCase("PIT") == 0 ) || (dt.toString().compareToIgnoreCase("FOOD") == 0 )) 
+            if (( dt.toString().compareToIgnoreCase("PIT") == 0 ) || (dt.toString().compareToIgnoreCase("FOOD") == 0 ))
+            {
                 deviceTypeString = "Temp";
+                if ( dt.toString().compareToIgnoreCase("PIT") == 0)
+                {
+                    StokerPitSensor sp = (StokerPitSensor) sd;
+                    sp.setFanDevice(null);
+                }
+            }
             else
                 deviceTypeString = "Blower";
            

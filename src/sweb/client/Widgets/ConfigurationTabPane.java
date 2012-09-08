@@ -276,6 +276,8 @@ public class ConfigurationTabPane extends VLayout
             ProbeRecord tempRecord = (ProbeRecord) probeList.get(i);
             String probeID = tempRecord.getID();
             SDevice sd = deviceMap.get( probeID );
+            if ( sd instanceof StokerPitSensor )
+                ((StokerPitSensor)sd).setFanDevice(null);
             cooker.addStokerProbe((StokerProbe) sd );
             
         }

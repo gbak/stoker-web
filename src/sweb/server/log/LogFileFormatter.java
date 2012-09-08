@@ -203,7 +203,7 @@ public class LogFileFormatter
         return s;
     }
     
-    private static String decode( String dec )
+    public static String decode( String dec )
     {
         String s = null;
         try

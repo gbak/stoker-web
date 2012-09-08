@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,9 +83,19 @@ public class ReportData
         
     }
     
-    public void init( String name ) throws LogNotFoundException, LogReadErrorException
+    public void init( String file ) throws LogNotFoundException, LogReadErrorException
     {
         String strLogNameShort;
+        String name = "";
+        try
+        {
+            name = URLDecoder.decode(file,"UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            
+            e.printStackTrace();
+        }
         
         logger.debug("ReportData: passed in log name: [" + name + "]");
         if ( name.endsWith(".log"))
