@@ -15,6 +15,9 @@ h1 {
   font-size: 16pt;
 }
 
+.sweb-OuterPanel {
+   margin: 0 10px 0 0;
+}
 /* Buttons */
 
 .sweb-ConnectionButton {
@@ -101,7 +104,7 @@ h1 {
 
 
 .sweb-LogsDecorator {
-   margin: 0 0 5px 0;
+   margin: 0 10px 5px 0;
 }
 
 .sweb-flexGauge {
@@ -346,6 +349,11 @@ h1 {
 }
 
 
+/* This is required to make the center of the DP to not look funky */
+.gwt-DecoratorPanel .middleCenter {
+   height: 100%;
+   width: 100%;
+ }
 
 .gwt-DisclosurePanel {
 }

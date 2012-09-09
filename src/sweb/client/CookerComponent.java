@@ -52,6 +52,10 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
+import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -87,7 +91,6 @@ public class CookerComponent extends Composite
     private static final String strConnectedText = "Connected";
     private static final String strNotConnectedText = "Not Connected";
 
-
     private HashMap<String,ProbeComponent> m_guageMap = new HashMap<String,ProbeComponent>();
 
     // List of logs that are currently active on the server.
@@ -95,16 +98,16 @@ public class CookerComponent extends Composite
     private HashMap<String,LogItem> m_activeLogItemsMap = new HashMap<String,LogItem>();
 
 
-    private DecoratorPanel m_outerMostDecPanel = new DecoratorPanel();
-    private VerticalPanel m_outerVPanel = new VerticalPanel();
     private FlowPanel m_stokerElementsPanel = new FlowPanel();
-   // private HorizontalPanel hpStokerElements = new HorizontalPanel();
-
+    private SimplePanel m_graphPanel = new SimplePanel();
+    private VerticalPanel m_outerVPanel = new VerticalPanel();
+    private DecoratorPanel m_outerMostDecPanel = new DecoratorPanel();
+    private DisclosurePanel m_graphDisclosurePanel = null;
     private HorizontalPanel m_StokerHeaderPanel = new HorizontalPanel();
+
+    //  private HTMLPanel sGraphPanel = new HTMLPanel("<div class=\"content\" style=\"width: 100%; height: 400px; position: absolute; overflow: hidden \" id=\"graph\"></div>");
      
   
-    private SimplePanel m_graphPanel = new SimplePanel();
-  //  private HTMLPanel sGraphPanel = new HTMLPanel("<div class=\"content\" style=\"width: 100%; height: 400px; position: absolute; overflow: hidden \" id=\"graph\"></div>");
    
     private Label m_cookerLabel = new Label("Cooker: ");
     private Label m_logsLabel = new Label("Logs ");
@@ -123,11 +126,9 @@ public class CookerComponent extends Composite
     private Button m_applyProfileButton = new Button("Apply Profile");
     private Button m_alertsButton = new Button("Alerts");
 
-   // private Image StatusImage = new Image(strConnectedImageURL);
     private HTML  m_statusText = new HTML(strConnectedText);
 
     private Cooker m_cooker = null;
-  //  private String m_PitID = null;
 
     private int m_gaugePanelWidth = 0;
     private int m_gaugePanelHeight = 0;
@@ -554,8 +555,6 @@ public class CookerComponent extends Composite
     
     public void init(Cooker c)
     {
-        
-
         if ( m_cooker != null )
         {
             System.out.println("Cooker init() already called.");
@@ -572,14 +571,14 @@ public class CookerComponent extends Composite
         m_cookerNameLabel.setText(m_cooker.getCookerName());
 
     //    sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
-        DecoratorPanel dpGraph = new DecoratorPanel();
+        final DecoratorPanel dpGraph = new DecoratorPanel();
         
        // dpGraph.addStyleName("sweb-graphPanel");
 
         m_Height = 385;
         if ( m_alignment == Alignment.SINGLE)
         {
-            m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 10;
+            m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 15;
             
             m_graphPanel.setWidth(m_Width + "px");
           //  sGraphPanel.setWidth("100%");
@@ -591,20 +590,36 @@ public class CookerComponent extends Composite
         else
         {
             m_Height = 325;
-            m_Width = m_stokerElementsPanel.getOffsetWidth()- 20;
+            m_Width = m_stokerElementsPanel.getOffsetWidth()- 50;
 
             m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");
 
             m_graphPanel.setHeight( m_Height + "px");
-            DisclosurePanel dp = new DisclosurePanel("Graph");
+            m_graphDisclosurePanel = new DisclosurePanel("Graph");
         //    dp.setWidth(new Integer(hpStokerElements.getOffsetWidth() - 10).toString() + "px");
-            dp.setWidth(new Integer(m_Width).toString() + "px");
-            dp.setVisible(true);
-            dp.setContent( m_graphPanel );
-            dp.setAnimationEnabled(true);
+          //  dp.setWidth(new Integer(m_Width).toString() + "px");
             
-            dpGraph.add( dp );
-           m_outerVPanel.add( dpGraph );
+            // We can set 100% here because collapsed, 100% is quite small.
+            m_graphDisclosurePanel.setWidth(new Integer(m_Width - 5).toString() + "px");
+            m_graphDisclosurePanel.setVisible(true);
+            m_graphDisclosurePanel.setContent( m_graphPanel );
+            m_graphDisclosurePanel.setAnimationEnabled(true);
+            m_graphDisclosurePanel.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+
+                @Override
+                public void onOpen(OpenEvent<DisclosurePanel> event)
+                {
+                    m_Width = m_outerMostDecPanel.getOffsetWidth() - 50;
+                    m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                    m_graphDisclosurePanel.setWidth(new Integer(m_Width - 5).toString() + "px");
+                    m_graphStoker.setPixelSize(m_Width-5, m_Height);
+                    m_graphStoker.setNewSize(m_Width - 5, m_Height );
+
+                }
+                
+            });
+            dpGraph.add( m_graphDisclosurePanel );
+           m_outerVPanel.add( m_graphDisclosurePanel );
         }
         
         
@@ -644,17 +659,29 @@ public class CookerComponent extends Composite
                  {
                     public void onResize( ResizeEvent event )
                     {
-                        m_stokerElementsPanel.setWidth(event.getWidth() - 20 + "px");
+                     //   System.out.println("Window Width: " + Window.getClientWidth());
+                     //   System.out.println("Event Width: " + event.getWidth());
+                     //   System.out.println("Width: " + m_outerMostDecPanel.getOffsetWidth());
+                     //   m_stokerElementsPanel.setWidth(event.getWidth() - 20 + "px");
+                     //   m_outerMostDecPanel.setWidth(Window.getClientWidth() - 10 + "px");
+                        
                         if ( m_alignment == Alignment.SINGLE)
                         {
-                            m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 10;
+                           //m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 10;
+                           // m_Width = event.getWidth() - m_gaugePanelWidth - 20;
+                            m_Width = m_outerMostDecPanel.getOffsetWidth() - m_gaugePanelWidth - 20;
                             m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                           
+                            
                         }
                         else
                         {
                             m_Height = 325;
-                            m_Width = m_stokerElementsPanel.getOffsetWidth()- 20;
+                           // m_Width = m_stokerElementsPanel.getOffsetWidth()- 20;
+                            m_Width = m_outerMostDecPanel.getOffsetWidth() - 50;
                             m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                           m_graphDisclosurePanel.setWidth(new Integer(m_Width - 5).toString() + "px");
+                       //    
                         }
                          
                         m_graphStoker.setPixelSize(m_Width-5, m_Height);

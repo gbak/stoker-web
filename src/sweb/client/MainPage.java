@@ -237,6 +237,8 @@ public class MainPage
 
             m_outerDocPanel.setWidth("100%");
             m_outerDocPanel.setHeight("100%");
+            
+            m_outerDocPanel.setStyleName("sweb-OuterPanel");
 
             m_HeaderHP.add( new Image( "stokerweb5.png"));
             m_HeaderHP.setWidth("100%");
