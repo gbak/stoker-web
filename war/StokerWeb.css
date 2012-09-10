@@ -218,7 +218,7 @@ h1 {
 .InvalidLoginText {
 	color: red;
 }
-/** Most GWT widgets already have a style name defined */
+/** Most GWT widgets already have a style defined */
 
 
 .alerts-dialog-panell {
@@ -245,6 +245,10 @@ h1 {
     font-family: 'Trebuchet MS', Helvetica, sans-serif;
     padding: 0px 0px 0px 0px;
     width: 210px;
+}
+
+.label-GaugeName[disabled] {
+	background-color: #FFFFFF;
 }
 
 .panel-CookerType {
