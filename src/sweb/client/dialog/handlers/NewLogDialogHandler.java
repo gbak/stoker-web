@@ -20,7 +20,7 @@ package sweb.client.dialog.handlers;
 
 import java.util.ArrayList;
 
-import sweb.shared.model.SDevice;
+import sweb.shared.model.devices.SDevice;
 
 public interface NewLogDialogHandler
 {

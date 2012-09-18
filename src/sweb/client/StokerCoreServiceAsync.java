@@ -22,10 +22,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.ConfigurationSettings;
+import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
 import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.logfile.LogDir;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -35,11 +37,17 @@ public interface StokerCoreServiceAsync
     void getNewGraphDataPoints(String input, AsyncCallback<ArrayList<SDataPoint>> callback)
             throws IllegalArgumentException;
 
-    void getConfiguration(AsyncCallback<HashMap<String,SDevice>> callback)
+    void getDeviceConfiguration(AsyncCallback<ConfigurationSettings> callback)
             throws IllegalArgumentException;
 
-    void updateConfiguration( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)
-             throws IllegalArgumentException;
+    void getStokerWebConfiguration(AsyncCallback<CookerList> callback )
+            throws IllegalArgumentException;
+    
+    void updateTempAndAlarmSettings( ArrayList<SDevice> asd, AsyncCallback<Integer> callback)
+           throws IllegalArgumentException;
+    
+    void updateStokerWebConfig( CookerList cookerList, AsyncCallback<Integer> callback )
+            throws IllegalArgumentException;
 
     void countDownServer(AsyncCallback<Long> asyncCallback);
 
@@ -55,7 +63,7 @@ public interface StokerCoreServiceAsync
     void getLogList(AsyncCallback<ArrayList<LogItem>> asyncCallback ) throws IllegalArgumentException;
 
     void startLog( String strCookerName, String strLogName, ArrayList<SDevice> arSD, AsyncCallback<Integer> callback) throws IllegalArgumentException;
-    void stopLog( String strCookerName, String strLogName, AsyncCallback<Integer> callback) throws IllegalArgumentException;
+    void stopLog( String strCookerName, String strLogName, AsyncCallback<String> callback) throws IllegalArgumentException;
 
     void getLogFileNames(AsyncCallback<LogDir> asyncCallback ) throws IllegalArgumentException;
     void attachToExistingLog( String cookerName, String selectedLog, String fileName, AsyncCallback<Integer> asyncCallback ) throws IllegalArgumentException;

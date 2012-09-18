@@ -1,3 +1,21 @@
+/**
+ *  Stoker-web
+ *
+ *  Copyright (C) 2012  Gary Bak
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+
 package sweb.server;
 
 import java.io.BufferedInputStream;
@@ -12,7 +30,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +44,9 @@ import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 import sweb.server.report.ReportData;
 
 public class ReportServlet extends HttpServlet
@@ -34,6 +54,16 @@ public class ReportServlet extends HttpServlet
    private static final long serialVersionUID = 4044185269678824532L;
    private static final Logger logger = Logger.getLogger(ReportServlet.class.getName());
 
+   private Provider<ReportData> reportDataProvider;
+   
+   @Inject
+   ReportServlet(Provider<ReportData> reportDataProvider)
+   {
+      this.reportDataProvider = reportDataProvider;
+      
+   }
+   
+   
    protected void doGet(HttpServletRequest request, HttpServletResponse response)
          throws ServletException, IOException
    {
@@ -51,7 +81,9 @@ public class ReportServlet extends HttpServlet
           String strReportName = queryString.substring(8);
           logger.info("Report Name selected: " + strReportName );
           
-          ReportData reportData = new ReportData( strReportName );
+          //ReportData reportData = new ReportData( strReportName );
+          ReportData reportData = reportDataProvider.get();
+          reportData.init( strReportName );
           
           JRDataSource dataSource = new JRMapCollectionDataSource( reportData.getReportDataSource().getReportData() );
           
@@ -99,7 +131,7 @@ public class ReportServlet extends HttpServlet
      //       "jasper.reports.compile.temp",
      //       sc.getRealPath("/reports/"));
        
-       String stokerWebDir = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_STOKERWEB_DIR);
+       String stokerWebDir = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKERWEB_DIR);
        logger.debug("Setting property: jasper.report.compile.temp to: [" + stokerWebDir + "]");
        System.setProperty("jasper.reports.compile.temp", stokerWebDir );
        

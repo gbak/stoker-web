@@ -25,10 +25,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -46,7 +44,7 @@ public class StokerWebProperties extends Properties
         super();
         
         Map<String,String> mapEnv = System.getenv();
-        stokerWebDir = mapEnv.get(StokerConstants.ENV_STOKERWEB_DIR);
+        stokerWebDir = mapEnv.get(StokerWebConstants.ENV_STOKERWEB_DIR);
         if ( stokerWebDir == null )
         {
             String s = "Unable to find STOKERWEB_DIR environment variable, using '.'";
@@ -65,7 +63,7 @@ public class StokerWebProperties extends Properties
      
             //load( new FileInputStream(StokerConstants.FILE_STOKERWEB_PROPERTIES));
             InputStream inputStream = this.getClass().getClassLoader()
-                  .getResourceAsStream(StokerConstants.FILE_STOKERWEB_PROPERTIES);
+                  .getResourceAsStream(StokerWebConstants.FILE_STOKERWEB_PROPERTIES);
             load( inputStream );
             
         }
@@ -100,7 +98,7 @@ public class StokerWebProperties extends Properties
                 if ( swp == null )
                 {
                     swp = new StokerWebProperties();
-                    swp.setProperty(StokerConstants.PROPS_STOKERWEB_DIR, stokerWebDir );
+                    swp.setProperty(StokerWebConstants.PROPS_STOKERWEB_DIR, stokerWebDir );
                 }
             }
         }
@@ -116,7 +114,7 @@ public class StokerWebProperties extends Properties
         long retval;
         try
         {
-           tmpString = StokerWebProperties.getInstance().getProperty(StokerConstants.PROPS_LOG_FILE_PERIOD);
+           tmpString = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_LOG_FILE_PERIOD);
            if ( tmpString == null )
                throw new NumberFormatException();
 
@@ -125,9 +123,9 @@ public class StokerWebProperties extends Properties
         }
         catch(NumberFormatException nfe)
         {
-            logger.error("Unable to convert property [" + StokerConstants.PROPS_LOG_FILE_PERIOD + "] with value [" +
+            logger.error("Unable to convert property [" + StokerWebConstants.PROPS_LOG_FILE_PERIOD + "] with value [" +
                     tmpString + "] to a long");
-            throw new InvalidStokerWebPropertyException(StokerConstants.PROPS_LOG_FILE_PERIOD);
+            throw new InvalidStokerWebPropertyException(StokerWebConstants.PROPS_LOG_FILE_PERIOD);
         }
         return retval;
     }
