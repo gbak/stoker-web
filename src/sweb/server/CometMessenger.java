@@ -30,6 +30,8 @@ import net.zschech.gwt.comet.server.CometSession;
 
 import org.apache.log4j.Logger;
 
+import com.google.inject.Inject;
+
 public class CometMessenger implements ClientMessenger
 {
 
@@ -37,6 +39,8 @@ public class CometMessenger implements ClientMessenger
     
     private static final Logger logger = Logger.getLogger(CometMessenger.class.getName());
     
+    @Inject
+    private CometMessenger() { }
     
     @Override
     public void addSession(HttpSession httpSession)

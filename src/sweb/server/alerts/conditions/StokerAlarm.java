@@ -32,6 +32,7 @@ import com.google.inject.Inject;
 
 import sweb.server.alerts.AlertManager;
 import sweb.server.alerts.delivery.Messenger;
+import sweb.server.config.StokerWebConfiguration;
 import sweb.server.events.ConfigChangeEvent;
 import sweb.server.events.DataPointEvent;
 
@@ -51,15 +52,16 @@ public class StokerAlarm extends AlertCondition
    private StokerAlarmAlertModel saa = null;
          
    //private Controller controller;
-   private PitMonitor m_pitMonitor;
+  // private PitMonitor m_pitMonitor;
+   private StokerWebConfiguration m_stokerWebConfiguration;
    private AlertManager m_alertManager;
    
    
    @Inject
-   public StokerAlarm(PitMonitor pit, AlertManager alert, EventBus eventBus) 
+   public StokerAlarm(StokerWebConfiguration stokerWebConfiguration, AlertManager alert, EventBus eventBus) 
    { 
        super(); 
-       this.m_pitMonitor = pit;
+       this.m_stokerWebConfiguration = stokerWebConfiguration;
        this.m_alertManager = alert;
        eventBus.register(this);
        init();
@@ -80,7 +82,7 @@ public class StokerAlarm extends AlertCondition
    private void init()
    {
     //  setConfig();
-      executor = Executors.newFixedThreadPool(2);
+      executor = Executors.newFixedThreadPool(3);
       
       // TODO: Removed for EventBus
      // handleControllerEvents();
@@ -95,6 +97,7 @@ public class StokerAlarm extends AlertCondition
       m_hmConfig = Controller.getInstance().getStokerConfiguration().data();   
    }*/
    
+   // This needs to change to a thread pool...
    @Subscribe
    public void handleDataPointEvent(DataPointEvent de)
    {
@@ -239,7 +242,7 @@ public class StokerAlarm extends AlertCondition
          
          for ( SProbeDataPoint spdp : aldp )
          {
-             SDevice sd = m_pitMonitor.getDeviceByID( spdp.getDeviceID());
+             SDevice sd = m_stokerWebConfiguration.getDeviceByID( spdp.getDeviceID());
            // SDevice sd = m_hmConfig.get(spdp.getDeviceID());  // TODO: remove
             if ( sd == null || ! sd.isProbe() )
                continue;
@@ -247,7 +250,7 @@ public class StokerAlarm extends AlertCondition
             StokerProbe sp = (StokerProbe) sd;
             
             
-            logger.debug("StokerAlarm: DataPoint::StateChange() StokerProbe Name: " + sp.getName());
+            logger.debug("StokerAlarm: DataPoint::StateChange() StokerProbe Name: " + sp.getName() + " Alarm: " + sp.getAlarmEnabled() );
             if ( sp.getAlarmEnabled() == StokerProbe.AlarmType.NONE )
             {
                continue;
