@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 public class ControllerEventLight implements Serializable
 {
-    public enum EventTypeLight { NONE, CONFIG_UPDATE, LOST_CONNECTION, CONNECTION_ESTABLISHED }
+    public enum EventTypeLight { NONE, CONFIG_UPDATE, CONFIG_UPDATE_REFRESH, LOST_CONNECTION, CONNECTION_ESTABLISHED, EXTENDED_CONNECTION_LOSS }
 
     private EventTypeLight m_EventTypeLight = EventTypeLight.NONE;
 

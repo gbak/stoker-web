@@ -1,3 +1,21 @@
+/**
+ *  Stoker-web
+ *
+ *  Copyright (C) 2012  Gary Bak
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
+
 package sweb.server.report;
 
 import java.io.BufferedReader;
@@ -5,6 +23,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,20 +38,22 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.log.ListLogFiles;
-import sweb.server.controller.log.LogFileFormatter;
-import sweb.server.controller.log.LogFileFormatter.LineType;
-import sweb.server.controller.log.exceptions.LogNotFoundException;
-import sweb.server.controller.log.exceptions.LogReadErrorException;
+import com.google.inject.Inject;
+
+import sweb.server.log.LogManager;
+import sweb.server.log.exceptions.LogNotFoundException;
+import sweb.server.log.exceptions.LogReadErrorException;
+import sweb.server.log.file.ListLogFiles;
+import sweb.server.log.file.LogFileFormatter;
+import sweb.server.log.file.LogFileFormatter.LineType;
 import sweb.server.report.JasperReportConstants.ReportConstants;
 import sweb.server.report.TableEntry.ActionType;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.StokerFan;
-import sweb.shared.model.StokerPitSensor;
-import sweb.shared.model.StokerProbe;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.stoker.StokerFan;
+import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.logfile.LogNote;
 
 public class ReportData
@@ -48,15 +70,32 @@ public class ReportData
     HashMap<String,TimeSeries> mapProbeChartPoints = new HashMap<String,TimeSeries>();
     
     String strBlowerID = new String();
-    
+    private LogManager logManager = null;
     
     String strLogFilePath = null;
     
     private static final Logger logger = Logger.getLogger(ReportData.class.getName());
     
-    public ReportData( String name ) throws LogNotFoundException, LogReadErrorException
+    @Inject
+    private ReportData(LogManager logManager ) 
+    { 
+        this.logManager = logManager;
+        
+    }
+    
+    public void init( String file ) throws LogNotFoundException, LogReadErrorException
     {
         String strLogNameShort;
+        String name = "";
+        try
+        {
+            name = URLDecoder.decode(file,"UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            
+            e.printStackTrace();
+        }
         
         logger.debug("ReportData: passed in log name: [" + name + "]");
         if ( name.endsWith(".log"))
@@ -69,8 +108,8 @@ public class ReportData
         else
         {
             logger.debug("Log file does not end in .log");
-           strLogFilePath = DataOrchestrator.getInstance().getLogFilePath(name);
-           strLogNameShort = DataOrchestrator.getInstance().getLogFileName(name);
+           strLogFilePath = logManager.getLogFilePath(name); //Controller.getInstance().getDataOrchestrator().getLogFilePath(name);
+           strLogNameShort = logManager.getLogFileName(name); //Controller.getInstance().getDataOrchestrator().getLogFileName(name);
         }
         logger.debug("Full path is: " + strLogFilePath );
         logger.debug("Short log name: " + strLogNameShort );
@@ -171,17 +210,17 @@ public class ReportData
                         {
                             case FOOD:
                                 StokerProbe sp = (StokerProbe)sd;
-                                sb.append(sp.getPrintString());
+                                sb.append(sp.printString());
                                 break;
                             
                             case PIT:
                                 StokerPitSensor sps = (StokerPitSensor)sd;
-                                sb.append( sps.getPrintString());
+                                sb.append( sps.printString());
                                 break;
                             
                             case BLOWER:
                                 StokerFan sf = (StokerFan)sd;
-                                sb.append( sf.getPrintString());     
+                                sb.append( sf.printString());     
                                 break;
                         }
                         
@@ -222,13 +261,14 @@ public class ReportData
                     case DATA:
                         for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hmByLogDevNumAndDeviceID ))
                         {
-                             TimeSeries ts = mapProbeChartPoints.get(sdp.getDeviceID());
+                            String deviceName = hmByDeviceIDAndSDevice.get(sdp.getDeviceID()).getName();
+                             TimeSeries ts = mapProbeChartPoints.get(sdp.getDeviceID() + deviceName);
                              if ( ts == null )
                              {
-                                 String deviceName = hmByDeviceIDAndSDevice.get(sdp.getDeviceID()).getName();
+                                 
                                  logger.debug("Creating new TimeSeries for device: [" + deviceName + "]");
                                  ts = new TimeSeries(deviceName, Second.class );
-                                 mapProbeChartPoints.put( sdp.getDeviceID(), ts);
+                                 mapProbeChartPoints.put( sdp.getDeviceID() + deviceName, ts);
                                  
                              }
                              RegularTimePeriod s = new Second( sdp.getCollectedDate() );
@@ -258,7 +298,8 @@ public class ReportData
                     
                     case CONFIG:
                         SDevice sd = LogFileFormatter.parseLogConfigLine( str );
-                        hmByLogDevNumAndDeviceID.put(sd.getDeviceLogNum(), sd.getID() );
+                        String deviceNumInLog = LogFileFormatter.getDeviceNumber(str);
+                        hmByLogDevNumAndDeviceID.put(deviceNumInLog, sd.getID() );
                         hmByDeviceIDAndSDevice.put(sd.getID(), sd );
                         break;
                 

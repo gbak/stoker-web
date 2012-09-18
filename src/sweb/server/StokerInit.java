@@ -22,47 +22,50 @@ import javax.servlet.http.HttpServlet;
 
 import org.apache.log4j.Logger;
 
-import sweb.server.controller.Controller;
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+
+import sweb.server.events.ConfigChangeEvent;
+import sweb.server.events.StateChangeEvent;
+import sweb.server.log.LogManager;
 import sweb.server.security.LoginProperties;
 
 public class StokerInit extends HttpServlet
 {
-
     private static final long serialVersionUID = 4958759438289484633L;
-    private Controller m_Controller = null;
+    private LogManager m_logManager;
+    
     private static final Logger logger = Logger.getLogger(LoginProperties.class.getName());
 
-    public StokerInit()
+
+    @Inject
+    public StokerInit(EventBus eventBus,
+                      LogManager logManager )
     {
-        // m_Controller is a singleton and the variable is not required, but instead used to
-        // know if it has been initialized already, this is called on browser refresh
-        // and we only want this to be executed once and only once
-        if ( m_Controller == null)
-        {         
-            m_Controller = Controller.getInstance();
-
-            m_Controller.addDataEventListener( new DataControllerEventListener() {
-
-                public void actionPerformed(DataControllerEvent ce)
-                {
-                   if ( ce.getEventType() == DataControllerEvent.EventType.EXTENDED_CONNECTION_LOSS )
-                   {
-                       DataOrchestrator.getInstance().stopAllLogs();
-                   }
-
-                }
-
-            });
-
-            // This will initialize the Data and the configuration controller
-            // Once the config listener completes it will fire the event
-            // and the default log file will start recording.
-
-            m_Controller.init();
-
-        }
+        eventBus.register(this);
+        this.m_logManager = logManager;
+        
+     //   config.init();
+        
+        logger.debug("StokerInit()");
     }
+    
+    @Subscribe
+    public void handleConfigChangeEvent( ConfigChangeEvent ce )
+    {
+        // TODO: Reset All
+    }
+    
+    
+   /* @Subscribe
+    public void handleStateChangeEvent( StateChangeEvent ce )
+    {
+        if ( ce.getEventType() == StateChangeEvent.EventType.EXTENDED_CONNECTION_LOSS )
+        {
+            m_logManager.stopAllLogs();
+        }
+   
+    }*/
+
 }

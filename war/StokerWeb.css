@@ -15,6 +15,9 @@ h1 {
   font-size: 16pt;
 }
 
+.sweb-OuterPanel {
+   margin: 0 10px 0 0;
+}
 /* Buttons */
 
 .sweb-ConnectionButton {
@@ -101,7 +104,7 @@ h1 {
 
 
 .sweb-LogsDecorator {
-   margin: 0 0 5px 0;
+   margin: 0 10px 5px 0;
 }
 
 .sweb-flexGauge {
@@ -215,7 +218,7 @@ h1 {
 .InvalidLoginText {
 	color: red;
 }
-/** Most GWT widgets already have a style name defined */
+/** Most GWT widgets already have a style defined */
 
 
 .alerts-dialog-panell {
@@ -236,9 +239,16 @@ h1 {
 .label-GaugeName {
  font-size: 2em;
 	text-align: center;
+	border: 0px;
 	/*font-weight: bold; */
 	color: #333333;
     font-family: 'Trebuchet MS', Helvetica, sans-serif;
+    padding: 0px 0px 0px 0px;
+    width: 210px;
+}
+
+.label-GaugeName[disabled] {
+	background-color: #FFFFFF;
 }
 
 .panel-CookerType {
@@ -249,6 +259,13 @@ h1 {
 .panel-CookerType .label-Cooker {
 	font-size: 2em;
 	color: #333333;
+}
+.panel-CookerType .textBox-CookerName {
+	font-size: 2em;
+	border: 0px;
+	color: #FF9900;
+    font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	padding: 0px 0px 0px 8px;
 }
 
 .panel-CookerType .label-Status {
@@ -336,6 +353,11 @@ h1 {
 }
 
 
+/* This is required to make the center of the DP to not look funky */
+.gwt-DecoratorPanel .middleCenter {
+   height: 100%;
+   width: 100%;
+ }
 
 .gwt-DisclosurePanel {
 }

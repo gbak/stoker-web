@@ -18,10 +18,8 @@
 
 package sweb.client.dialog;
 
-
-
-import sweb.client.dialog.handlers.LoginDialogHandler;
 import sweb.client.StokerCoreServiceAsync;
+import sweb.client.dialog.handlers.LoginDialogHandler;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,22 +27,14 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
-import com.google.gwt.user.client.Event.NativePreviewHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ButtonBase;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 
 public class LoginDialog extends DialogBox implements ClickHandler
 {
@@ -83,9 +73,9 @@ public class LoginDialog extends DialogBox implements ClickHandler
        loginPanel.setWidget(1, 1, userTextBox );
        loginPanel.setWidget(2, 0, passHTML );
        loginPanel.setWidget(2, 1, passTextBox );
-       loginPanel.setWidget(3, 0, loginButton );
+       loginPanel.setWidget(3, 0, cancelButton );
        loginPanel.setWidget(3, 1, loginMessage );
-       loginPanel.setWidget(3, 2, cancelButton );
+       loginPanel.setWidget(3, 2, loginButton );
        loginPanel.getRowFormatter().addStyleName(3,"login-buttonRow");
        loginPanel.getFlexCellFormatter().setColSpan(0, 0, 3);
       // loginPanel.getFlexCellFormatter().setColSpan(3, 0, 3);

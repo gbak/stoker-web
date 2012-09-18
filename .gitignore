@@ -13,4 +13,5 @@ stokerweb.war
 *.zip
 *.properties
 addUser.jar
+war/CookerConfig.json
 

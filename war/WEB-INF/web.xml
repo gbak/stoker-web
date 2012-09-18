@@ -6,20 +6,42 @@
 <web-app>
   
   <!-- Listener for shutting down the comet processor when the ServletContext is destroyed -->
-  <listener>
+ <!--  <listener>
      <listener-class>net.zschech.gwt.comet.server.CometServletContextListener</listener-class>
   </listener>
   
-  <!-- Listener for invalidating CometSessions when HTTPSessions are invalidated -->
+  Listener for invalidating CometSessions when HTTPSessions are invalidated
   <listener>
      <listener-class>net.zschech.gwt.comet.server.CometHttpSessionListener</listener-class>
   </listener>
   
    <listener>
      <listener-class>sweb.server.StokerCoreServiceImpl</listener-class>
-  </listener>
+  </listener> -->
   
-    <!-- Servlets -->
+    <filter>
+		<filter-name>guiceFilter</filter-name>
+		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>guiceFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!--
+		This Guice listener hijacks all further filters and servlets. Extra
+		filters and servlets have to be configured in your
+		ServletModule#configureServlets() by calling
+		serve(String).with(Class<? extends HttpServlet>) and
+		filter(String).through(Class<? extends Filter)
+	-->
+	<listener>
+		<listener-class>sweb.server.StokerWebServletConfig
+		</listener-class>
+	</listener>
+	
+    <!-- Servlets 
     <servlet>
        <servlet-name>stokeServlet</servlet-name>
        <servlet-class>sweb.server.StokerCoreServiceImpl</servlet-class>
@@ -40,6 +62,7 @@
   <servlet-mapping>
     <servlet-name>stokerComet</servlet-name>
     <url-pattern>/stokerweb/comet</url-pattern>
+    <url-pattern>/stokerweb/comet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>reportServlet</servlet-name>
@@ -47,11 +70,14 @@
     <url-pattern>/stokerweb/report/*</url-pattern>
   </servlet-mapping>
   
-  <servlet>
+      <servlet>
      <servlet-name>stokeInitServlet</servlet-name>
      <servlet-class>sweb.server.StokerInit</servlet-class>
      <load-on-startup>1</load-on-startup>
   </servlet>
+
+  -->
+
   
   <!-- Default page to serve -->
   <welcome-file-list>

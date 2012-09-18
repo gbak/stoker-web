@@ -19,11 +19,13 @@
 package sweb.server;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Timer;
-
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
@@ -31,221 +33,187 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.log4j.Logger;
 
 import sweb.client.StokerCoreService;
-import sweb.server.controller.Controller;
-import sweb.server.controller.StokerConfiguration;
-import sweb.server.controller.data.DataOrchestrator;
-import sweb.server.controller.events.ConfigControllerEvent;
-import sweb.server.controller.events.ConfigControllerEventListener;
-import sweb.server.controller.events.DataControllerEvent;
-import sweb.server.controller.events.DataControllerEventListener;
-import sweb.server.controller.events.DataPointEvent;
-import sweb.server.controller.events.DataPointEventListener;
-import sweb.server.controller.events.DataControllerEvent.EventType;
-import sweb.server.controller.events.WeatherChangeEvent;
-import sweb.server.controller.events.WeatherChangeEventListener;
-import sweb.server.controller.log.ListLogFiles;
-import sweb.server.controller.log.exceptions.LogExistsException;
-import sweb.server.controller.log.exceptions.LogNotFoundException;
+import sweb.server.alerts.AlertsManagerImpl;
+import sweb.server.config.StokerWebConfiguration;
+
+import sweb.server.events.DataPointEvent;
+import sweb.server.events.ConfigChangeEvent;
+import sweb.server.events.StateChangeEvent;
+import sweb.server.events.WeatherChangeEvent;
+import sweb.server.events.StateChangeEvent.EventType;
+
+import sweb.server.log.LogManager;
+import sweb.server.log.exceptions.LogExistsException;
+import sweb.server.log.exceptions.LogNotFoundException;
+import sweb.server.log.file.ListLogFiles;
+import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
 import sweb.server.security.User;
-import sweb.shared.model.CallBackRequestType;
-import sweb.shared.model.HardwareDeviceStatus;
-import sweb.shared.model.HardwareDeviceStatus.Status;
+import sweb.server.weather.WeatherController;
+
+import sweb.shared.model.CookerList;
 import sweb.shared.model.LogItem;
-import sweb.shared.model.SBlowerDataPoint;
-import sweb.shared.model.SDataPoint;
-import sweb.shared.model.SDevice;
-import sweb.shared.model.SProbeDataPoint;
+import sweb.shared.model.logfile.LogDir;
+import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.events.LogEvent;
+import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.weather.WeatherData;
+import sweb.shared.model.CallBackRequestType;
+import sweb.shared.model.data.SProbeDataPoint;
+import sweb.shared.model.HardwareDeviceState;
+import sweb.shared.model.ConfigurationSettings;
+import sweb.shared.model.data.SBlowerDataPoint;
+import sweb.shared.model.HardwareDeviceState.Status;
+import sweb.shared.model.events.LogEvent.LogEventType;
 import sweb.shared.model.events.ControllerEventLight;
 import sweb.shared.model.events.ControllerEventLight.EventTypeLight;
-import sweb.shared.model.events.LogEvent;
-import sweb.shared.model.events.LogEvent.LogEventType;
-import sweb.shared.model.logfile.LogDir;
-import sweb.shared.model.weather.WeatherData;
 
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
 
 /**
  * The server side implementation of the RPC service.
  */
-/**
- * @author gary.bak
- *
- */
-/**
- * @author gary.bak
- *
- */
 @SuppressWarnings("serial")
-public class StokerCoreServiceImpl extends RemoteServiceServlet implements
-        StokerCoreService, HttpSessionListener 
+public class StokerCoreServiceImpl extends RemoteServiceServlet implements StokerCoreService, 
+                                                                           HttpSessionListener 
 {
 
-    //private ConcurrentMap<String,CometSession> webSessions = new ConcurrentHashMap<String, CometSession>();
+    EventBus m_eventBus = null;
+    PitMonitor m_pitMonitor = null;
+    LogManager m_logManager = null;
+    ClientMessenger m_ClientMessenger = null;
+    WeatherController m_WeatherController = null;
+    AlertsManagerImpl m_alertsManager = null;
+    StokerWebConfiguration m_StokerWebConfig = null;
     
-
-    private static int i =0;
-   
-    private boolean haveDataConnection = false;
-
-    private Timer readTimeDataTimer = null;
-    private DataPointEventListener m_DPEL= null;
-
-    DataControllerEventListener m_dcel = null;
-    ConfigControllerEventListener m_ccel = null;
-    WeatherChangeEventListener m_wcel = null;
-
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
-    public HashMap<String,SDevice> getConfiguration()
+    @Inject
+    public StokerCoreServiceImpl( StokerWebConfiguration config, 
+                                  PitMonitor pm,
+                                  ClientMessenger cm,
+                                  AlertsManagerImpl am,
+                                  LogManager lm,
+                                  WeatherController wc,
+                                  EventBus bus)
+    {
+        this.m_StokerWebConfig = config;
+        this.m_pitMonitor = pm;
+        this.m_ClientMessenger = cm;
+        this.m_WeatherController = wc;
+        this.m_logManager = lm;
+        this.m_alertsManager = am;
+        this.m_eventBus = bus;
+        
+        m_eventBus.register(this);
+        
+    }
+    
+    public ConfigurationSettings getDeviceConfiguration()
             throws IllegalArgumentException
     {
-        return StokerConfiguration.getInstance().data();
+        return new ConfigurationSettings( m_StokerWebConfig.getCookerList(), m_pitMonitor.getRawDevices() );
     }
 
+    
+    
     public void setupCallBack()
     {
        HttpSession httpSession = getThreadLocalRequest().getSession();
+      // CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
 
-       ClientMessagePusher.getInstance().addSession( httpSession );
-       
-       handleControllerEvents();
-
-       if ( m_DPEL == null)
-       {
-           logger.info("Creating new listener.");
-           m_DPEL = new DataPointEventListener() {
-
-               public void stateChange(DataPointEvent dpe)
-                {
-                   ArrayList<SProbeDataPoint> aldp = dpe.getSProbeDataPoints();
-                   if ( aldp != null)
-                   {
-                       for ( SProbeDataPoint sdp : aldp)
-                       {
-                           ClientMessagePusher.getInstance().push(sdp);
-                       }
-                   }
-
-                   // The new data point here is a dummy, it is needed to create the sharp
-                   // steps in the blower graph.
-                   SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
-                   if ( bdp != null  )
-                   {
-                      ClientMessagePusher.getInstance().push(bdp);
-                   }
-
-                }
-
-           };
-           DataOrchestrator.getInstance().addListener( m_DPEL );
-       }
+       m_ClientMessenger.addSession( httpSession );
     }
 
     public ArrayList<SDataPoint> getNewGraphDataPoints(String input) throws IllegalArgumentException
     {
-        return DataOrchestrator.getInstance().getLastDPs();
-
+        return m_pitMonitor.getCurrentTemps();
     }
 
-    private void removeControllerEvents()
+    @Subscribe
+    public void handleDataPointEvents( DataPointEvent dpe )
     {
-        logger.info("Removing event listeners!");
-        Controller.getInstance().removeDataEventListener( m_dcel );
-        Controller.getInstance().removeConfigEventListener(m_ccel);
-        Controller.getInstance().removeWeatherChangeEventListener(m_wcel);
-    }
-
-    private void handleControllerEvents()
-    {
-
-        if (m_dcel == null)
+        ArrayList<SProbeDataPoint> aldp = dpe.getSProbeDataPoints();
+        if ( aldp != null)
         {
-            m_dcel = new DataControllerEventListener() {
-
-                public void actionPerformed(DataControllerEvent ce)
-                {
-                    switch (ce.getEventType())
-                    {
-                        case CONNECTION_ESTABLISHED:
-                            ClientMessagePusher
-                                    .getInstance()
-                                    .push(new ControllerEventLight(
-                                            EventTypeLight.CONNECTION_ESTABLISHED));
-                            break;
-                        case NONE:
-                            break;
-                        case LOST_CONNECTION:
-                            ClientMessagePusher.getInstance().push(
-                                    new ControllerEventLight(
-                                            EventTypeLight.LOST_CONNECTION));
-                            break;
-                        default:
-
-                    }
-                    if (ce.getEventType() == EventType.CONNECTION_ESTABLISHED)
-                    {
-
-                    }
-                }
-
-            };
-
-            Controller.getInstance().addDataEventListener(m_dcel);
-
+            for ( SProbeDataPoint sdp : aldp)
+            {
+                m_ClientMessenger.push(sdp);
+            }
         }
 
-        if (m_ccel == null)
+        SBlowerDataPoint bdp = dpe.getSBlowerDataPoint();
+        if ( bdp != null  )
         {
-            m_ccel = new ConfigControllerEventListener() {
-
-                public void actionPerformed(ConfigControllerEvent ce)
-                {
-                    switch (ce.getEventType())
-                    {
-                        case NONE:
-                            break;
-                        case CONFIG_UPDATE:
-                            ClientMessagePusher.getInstance().push(
-                                    new ControllerEventLight(
-                                            EventTypeLight.CONFIG_UPDATE));
-                            break;
-                        default:
-                    }
-                }
-
-            };
-
-            Controller.getInstance().addConfigEventListener(m_ccel);
-        }
-
-        if (m_wcel == null)
-        {
-            m_wcel = new WeatherChangeEventListener() {
-
-                public void weatherUpdated(WeatherChangeEvent wce)
-                {
-                    WeatherData wd = wce.getWeatherData();
-                    if ( wd != null )
-                       ClientMessagePusher.getInstance().push(wd);
-                }
-
-            };
-
-            Controller.getInstance().addWeatherChangeEventListener(m_wcel);
+            m_ClientMessenger.push(bdp);
         }
     }
     
+    @Subscribe
+    public void handleStateChangeEvents( StateChangeEvent ce)
+    {
+        switch (ce.getEventType())
+        {
+            case CONNECTION_ESTABLISHED:
+                m_ClientMessenger
+                        .push(new ControllerEventLight(
+                                EventTypeLight.CONNECTION_ESTABLISHED));
+                break;
+            case NONE:
+                break;
+            case LOST_CONNECTION:
+                m_ClientMessenger.push(
+                        new ControllerEventLight(
+                                EventTypeLight.LOST_CONNECTION));
+                break;
+            case EXTENDED_CONNECTION_LOSS:
+                m_ClientMessenger.push(
+                        new ControllerEventLight(
+                                EventTypeLight.EXTENDED_CONNECTION_LOSS));
+            default:
+
+        }
+ 
+    }
+    
+    @Subscribe
+    public void handleConfigChangeEvents( ConfigChangeEvent ce )
+    {
+        switch (ce.getEventType())
+        {
+            case NONE:
+                break;
+            case CONFIG_UPDATE_DETECTED:
+                m_ClientMessenger.push(
+                        new ControllerEventLight(
+                                EventTypeLight.CONFIG_UPDATE));
+                break;
+            default:
+        }
+    }
+    
+    @Subscribe
+    public void handleWeatherChangeEvents( WeatherChangeEvent wce )
+    {
+        WeatherData wd = wce.getWeatherData();
+        if ( wd != null )
+            m_ClientMessenger.push(wd);
+    }
+    
+
     public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
     {
-       Controller.getInstance().setAlertConfiguration(alertBaseList);
+       m_alertsManager.setConfiguration(alertBaseList);
        
     }
     
     public ArrayList<AlertModel> getAlertConfiguration()
     {
-       ArrayList<AlertModel> ab = Controller.getInstance().getAlertConfiguration();
+       ArrayList<AlertModel> ab = m_alertsManager.getConfiguration();
        return ab;
     }
     
@@ -297,6 +265,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        session.setAttribute("user", user);
        return session.getId();
     }
+    
     private User getUserAlreadyFromSession()
     {
 
@@ -331,66 +300,70 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
 
     public Long countDownServer() throws IllegalArgumentException
     {
-        // TODO Auto-generated method stub
+        // TODO Count down timer logic.  Countdown the time until the telnet controller
+        // will reconnect to the server.  This is only applicable if the stoker is 
+        // disconnected.  The timer works and is implemented, but i'd be nice to display
+        // this on the browser as well as a connect now button.
         return null;
     }
 
     public ArrayList<ArrayList<SDataPoint>> getAllGraphDataPoints(String logName)
             throws IllegalArgumentException
     {
-
-        return DataOrchestrator.getInstance().getAllDataPoints( logName );
+        return m_logManager.getAllDataPoints(logName);
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
     {
-        return DataOrchestrator.getInstance().getLogList();
+        return m_logManager.getLogList();
     }
 
+    /**
+     * Begin a new log
+     */
     public Integer startLog(String strCookerName, String strLogName, ArrayList<SDevice> arSD ) throws IllegalArgumentException
     {
        if ( ! loginGuard() )
           return -1;
        
         Integer ret = new Integer(0);
-        if ( ! DataOrchestrator.getInstance().isLogRunning(strLogName))
+        if ( ! m_logManager.isLogRunning(strLogName))
         {
             try
             {
                 LogItem li = new LogItem(strCookerName, strLogName, arSD);
-                DataOrchestrator.getInstance().startLog( li );
+                m_logManager.startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
-                ClientMessagePusher.getInstance().push( le );
+                m_ClientMessenger.push( le );
 
             }
             catch (LogExistsException e)
             {
-                try { DataOrchestrator.getInstance().stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
+                try { m_logManager.stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
 
             }
         }
         return ret;
     }
 
-    public Integer stopLog(String strCookerName, String strLogName)
+    public String stopLog(String strCookerName, String strLogName)
             throws IllegalArgumentException
     {
        if ( ! loginGuard() )
-          return -1;
+          return "";
        
-        Integer ret = new Integer(0);
+        String ret = new String();
         try
         {
-            DataOrchestrator.getInstance().stopLog(strLogName);
-            ret = new Integer(1);
+            ret = m_logManager.stopLog(strLogName);
             // Create LogEvent and pass it back via comet stream
             LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
-            ClientMessagePusher.getInstance().push( le );
+            m_ClientMessenger.push( le );
         }
         catch (LogNotFoundException e)
         {
-            // TODO Auto-generated catch block
+            logger.error("stopLog: provided log not found");
             e.printStackTrace();
         }
         return ret;
@@ -406,14 +379,15 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     }
 
 
-    public Integer updateConfiguration(ArrayList<SDevice> asd)
+    public Integer updateTempAndAlarmSettings(ArrayList<SDevice> asd)
             throws IllegalArgumentException
     {
        if ( ! loginGuard() )
           return -1;
-       
-        StokerConfiguration.getInstance().update( asd );
-        Controller.getInstance().loadConfiguration();
+
+
+       m_StokerWebConfig.updateConfig(asd);
+
         return new Integer(1);
     }
 
@@ -428,7 +402,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
        if ( ! loginGuard() )
           return -1;
        
-        return DataOrchestrator.getInstance().attachToExistingLog(cookerName, selectedLog, fileName);
+        return m_logManager.attachToExistingLog(cookerName, selectedLog, fileName);
 
     }
 
@@ -442,7 +416,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     {
         logger.info("Http Session Destroyed");
         HttpSession hs = arg0.getSession();
-        ClientMessagePusher.getInstance().removeSession(hs);
+      //  CustomSession httpSession = (CustomSession)arg0.getSession();
+        
+   //     ClientMessagePusher.getInstance().removeSession(hs); // This was causing a stack overflow error
+                                         // cleanup work should be done in removeSession.
+                                                            
       //  removeControllerEvents();  // Is this correct?  gbak
 
     }
@@ -467,14 +445,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private void getStatus()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
-
+      //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         Status s = null;
-        if ( Controller.getInstance().isDataControllerReady() )
+        if ( m_pitMonitor.isActive() )
             s = Status.CONNECTED;
         else
             s = Status.DISCONNECTED;
 
-        ClientMessagePusher.getInstance().sessionPush( httpSession, new HardwareDeviceStatus( s, null ) );
+        m_ClientMessenger.sessionPush( httpSession, new HardwareDeviceState( s, null ) );
     }
 
     /**
@@ -484,13 +462,15 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
     private void forceLatestDataPush()
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
+      //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
         
-        for ( SDataPoint sdp : DataOrchestrator.getInstance().getLastDPs())
-           ClientMessagePusher.getInstance().sessionPush( httpSession, sdp);
+        //for ( SDataPoint sdp : Controller.getInstance().getDataOrchestrator().getLastDPs())
+        for ( SDataPoint sdp : m_pitMonitor.getCurrentTemps())
+            m_ClientMessenger.sessionPush( httpSession, sdp);
 
-        WeatherData wd = Controller.getInstance().getWeatherController().getWeather();
+        WeatherData wd = m_WeatherController.getWeather();
         if ( wd != null )
-                ClientMessagePusher.getInstance().sessionPush( httpSession, wd );
+            m_ClientMessenger.sessionPush( httpSession, wd );
     }
 
     
@@ -503,7 +483,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         if ( ! loginGuard() )
             return -1;
         
-        DataOrchestrator.getInstance().addNoteToLog(note, logList);
+        m_logManager.addNoteToLog(note, logList);
         return 0;
     }
 
@@ -514,6 +494,92 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements
         
         return StokerWebProperties.getInstance().getClientProperties();
     }
+    
+    
+    
+    
+    /*private static class CustomSession extends SessionWrapper {
+        public CustomSession (HttpSession delegate, String prefix) {
+            super (delegate);
+            this.prefix = prefix;
+        }
+            
+        @Override
+        public Object getAttribute (String name) {
+            return super.getAttribute (this.prefix + "_" + name);
+        }
+            
+        @Override
+        public Enumeration<String> getAttributeNames () {
+            List<String> names = new ArrayList<String> ();
+            for (@SuppressWarnings("unchecked")
+            Enumeration<String> e = super.getAttributeNames (); e.hasMoreElements (); ) {
+                String name = e.nextElement ();
+                if (name.startsWith (this.prefix)) {
+                    names.add (name);
+                }
+            }
+                
+            final Iterator<String> i = names.iterator ();
+            return new Enumeration<String> () {
+                @Override
+                public boolean hasMoreElements () {
+                    return i.hasNext ();
+                }
 
+                @Override
+                public String nextElement () {
+                    return i.next ();
+                }
+            };
+        }
+            
+        @Override
+        public void removeAttribute (String name) {
+            super.removeAttribute (this.prefix + "_" + name);
+        }
+            
+        private String prefix;
+    }*/
+        
+   /* private class CustomSessionRequest extends HttpServletRequestWrapper {
+        public CustomSessionRequest (HttpServletRequest delegate) {
+            super (delegate);
+        }
+            
+        @Override
+        public HttpSession getSession (boolean create) {
+            HttpSession session = super.getSession (create);
+            if (null == session && !create) {
+                return null;
+            }
+            return new CustomSession (session, this.getPathInfo ());
+        }
+    }
+        
+    @Override
+    protected void doGet (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doGet (new CustomSessionRequest (request), response);
+    }
+*/
+    @Override
+    public Integer updateStokerWebConfig(CookerList cookerList )
+    {      
+        // Save Cooker to property file as JSON
+        m_StokerWebConfig.saveConfig(cookerList);
+
+        m_ClientMessenger.push(
+                new ControllerEventLight(
+                        EventTypeLight.CONFIG_UPDATE_REFRESH));
+        return new Integer(1);
+    }
+
+    @Override
+    public CookerList getStokerWebConfiguration()
+            throws IllegalArgumentException
+    {
+        return m_StokerWebConfig.getCookerList();
+    }
+    
     
 }
