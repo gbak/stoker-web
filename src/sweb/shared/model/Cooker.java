@@ -109,7 +109,8 @@ public class Cooker implements Serializable
     
     public void update( ArrayList<SDevice> arsd )
     {
-        pitSensor.update( arsd );
+        if ( pitSensor != null)
+           pitSensor.update( arsd );
         for ( StokerProbe sp : probeList )
         {
             sp.update( arsd );

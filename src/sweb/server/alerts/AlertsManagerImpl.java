@@ -44,7 +44,7 @@ public class AlertsManagerImpl implements AlertManager
    private static final Logger logger = Logger.getLogger(AlertsManagerImpl.class.getName());
    
    @Inject
-   public AlertsManagerImpl(StokerAlarm sa)
+   public AlertsManagerImpl(StokerAlarm sa, Messenger m)
    {
        stokerAlarm = sa;
    }

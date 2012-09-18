@@ -20,11 +20,23 @@ package sweb.server.alerts.delivery;
 
 import java.util.ArrayList;
 
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
+
 import sweb.shared.model.alerts.BrowserAlarmModel;
 
 public class NotifyByBrowser implements Notify
 {
 
+    EventBus m_eventBus;
+    
+    @Inject
+    private NotifyByBrowser( EventBus eventBus )
+    {
+      m_eventBus = eventBus;
+      
+    }
+    
    @Override
    public void init()
    {
@@ -61,7 +73,8 @@ public class NotifyByBrowser implements Notify
          BrowserAlarmModel alarm = new BrowserAlarmModel();
          alarm.setMessage(strMessage);
          
-         BrowserDelivery.send(alarm);
+         m_eventBus.post(alarm);
+         
          
       }
       catch ( Exception e )

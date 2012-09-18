@@ -117,18 +117,20 @@ h1 {
 
 .sweb-gaugeFlowPanel {
    float: left;
+
 }
 .sweb-panelGaugeTall{
     width: 200px; 
     height: 375px; 
     text-align: center; 
+	float: left;
 }
 
 .sweb-panelGaugeShort {
     width: 200px; 
     height: 285px; 
 	text-align: center; 
-	
+	float: left;
 }
 .sweb-fanLabel {
 	font-size: 11px;

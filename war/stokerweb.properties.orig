@@ -12,6 +12,13 @@ timeout_to_extended_disconnect=30
 # Minutes to test if the stoker is available while stoker is in offline mode
 timeout_to_reconnect=15
 
+# use alarm settings from 'local' file or 'stoker'.
+# local settings will disable stoker alarms
+alarmSettings_location=local
+
+# Number of minutes that a alarm will silence before repeating
+minutes_to_repeat_alarm=10
+
 ########### Client Settings ######################
 
 # This can be 'gauge' or 'text'
@@ -21,9 +28,7 @@ client.tempDisplayGauge.gaugeMax=400
 client.tempDisplayGauge.gaugeMin=0
 client.tempDisplayGauge.gaugeStepping=50
 
-# use alarm settings from 'local' file or 'stoker'.
-# local settings will disable stoker alarms
-alarmSettings_location=local
+
 
 # Mail settings
 mail.sendTo=xxx@gmail.com

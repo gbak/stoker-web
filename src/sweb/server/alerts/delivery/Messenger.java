@@ -24,9 +24,18 @@ import java.util.HashSet;
 
 import java.util.Set;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+
 public class Messenger
 {
-    public Messenger()  { }
+    private static Provider<NotifyByBrowser> m_browser;
+    
+    @Inject
+    public Messenger(Provider<NotifyByBrowser> browser)  
+    { 
+        m_browser = browser;
+    }
     
     public static void deliver(Collection<String> deliverTo, ArrayList<String> message )
     {
@@ -34,7 +43,7 @@ public class Messenger
         {
             if ( delivery.compareTo("Browser Alert") == 0)
             {
-                Notify ad = new NotifyByBrowser();
+                Notify ad = m_browser.get();
                 ad.sendAlert(message);
             }
             else if ( delivery.compareTo("Email") == 0 )

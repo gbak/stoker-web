@@ -58,6 +58,7 @@ import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.events.LogEvent;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.alerts.AlertModel;
+import sweb.shared.model.alerts.BrowserAlarmModel;
 import sweb.shared.model.weather.WeatherData;
 import sweb.shared.model.CallBackRequestType;
 import sweb.shared.model.data.SProbeDataPoint;
@@ -204,6 +205,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
             m_ClientMessenger.push(wd);
     }
     
+    @Subscribe
+    public void handleAlertEvents( BrowserAlarmModel bam )
+    {
+        logger.debug("Pushing BrowserAlarmModel: " + bam.getMessage() );
+        m_ClientMessenger.push( bam );
+    }
 
     public void setAlertConfiguration( ArrayList<AlertModel> alertBaseList )
     {
