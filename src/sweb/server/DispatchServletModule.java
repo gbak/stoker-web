@@ -25,6 +25,8 @@ import com.google.inject.servlet.ServletModule;
 import sweb.server.alerts.AlertManager;
 import sweb.server.alerts.AlertsManagerImpl;
 import sweb.server.alerts.delivery.BrowserDelivery;
+import sweb.server.alerts.delivery.Messenger;
+import sweb.server.alerts.delivery.NotifyByBrowser;
 import sweb.server.config.HardwareDeviceConfiguration;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.config.stoker.StokerHardwareDevice;
@@ -76,6 +78,8 @@ public class DispatchServletModule extends ServletModule
       
       bind(StokerFile.class);
       bind(ConnectionMonitor.class);
+      bind(NotifyByBrowser.class);
+      bind(Messenger.class);
       bind(BrowserDelivery.class);
       
       //requestStaticInjection(SDataPointHelper.class);

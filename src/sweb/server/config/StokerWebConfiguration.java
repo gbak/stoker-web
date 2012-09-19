@@ -41,6 +41,7 @@ import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerHelper;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.stoker.StokerFan;
 import sweb.shared.model.devices.stoker.StokerPitSensor;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
@@ -57,7 +58,7 @@ public class StokerWebConfiguration
     private static final String strConfigFile = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_STOKERWEB_DIR) + 
             File.separator + "CookerConfig.json";
 
-    
+    private HashMap<String,SDevice> m_deviceCache = new HashMap<String,SDevice>();
     private HardwareDeviceConfiguration m_deviceConfiguration = null;
     private CookerList m_cookerList;
     private EventBus m_eventBus;
@@ -94,6 +95,26 @@ public class StokerWebConfiguration
         m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));
     }
     
+    private void loadDeviceCacheFromCookerList()
+    {
+        m_deviceCache.clear();
+        for ( Cooker c : m_cookerList.getCookerList() )
+        {
+            StokerPitSensor sps = c.getPitSensor();
+            if ( sps != null )
+            { 
+                m_deviceCache.put( sps.getID(),sps);
+                StokerFan sf = sps.getFanDevice();
+                if ( sf != null )
+                    m_deviceCache.put( sf.getID(), sf);
+            }
+            for ( StokerProbe sp : c.getProbeList() )
+            {
+               m_deviceCache.put( sp.getID(), sp );
+            }
+        }    
+    }
+    
     /**
      * Gets the SDevice by its ID.  This method will query the hardware controller
      * directly since the configuration may be incomplete if the .json file is missing
@@ -104,7 +125,10 @@ public class StokerWebConfiguration
      */
     public SDevice getDeviceByID( String id )
     {
-       return m_deviceConfiguration.getDevice(id);
+        if ( m_cookerList == null || m_cookerList.getCookerList().size() == 0 )
+           return m_deviceConfiguration.getDevice(id);
+        
+        return m_deviceCache.get(id );
     }
     
     private void reconcile()
@@ -197,12 +221,15 @@ public class StokerWebConfiguration
            }
        }
        m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED) );
+       loadDeviceCacheFromCookerList();
+       
     }
     
     public void updateConfig( ArrayList<SDevice> arsd)
     {
        m_cookerList.update( arsd );
        save();
+      
       
        
     }
@@ -233,6 +260,8 @@ public class StokerWebConfiguration
         {
             logger.error("Error writing " + strConfigFile + "\n" + e.getStackTrace() );
         }
+        
+        loadDeviceCacheFromCookerList();
     }
     
     private void removeAlarmsIfLocal( ArrayList<SDevice> deviceList )
