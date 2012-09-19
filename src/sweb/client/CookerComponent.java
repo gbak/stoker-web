@@ -514,11 +514,14 @@ public class CookerComponent extends Composite
 
         StokerProbe pit = (StokerProbe) c.getPitSensor();
         
+        m_stokerElementsPanel.setStyleName("sweb-gaugeFlowPanel");
+        
         if ( pit != null )
         {
             ProbeComponent gc = new ProbeComponent( pit, m_alignment, m_properties );
             m_guageMap.put( pit.getID(), gc );
-            gc.addStyleName("sweb-gaugeFlowPanel");
+         //   gc.addStyleName("sweb-gaugeFlowPanel");
+            gc.addStyleName("sweb-panelGaugeTall");
             m_stokerElementsPanel.add( gc );
             m_gaugePanelWidth = m_gaugePanelWidth +  gc.getOffsetWidth();
         }
@@ -526,7 +529,8 @@ public class CookerComponent extends Composite
         {
             ProbeComponent gcp = new ProbeComponent( probe, m_alignment, m_properties );
             m_guageMap.put( probe.getID(), gcp );
-            gcp.addStyleName("sweb-gaugeFlowPanel");
+            //gcp.addStyleName("sweb-gaugeFlowPanel");
+            gcp.addStyleName("sweb-panelGaugeTall");
             m_stokerElementsPanel.add( gcp );
             m_gaugePanelWidth = m_gaugePanelWidth +  gcp.getOffsetWidth();
         
