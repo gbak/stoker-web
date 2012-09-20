@@ -513,15 +513,20 @@ public class CookerComponent extends Composite
     {
 
         StokerProbe pit = (StokerProbe) c.getPitSensor();
+        String styleName;
         
         m_stokerElementsPanel.setStyleName("sweb-gaugeFlowPanel");
+        if ( m_alignment == Alignment.SINGLE )
+           styleName = "sweb-panelGaugeTall";
+        else
+            styleName = "sweb-panelGaugeShort";
         
         if ( pit != null )
         {
             ProbeComponent gc = new ProbeComponent( pit, m_alignment, m_properties );
             m_guageMap.put( pit.getID(), gc );
          //   gc.addStyleName("sweb-gaugeFlowPanel");
-            gc.addStyleName("sweb-panelGaugeTall");
+            gc.addStyleName(styleName);
             m_stokerElementsPanel.add( gc );
             m_gaugePanelWidth = m_gaugePanelWidth +  gc.getOffsetWidth();
         }
@@ -530,10 +535,9 @@ public class CookerComponent extends Composite
             ProbeComponent gcp = new ProbeComponent( probe, m_alignment, m_properties );
             m_guageMap.put( probe.getID(), gcp );
             //gcp.addStyleName("sweb-gaugeFlowPanel");
-            gcp.addStyleName("sweb-panelGaugeTall");
+            gcp.addStyleName(styleName);
             m_stokerElementsPanel.add( gcp );
             m_gaugePanelWidth = m_gaugePanelWidth +  gcp.getOffsetWidth();
-        
         }
         
     }
@@ -564,7 +568,8 @@ public class CookerComponent extends Composite
         
         addComponents(c);
         
-        System.out.println("Height is: " + m_stokerElementsPanel.getOffsetHeight());
+        m_Height =  m_stokerElementsPanel.getOffsetHeight();
+        System.out.println("Height is: " + m_Height);
         System.out.println("Width is: " + m_stokerElementsPanel.getOffsetWidth());
         
         m_cooker = c;
@@ -576,10 +581,10 @@ public class CookerComponent extends Composite
         
        // dpGraph.addStyleName("sweb-graphPanel");
 
-        m_Height = 385;
+     //   m_Height = 385;
         if ( m_alignment == Alignment.SINGLE)
         {
-            m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 15;
+            m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 35;
             
             m_graphPanel.setWidth(m_Width + "px");
           //  sGraphPanel.setWidth("100%");
@@ -590,7 +595,7 @@ public class CookerComponent extends Composite
         }
         else
         {
-            m_Height = 325;
+          //  m_Height = 325;
             m_Width = m_stokerElementsPanel.getOffsetWidth()- 50;
 
             m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");

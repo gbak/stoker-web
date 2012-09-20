@@ -30,6 +30,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
+import sweb.server.StokerWebConstants;
+import sweb.server.StokerWebProperties;
 import sweb.server.alerts.AlertManager;
 import sweb.server.alerts.delivery.Messenger;
 import sweb.server.config.StokerWebConfiguration;
@@ -56,6 +58,8 @@ public class StokerAlarm extends AlertCondition
    private StokerWebConfiguration m_stokerWebConfiguration;
    private AlertManager m_alertManager;
    
+   Integer m_alarmRepeatMinutes = StokerWebConstants.ALARM_REPEAT_TIMER_MINUTES;
+   
    
    @Inject
    public StokerAlarm(StokerWebConfiguration stokerWebConfiguration, AlertManager alert, EventBus eventBus) 
@@ -72,32 +76,33 @@ public class StokerAlarm extends AlertCondition
    
    private static final Logger logger = Logger.getLogger(StokerAlarm.class.getName());
    
-/*   @Inject
-   public void setConfiguration( ConfigurationController cc, HardwareDeviceConfiguration hdc)
-   {
-       configurationController = cc;
-       hardwareDeviceConfiguration = hdc;
-   }*/
    
    private void init()
    {
-    //  setConfig();
+
       executor = Executors.newFixedThreadPool(3);
       
-      // TODO: Removed for EventBus
-     // handleControllerEvents();
-      
       saa = new StokerAlarmAlertModel(false);
-     // saa.setAvailableDeliveryMethods(Controller.getInstance().getAvailableDeliveryMethods());
+
+      String alarmRepeat = StokerWebProperties.getInstance().getProperty(StokerWebConstants.PROPS_ALARM_REPEAT_TIMER);
+      if ( alarmRepeat != null )
+      {
+          try
+          {
+              m_alarmRepeatMinutes = new Integer(alarmRepeat);
+              
+          }
+          catch( NumberFormatException nfe )
+          {
+              logger.warn("Invalid minute value for property: " + StokerWebConstants.PROPS_ALARM_REPEAT_TIMER);
+          }
+          if ( m_alarmRepeatMinutes < 1 )
+              m_alarmRepeatMinutes = 1;
+          
+      }
+
    }
    
-/*   private void setConfig()
-   {
-       //TODO: fix this.
-      m_hmConfig = Controller.getInstance().getStokerConfiguration().data();   
-   }*/
-   
-   // This needs to change to a thread pool...
    @Subscribe
    public void handleDataPointEvent(DataPointEvent de)
    {
@@ -121,45 +126,7 @@ public class StokerAlarm extends AlertCondition
              default:
          }
    }
-   /*
-    // Removed for EventBus
-   private void handleControllerEvents()
-   {
-
-      DataPointEventListener m_dl = new DataPointEventListener() {
-
-         public void stateChange(DataPointEvent de)
-         {
-            Runnable worker = new CheckDataEventRunnable( de );
-            executor.execute( worker );
-         }
-      };
-      
-      controller.addTempListener(m_dl);
-
-       ConfigChangeEventListener m_ccel = new ConfigChangeEventListener() {
-
-           public void actionPerformed(ConfigChangeEvent ce)
-           {
-              if ( saa == null || saa.getEnabled() == false )
-                 return;
-              
-               switch( ce.getEventType())
-               {
-                   case NONE:
-                       break;
-                   case CONFIG_UPDATE:
-           //            setConfig();
-                       break;
-                   default:
-               }
-           }
-
-          };
-
-          controller.addConfigEventListener(m_ccel);
-
-   }*/
+  
    
    private void soundTempAlert( TempAlertType t, StokerProbe sp, float data )
    {
@@ -169,7 +136,7 @@ public class StokerAlarm extends AlertCondition
       if ( lastAlertDate != null )
       {
          last.setTime( lastAlertDate );
-         last.add( Calendar.MINUTE, 1);  // TODO: add this to StokerWebProperties
+         last.add( Calendar.MINUTE, m_alarmRepeatMinutes.intValue()); 
       }
          if ( lastAlertDate == null || last.before( current ) )
          {
@@ -243,7 +210,7 @@ public class StokerAlarm extends AlertCondition
          for ( SProbeDataPoint spdp : aldp )
          {
              SDevice sd = m_stokerWebConfiguration.getDeviceByID( spdp.getDeviceID());
-           // SDevice sd = m_hmConfig.get(spdp.getDeviceID());  // TODO: remove
+
             if ( sd == null || ! sd.isProbe() )
                continue;
             

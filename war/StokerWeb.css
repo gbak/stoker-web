@@ -130,7 +130,7 @@ h1 {
     width: 200px; 
     height: 285px; 
 	text-align: center; 
-	
+	float: left;
 }
 .sweb-fanLabel {
 	font-size: 11px;

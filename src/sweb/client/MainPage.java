@@ -102,7 +102,6 @@ public class MainPage
     DockPanel m_outerDocPanel = new DockPanel(); // Outermost panel
     HorizontalPanel m_HeaderHP = new HorizontalPanel();
     VerticalPanel m_cookerVP = null; // For Multiple cookers
-    VerticalPanel m_cookerVPDummy = new VerticalPanel();
     SimplePanel m_cookerOuterPanel = new SimplePanel();
     
     

@@ -44,6 +44,9 @@ public class StokerWebConstants
     public static final String TIMEOUT_TO_EXTENDED_LOSS = "30";
     public static final String TIMEOUT_TO_RECONNECT = "15";
     
+    public static final String PROPS_ALARM_REPEAT_TIMER = "minutes_to_repeat_alarm";
+    public static final Integer ALARM_REPEAT_TIMER_MINUTES = 5;
+    
     // Files
     public static final String FILE_STOKERWEB_PROPERTIES = "stokerweb.properties";
     public static final String FILE_LOGIN_PROPERTIES     = "login.properties";
