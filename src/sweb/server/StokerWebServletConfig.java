@@ -21,7 +21,6 @@ package sweb.server;
 
 
 import sweb.server.monitors.ConnectionMonitor;
-import sweb.server.monitors.stoker.StokerPitMonitor;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

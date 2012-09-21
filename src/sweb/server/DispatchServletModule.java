@@ -45,6 +45,7 @@ import sweb.server.monitors.ConnectionMonitor;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.monitors.stoker.StokerPitMonitor;
 import sweb.server.report.ReportData;
+import sweb.server.rest.JerseyTest;
 import sweb.server.weather.WeatherController;
 
 public class DispatchServletModule extends ServletModule
@@ -90,9 +91,11 @@ public class DispatchServletModule extends ServletModule
       
       //requestStaticInjection(SDataPointHelper.class);
       bind(GuiceContainer.class);
+      bind(JerseyTest.class);
       //bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
       bind(JacksonJsonProvider.class).in(Singleton.class);
       
+      //serve("/stokerweb/rest/*").with(GuiceContainer.class);
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       
@@ -107,7 +110,7 @@ public class DispatchServletModule extends ServletModule
       serve("/stokerweb/report/*").with(sweb.server.ReportServlet.class);
       
      // serve("/stokerweb/rest").with(GuiceContainer.class);
-    //  serve("/stokerweb/rest/*").with(GuiceContainer.class);
+      serve("/stokerweb/rest/*").with(GuiceContainer.class);
       
       
     }
