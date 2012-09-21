@@ -18,9 +18,15 @@
 
 package sweb.server;
 
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+
 import com.google.common.eventbus.EventBus;
+import com.google.inject.Scopes;
 import com.google.inject.Singleton;
+import com.google.inject.internal.ImmutableMap;
 import com.google.inject.servlet.ServletModule;
+import com.sun.jersey.api.json.JSONConfiguration;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 import sweb.server.alerts.AlertManager;
 import sweb.server.alerts.AlertsManagerImpl;
@@ -83,6 +89,10 @@ public class DispatchServletModule extends ServletModule
       bind(BrowserDelivery.class);
       
       //requestStaticInjection(SDataPointHelper.class);
+      bind(GuiceContainer.class);
+      //bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
+      bind(JacksonJsonProvider.class).in(Singleton.class);
+      
       
       bind(net.zschech.gwt.comet.server.CometServlet.class).asEagerSingleton();
       
@@ -95,6 +105,9 @@ public class DispatchServletModule extends ServletModule
       bind(sweb.server.ReportServlet.class).asEagerSingleton();
       serve("/stokerweb/report").with(sweb.server.ReportServlet.class);
       serve("/stokerweb/report/*").with(sweb.server.ReportServlet.class);
+      
+     // serve("/stokerweb/rest").with(GuiceContainer.class);
+    //  serve("/stokerweb/rest/*").with(GuiceContainer.class);
       
       
     }
