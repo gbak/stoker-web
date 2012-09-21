@@ -117,6 +117,7 @@ h1 {
 
 .sweb-gaugeFlowPanel {
    float: left;
+   width: 100%;
 
 }
 .sweb-panelGaugeTall{

@@ -582,7 +582,7 @@ public class CookerComponent extends Composite
        // dpGraph.addStyleName("sweb-graphPanel");
 
 
-        m_graphPanel.setStyleName("sweb-gaugeFlowPanel" );
+       // m_graphPanel.setStyleName("sweb-gaugeFlowPanel" );
      //   m_Height = 385;
         if ( m_alignment == Alignment.SINGLE)
         {
