@@ -84,6 +84,13 @@
 
   <target name="build" depends="gwtc" description="Build this project" />
 
+  <target name="common" depends="javac" description="Build common jar for client"  >
+      <jar destfile="stokerweb-common.jar">
+            <fileset dir="war/WEB-INF/classes/" 
+                     includes="sweb/common/**/*.class" />
+      </jar>
+  </target>
+  
   <target name="war" depends="build" description="Create a war file">
     <zip destfile="stokerweb.war" basedir="war"/>
   </target>
