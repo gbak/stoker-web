@@ -45,7 +45,7 @@ import sweb.server.monitors.ConnectionMonitor;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.monitors.stoker.StokerPitMonitor;
 import sweb.server.report.ReportData;
-import sweb.server.rest.JerseyTest;
+import sweb.server.rest.RestServices;
 import sweb.server.weather.WeatherController;
 
 public class DispatchServletModule extends ServletModule
@@ -91,7 +91,7 @@ public class DispatchServletModule extends ServletModule
       
       //requestStaticInjection(SDataPointHelper.class);
       bind(GuiceContainer.class);
-      bind(JerseyTest.class);
+      bind(RestServices.class);
       //bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
       bind(JacksonJsonProvider.class).in(Singleton.class);
       

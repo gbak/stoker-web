@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 
 public class CookerHelper  implements Serializable
@@ -83,7 +83,7 @@ public class CookerHelper  implements Serializable
     {
         ArrayList<SDevice> sd = new ArrayList<SDevice>();
         
-        StokerPitSensor pitSensor = cooker.getPitSensor();
+        StokerPitProbe pitSensor = cooker.getPitSensor();
         if ( pitSensor != null)
         {
            sd.add((SDevice)pitSensor);

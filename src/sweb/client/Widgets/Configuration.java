@@ -26,7 +26,7 @@ import sweb.shared.model.ConfigurationSettings;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
@@ -234,7 +234,7 @@ public class Configuration extends Dialog
         {
             for ( Cooker cooker : cookerList.getCookerList() )
             {
-                StokerPitSensor pit = cooker.getPitSensor();
+                StokerPitProbe pit = cooker.getPitSensor();
                 if ( pit != null )
                 {
                     if ( deviceHash.containsKey(pit.getID()))
@@ -311,7 +311,7 @@ public class Configuration extends Dialog
                 deviceTypeString = "Temp";
                 if ( dt.toString().compareToIgnoreCase("PIT") == 0)
                 {
-                    StokerPitSensor sp = (StokerPitSensor) sd;
+                    StokerPitProbe sp = (StokerPitProbe) sd;
                     sp.setFanDevice(null);
                 }
             }

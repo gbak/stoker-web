@@ -5,10 +5,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class Blower extends Device
 {
     @JsonProperty(value="fanOn")
-    Boolean fanOn;
+    public Boolean fanOn;
     
     @JsonProperty(value="totalRuntime")
-    Long totalRuntime;
+    public Long totalRuntime;
     
     public Blower() { }
     

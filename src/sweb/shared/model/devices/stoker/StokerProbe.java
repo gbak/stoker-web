@@ -67,24 +67,39 @@ public class StokerProbe extends SDevice implements Serializable
        alarm = sp.alarm;
     }
 
-    public StokerProbe(String id, String name, int f, int up, int dn )
+    public StokerProbe(String id, String name, int target, int upperTempAlarm, int lowerTempAlarm )
     {
         super(id, name);
-        targetTemp = f;
-        lowerTempAlarm = dn;
-        upperTempAlarm = up;
-        alarm = AlarmType.NONE;
+        targetTemp = target;
+        this.lowerTempAlarm = lowerTempAlarm;
+        this.upperTempAlarm = upperTempAlarm;
+        this.alarm = AlarmType.NONE;
     }
     
-    public StokerProbe(String id, String name, int f, int up, int dn, AlarmType at )
+    public StokerProbe(String id, String name, int targetTemp, int upperTempAlarm, int  lowerTempAlarm, AlarmType alarmType )
     {
         super(id, name);
-        targetTemp = f;
-        lowerTempAlarm = dn;
-        upperTempAlarm = up;
-        alarm = at;
+        this.targetTemp = targetTemp;
+        this.lowerTempAlarm = lowerTempAlarm;
+        this.upperTempAlarm = upperTempAlarm;
+        this.alarm = alarmType;
     }
 
+    public StokerProbe( String id, 
+                        String name, 
+                        int targetTemp, 
+                        int upperTempAlarm, 
+                        int  lowerTempAlarm, 
+                        AlarmType alarmType,
+                        float currentTemp )
+    {
+        super(id, name);
+        this.targetTemp = targetTemp;
+        this.lowerTempAlarm = lowerTempAlarm;
+        this.upperTempAlarm = upperTempAlarm;
+        this.alarm = alarmType;
+        this.fCurrentTemp = currentTemp;
+    }
     public void setCurrentTemp( float f )
     {
         fCurrentTemp = f;

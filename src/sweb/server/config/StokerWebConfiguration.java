@@ -42,7 +42,7 @@ import sweb.shared.model.CookerHelper;
 import sweb.shared.model.CookerList;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerFan;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
@@ -100,7 +100,7 @@ public class StokerWebConfiguration
         m_deviceCache.clear();
         for ( Cooker c : m_cookerList.getCookerList() )
         {
-            StokerPitSensor sps = c.getPitSensor();
+            StokerPitProbe sps = c.getPitSensor();
             if ( sps != null )
             { 
                 m_deviceCache.put( sps.getID(),sps);
@@ -155,7 +155,7 @@ public class StokerWebConfiguration
            if ( logger.isDebugEnabled() && cooker.getCookerName() != null )
               logger.debug("Found cooker: " + cooker.getCookerName());
            
-           StokerPitSensor cookerPitSensor = cooker.getPitSensor();
+           StokerPitProbe cookerPitSensor = cooker.getPitSensor();
            
            if ( cookerPitSensor != null )
            {
@@ -164,7 +164,7 @@ public class StokerWebConfiguration
               {
                  if ( sdStoker.getProbeType() == DeviceType.PIT )
                  {
-                     if ( ! cookerPitSensor.equals((StokerPitSensor) sdStoker))
+                     if ( ! cookerPitSensor.equals((StokerPitProbe) sdStoker))
                      {
                          cooker.setPitSensor(null );
                      }

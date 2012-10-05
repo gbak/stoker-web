@@ -52,7 +52,7 @@ import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerFan;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.logfile.LogNote;
 
@@ -214,7 +214,7 @@ public class ReportData
                                 break;
                             
                             case PIT:
-                                StokerPitSensor sps = (StokerPitSensor)sd;
+                                StokerPitProbe sps = (StokerPitProbe)sd;
                                 sb.append( sps.printString());
                                 break;
                             

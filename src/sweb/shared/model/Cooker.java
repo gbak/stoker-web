@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 
 public class Cooker implements Serializable
@@ -31,7 +31,7 @@ public class Cooker implements Serializable
     private static final long serialVersionUID = 2387713458606878320L;
     
     String cookerName;
-    StokerPitSensor pitSensor;
+    StokerPitProbe pitSensor;
     ArrayList<StokerProbe> probeList = new ArrayList<StokerProbe>();
     
     // TODO: local Alerts will need to be configured here
@@ -44,20 +44,20 @@ public class Cooker implements Serializable
         
     }
     
-    public Cooker( String cookerName, StokerPitSensor pitSensor )
+    public Cooker( String cookerName, StokerPitProbe pitSensor )
     {
         this( cookerName );
         this.pitSensor = pitSensor;
         
     }
     
-    public Cooker( String cookerName, StokerPitSensor pitSensor, ArrayList<StokerProbe> probeList )
+    public Cooker( String cookerName, StokerPitProbe pitSensor, ArrayList<StokerProbe> probeList )
     {
         this( cookerName, pitSensor);
         this.probeList = probeList;
     }
     
-    public void setPitSensor( StokerPitSensor pitSensor )
+    public void setPitSensor( StokerPitProbe pitSensor )
     {
         this.pitSensor = pitSensor;
     }
@@ -85,7 +85,7 @@ public class Cooker implements Serializable
             return "null";
     }
     
-    public StokerPitSensor getPitSensor()
+    public StokerPitProbe getPitSensor()
     {
         return pitSensor;
     }

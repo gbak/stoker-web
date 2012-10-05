@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerFan;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
 /**
@@ -148,7 +148,7 @@ public abstract class HardwareDeviceConfiguration
         {
             if ( sd.getProbeType() == DeviceType.PIT )
             {
-                StokerFan sf = ((StokerPitSensor)sd).getFanDevice();
+                StokerFan sf = ((StokerPitProbe)sd).getFanDevice();
                 return sf.getID();
             }
         }
@@ -163,7 +163,7 @@ public abstract class HardwareDeviceConfiguration
        {
            if ( sd.getProbeType() == DeviceType.PIT )
            {
-               StokerFan sf = ((StokerPitSensor)sd).getFanDevice();
+               StokerFan sf = ((StokerPitProbe)sd).getFanDevice();
                arBlowers.add( sf.getID());           }
        }
        return arBlowers;

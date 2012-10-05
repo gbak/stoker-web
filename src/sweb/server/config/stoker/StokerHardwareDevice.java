@@ -59,7 +59,7 @@ import sweb.server.monitors.stoker.config.json.StokerOuter;
 
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerFan;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 
@@ -152,7 +152,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                StokerProbe sp = (StokerProbe) super.getDevice( deviceID );
                StokerFan dFan = (StokerFan) super.getDevice(strValue);
 
-               StokerPitSensor dProbe = new StokerPitSensor(sp, dFan);
+               StokerPitProbe dProbe = new StokerPitProbe(sp, dFan);
 
                super.replaceDevice( dProbe );
            }
@@ -273,7 +273,7 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                     else
                     {
                         logger.debug("Adding pit sensor device: " + sensor.getId().toUpperCase()+ " with name: " + sensor.getName());
-                        StokerPitSensor sp = new StokerPitSensor( sensor.getId().toUpperCase(), sensor.getName());
+                        StokerPitProbe sp = new StokerPitProbe( sensor.getId().toUpperCase(), sensor.getName());
                         sp.setCurrentTemp((float)sensor.getTc());
                         sp.setLowerTempAlarm(sensor.getTl());
                         sp.setTargetTemp(sensor.getTa());
@@ -624,10 +624,10 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
            {
                SDevice sd = stokerDeviceList.get( i );
                SDevice hwDevice = m_HWConfig.get( sd.getID() );
-               if ( hwDevice instanceof StokerPitSensor )
+               if ( hwDevice instanceof StokerPitProbe )
                {
                    
-                   ((StokerPitSensor)hwDevice).update((StokerPitSensor) sd );
+                   ((StokerPitProbe)hwDevice).update((StokerPitProbe) sd );
                }
                else if ( hwDevice instanceof StokerProbe )
                {

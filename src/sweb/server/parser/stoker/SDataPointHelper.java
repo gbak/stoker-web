@@ -31,7 +31,7 @@ import sweb.shared.model.data.SBlowerDataPoint;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 /*
  *  Helper class to SDataPoint since GWT did not like the complex set of classes
  *  in the shared section.
@@ -99,9 +99,9 @@ public class SDataPointHelper
           {
               
               SDevice pitDevice = configuration.getDeviceByID(deviceID);
-              if ( pitDevice instanceof StokerPitSensor )
+              if ( pitDevice instanceof StokerPitProbe )
               {
-                  SDevice fanDevice = ((StokerPitSensor) pitDevice).getFanDevice();
+                  SDevice fanDevice = ((StokerPitProbe) pitDevice).getFanDevice();
                   if ( fanDevice != null)
                   {
                       String strBlowerID = fanDevice.getID();

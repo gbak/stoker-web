@@ -38,7 +38,7 @@ import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.SDeviceBase;
 import sweb.shared.model.devices.stoker.StokerFan;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.logfile.LogNote;
 import sweb.shared.model.stoker.StokerDeviceTypes;
@@ -441,7 +441,7 @@ public class LogFileFormatter
             case PIT:
                 StokerProbe sp = new StokerProbe(strDeviceID, strName, target.intValue(), alarmHigh.intValue(), alarmLow.intValue(), alarmType );
                 StokerFan sf = new StokerFan( strBlowerID, "" );
-                sd = new StokerPitSensor(sp, sf);
+                sd = new StokerPitProbe(sp, sf);
                 break;
             case FOOD:
                 StokerProbe spFood = new StokerProbe(strDeviceID, strName, target.intValue(), alarmHigh.intValue(), alarmLow.intValue(), alarmType );

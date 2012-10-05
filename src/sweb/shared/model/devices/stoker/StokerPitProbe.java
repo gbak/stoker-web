@@ -26,25 +26,25 @@ import sweb.shared.model.data.SProbeDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.stoker.StokerDeviceTypes.DeviceType;
 
-public class StokerPitSensor extends StokerProbe implements Serializable
+public class StokerPitProbe extends StokerProbe implements Serializable
 {
 
     private static final long serialVersionUID = 462230168684643107L;
     StokerFan sfan;
 
-    private StokerPitSensor() { super(); }
+    private StokerPitProbe() { super(); }
 
-    public StokerPitSensor(String id, String name)
+    public StokerPitProbe(String id, String name)
     {
         super(id, name);
         sfan = null;
     }
-    public StokerPitSensor( StokerProbe sp, StokerFan f)
+    public StokerPitProbe( StokerProbe sp, StokerFan f)
     {
         super( sp );
         sfan = f;
     }
-    public StokerPitSensor( StokerProbe sp )
+    public StokerPitProbe( StokerProbe sp )
     {
         super( sp );
         sfan = null;
@@ -109,7 +109,7 @@ public class StokerPitSensor extends StokerProbe implements Serializable
        return DeviceType.PIT;
     }
 
-    public boolean equals( StokerPitSensor sp )
+    public boolean equals( StokerPitProbe sp )
     {
         if ( super.equals(sp ) == true )
             if ( this.getFanDevice() != null && sp.getFanDevice() != null )
@@ -124,7 +124,7 @@ public class StokerPitSensor extends StokerProbe implements Serializable
      * not assign the old object to the new, but copies the settings.
      * @param sps
      */
-    public void update( StokerPitSensor sps )
+    public void update( StokerPitProbe sps )
     {
         super.update( (StokerProbe) sps );
         
@@ -151,8 +151,8 @@ public class StokerPitSensor extends StokerProbe implements Serializable
         {
             if ( sd.getID().compareToIgnoreCase(this.getID() ) == 0 )
             {
-                if ( sd instanceof StokerPitSensor )
-                   update( (StokerPitSensor) sd );
+                if ( sd instanceof StokerPitProbe )
+                   update( (StokerPitProbe) sd );
                 else
                     update( (StokerProbe) sd );  // not sure if we'll ever run into this case.
             }

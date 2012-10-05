@@ -24,7 +24,7 @@ import java.util.HashMap;
 import sweb.shared.model.Cooker;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerFan;
-import sweb.shared.model.devices.stoker.StokerPitSensor;
+import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 
 import com.smartgwt.client.data.RecordList;
@@ -237,7 +237,7 @@ public class ConfigurationTabPane extends VLayout
         String pidID = null;
         String blowerID = null;
         StokerFan stokerFan = null;
-        StokerPitSensor stokerPitSensor = null;
+        StokerPitProbe stokerPitSensor = null;
     
         for ( SDevice sd : stokerConf )
         {
@@ -260,7 +260,7 @@ public class ConfigurationTabPane extends VLayout
            SDevice sd = deviceMap.get(pitRecord.getID());
            StokerProbe sp = new StokerProbe(sd.getID(), sd.getName() );
            
-           stokerPitSensor = new StokerPitSensor(sp, stokerFan );
+           stokerPitSensor = new StokerPitProbe(sp, stokerFan );
            
         }
 
@@ -276,8 +276,8 @@ public class ConfigurationTabPane extends VLayout
             ProbeRecord tempRecord = (ProbeRecord) probeList.get(i);
             String probeID = tempRecord.getID();
             SDevice sd = deviceMap.get( probeID );
-            if ( sd instanceof StokerPitSensor )
-                ((StokerPitSensor)sd).setFanDevice(null);
+            if ( sd instanceof StokerPitProbe )
+                ((StokerPitProbe)sd).setFanDevice(null);
             cooker.addStokerProbe((StokerProbe) sd );
             
         }

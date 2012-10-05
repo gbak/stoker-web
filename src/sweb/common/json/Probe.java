@@ -14,7 +14,7 @@ public class Probe extends Device
     public String lowerTempAlarm;
     
     @JsonProperty(value="alarmHigh")
-    String upperTempAlarm;
+    public String upperTempAlarm;
     
     @JsonProperty(value="alarmType")
     public AlarmType alarmType;
