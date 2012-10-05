@@ -4,6 +4,7 @@ import sweb.common.json.Blower;
 import sweb.common.json.Device;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
+import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerFan;
 import sweb.shared.model.devices.stoker.StokerPitProbe;
@@ -46,6 +47,17 @@ public class ConvertUtils
                          String.valueOf(sp.getCurrentTemp()));    
     }
     
+    public static Probe toProbe( StokerProbe sp, SDataPoint sdp )
+    {
+       return new Probe( sp.getID(),
+                         sp.getName(),
+                         String.valueOf(sp.getTargetTemp()),
+                         String.valueOf(sp.getLowerTempAlarm()),
+                         String.valueOf(sp.getUpperTempAlarm()),
+                         convertAlarmType(sp.getAlarmEnabled()),
+                         String.valueOf(sdp.getData()));    
+    }
+    
     public static StokerFan toStokerFan( Blower b)
     {
         StokerFan sf = new StokerFan( b.id, b.Name );
@@ -62,6 +74,11 @@ public class ConvertUtils
     public static PitProbe toPitProbe( StokerPitProbe sps )
     {
         return new PitProbe( toProbe( (StokerProbe) sps ), toBlower(sps.getFanDevice()));
+    }
+    
+    public static PitProbe toPitProbe( StokerPitProbe sps, SDataPoint sdp )
+    {
+        return new PitProbe( toProbe( (StokerProbe) sps, sdp ), toBlower(sps.getFanDevice()));
     }
     
     public static Blower toBlower( StokerFan sf )

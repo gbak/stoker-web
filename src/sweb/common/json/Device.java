@@ -6,7 +6,6 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value=PitProbe.class, name="pit"),
     @JsonSubTypes.Type(value=Probe.class, name="probe"),
     @JsonSubTypes.Type(value=Blower.class, name="fan")
 })

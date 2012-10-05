@@ -3,6 +3,7 @@ package sweb.server.rest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,17 +68,18 @@ public class RestServices {
 "  \"blowers\":[{\"id\":\"230000002A55C305\",\"name\":\"Blower 1\",\"on\":0}]}}");
     }
     
-    @POST
+    @GET
     @Path("data")
     public String handleDataGet( @DefaultValue("all") @QueryParam("probes") String probe )
     {
         DeviceDataList deviceDataList = new DeviceDataList();
         
+        Date receivedDate = null;
+        
         Set<String> set = null;
         if ( probe.compareToIgnoreCase("all") != 0 )
         {
-            set = new HashSet<String>(Arrays.asList(probe.split(",")));
-            
+            set = new HashSet<String>(Arrays.asList(probe.split(","))); 
         }
  
         for ( SDataPoint sdp : m_pitMonitor.getCurrentTemps())
@@ -87,23 +89,29 @@ public class RestServices {
             {
             
                 Device d = null;
-                if ( sd instanceof StokerProbe )
+                if ( sd instanceof StokerPitProbe )
                 {
-                    Probe p = ConvertUtils.toProbe( (StokerProbe) sd );
-                    deviceDataList.add( p );
+                    PitProbe p = ConvertUtils.toPitProbe( (StokerPitProbe) sd, sdp );
+                    deviceDataList.devices.add( p );
+                    if ( receivedDate == null)
+                       receivedDate = sdp.getCollectedDate();
                 }
-                else if ( sd instanceof StokerPitProbe )
+                else if ( sd instanceof StokerProbe )
                 {
-                    PitProbe p = ConvertUtils.toPitProbe( (StokerPitProbe) sd );
-                    deviceDataList.add( p );
+                    Probe p = ConvertUtils.toProbe( (StokerProbe) sd, sdp );
+                    deviceDataList.devices.add( p );
+                    if ( receivedDate == null)
+                        receivedDate = sdp.getCollectedDate();
                 }
                 else if ( sd instanceof StokerFan )
                 {
                     Blower b = ConvertUtils.toBlower( (StokerFan) sd );
-                    deviceDataList.add( b );
+                    deviceDataList.devices.add( b );
                 }
             }
         }
+        if ( receivedDate != null )
+            deviceDataList.receivedDate = receivedDate;
         
             
        /* return("[{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"200\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}," +
