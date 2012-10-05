@@ -21,7 +21,8 @@ public class ServiceResult<T> {
 	public String feedback;
 
 	@JsonProperty(value="data")
-	public ArrayList<T> data;
+	//public ArrayList<T> data;
+	public T data;
 
 	public ServiceResult(){}
 
@@ -35,14 +36,14 @@ public class ServiceResult<T> {
 		this.data = temp.data;
 	}
 	
-	@JsonIgnore
+	/*@JsonIgnore
 	public T get1stDataEntry() {
 		if (data == null || data.size() <= 0) {
 			return null;
 		}
 		
 		return data.get(0);
-	}
+	}*/
 	
 	public String toJsonString() throws Exception
 	{
@@ -60,14 +61,20 @@ public class ServiceResult<T> {
 		this.success = success;
 	}
 
-	public Collection<T> getData() {
+	/*public Collection<T> getData() {
 		return data;
-	}
-
-	public void setData(ArrayList<T> data) {
+	}*/
+	public T getData() {
+        return data;
+    }
+	
+	/*public void setData(ArrayList<T> data) {
 		this.data = data;
-	}
-
+	}*/
+	public void setData(T data) {
+        this.data = data;
+    }
+	
 	public String getFeedback() {
 		return feedback;
 	}
