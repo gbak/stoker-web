@@ -8,7 +8,7 @@ import sweb.common.base.constant.AlarmType;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include=JsonTypeInfo.As.PROPERTY, property="type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value=PitProbe.class, name="pit"),
+    @JsonSubTypes.Type(value=PitProbe.class, name="pit")
 })
 public class Probe extends Device
 {

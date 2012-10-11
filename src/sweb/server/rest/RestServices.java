@@ -103,11 +103,11 @@ public class RestServices {
                     if ( receivedDate == null)
                         receivedDate = sdp.getCollectedDate();
                 }
-                else if ( sd instanceof StokerFan )
+               /* else if ( sd instanceof StokerFan )
                 {
                     Blower b = ConvertUtils.toBlower( (StokerFan) sd );
                     deviceDataList.devices.add( b );
-                }
+                }*/
             }
         }
         if ( receivedDate != null )
