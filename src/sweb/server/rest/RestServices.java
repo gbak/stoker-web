@@ -93,14 +93,14 @@ public class RestServices {
                 {
                     PitProbe p = ConvertUtils.toPitProbe( (StokerPitProbe) sd, sdp );
                     deviceDataList.devices.add( p );
-                    if ( receivedDate == null)
+                    if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
                        receivedDate = sdp.getCollectedDate();
                 }
                 else if ( sd instanceof StokerProbe )
                 {
                     Probe p = ConvertUtils.toProbe( (StokerProbe) sd, sdp );
                     deviceDataList.devices.add( p );
-                    if ( receivedDate == null)
+                    if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
                         receivedDate = sdp.getCollectedDate();
                 }
                /* else if ( sd instanceof StokerFan )
