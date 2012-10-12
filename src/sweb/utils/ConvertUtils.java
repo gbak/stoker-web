@@ -1,5 +1,7 @@
 package sweb.utils;
 
+import java.util.ArrayList;
+
 import sweb.common.json.Blower;
 import sweb.common.json.Device;
 import sweb.common.json.PitProbe;
@@ -24,7 +26,40 @@ public class ConvertUtils
     }*/
     
     
-
+    public static sweb.common.json.Cooker toCooker( sweb.shared.model.Cooker sharedCooker )
+    {
+        sweb.common.json.Cooker jsonCooker = new sweb.common.json.Cooker();
+        
+        jsonCooker.name = sharedCooker.getCookerName();
+        jsonCooker.pitProbe = toPitProbe( sharedCooker.getPitSensor() );
+        
+        for ( sweb.shared.model.devices.stoker.StokerProbe sp : sharedCooker.getProbeList() )
+        {
+            jsonCooker.probeList.add( toProbe( sp ));
+        }
+        return jsonCooker;
+    }
+    
+    public static sweb.shared.model.Cooker toCooker( sweb.common.json.Cooker  jsonCooker )
+    {
+        
+        sweb.shared.model.Cooker sharedCooker = new sweb.shared.model.Cooker();
+        
+        sharedCooker.setCookerName(jsonCooker.name);
+        sharedCooker.setPitSensor( toStokerPitSensor( jsonCooker.pitProbe ));
+        
+        ArrayList<StokerProbe> alsp = new ArrayList<StokerProbe>();
+        
+        for ( sweb.common.json.Probe probe : jsonCooker.probeList )
+        {
+            alsp.add( toStokerProbe( probe ));
+        }
+        
+        sharedCooker.setProbeList( alsp );
+        
+        return sharedCooker;
+    }
+    
     public static StokerProbe toStokerProbe( Probe p )
     {
         return new StokerProbe( p.id,

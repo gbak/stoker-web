@@ -69,6 +69,43 @@ public class RestServices {
     }
     
     @GET
+    @Path("config")
+    public String handleConfigGet()
+    {
+       sweb.common.json.CookerList cookerList = new sweb.common.json.CookerList();
+       
+       for ( sweb.shared.model.Cooker cooker : m_stokerwebConfiguration.getCookerList().getCookerList() )
+       {
+          cookerList.add( ConvertUtils.toCooker( cooker )); 
+       }
+       
+       ObjectMapper mapper = new ObjectMapper();
+       String jsonString = "";
+       try
+       {
+           jsonString = mapper.writeValueAsString(cookerList);
+       }
+       catch (JsonGenerationException e)
+       {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       }
+       catch (JsonMappingException e)
+       {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       }
+       catch (IOException e)
+       {
+           // TODO Auto-generated catch block
+           e.printStackTrace();
+       }
+       return jsonString;
+   
+    }
+    
+    
+    @GET
     @Path("data")
     public String handleDataGet( @DefaultValue("all") @QueryParam("probes") String probe )
     {
