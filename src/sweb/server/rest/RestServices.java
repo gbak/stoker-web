@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -118,10 +119,11 @@ public class RestServices {
         {
             set = new HashSet<String>(Arrays.asList(probe.split(","))); 
         }
- 
+ /*
         for ( SDataPoint sdp : m_pitMonitor.getCurrentTemps())
         {
             SDevice sd = m_stokerwebConfiguration.getDeviceByID(sdp.getDeviceID());
+            String cookerName = m_stokerwebConfiguration.getCookerNameForDeviceID(sdp.getDeviceID());
             if ( set == null || (set != null && set.contains(sdp.getDeviceID())) )
             {
             
@@ -129,6 +131,7 @@ public class RestServices {
                 if ( sd instanceof StokerPitProbe )
                 {
                     PitProbe p = ConvertUtils.toPitProbe( (StokerPitProbe) sd, sdp );
+                    p.cooker = cookerName;
                     deviceDataList.devices.add( p );
                     if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
                        receivedDate = sdp.getCollectedDate();
@@ -136,17 +139,52 @@ public class RestServices {
                 else if ( sd instanceof StokerProbe )
                 {
                     Probe p = ConvertUtils.toProbe( (StokerProbe) sd, sdp );
+                    p.cooker = cookerName;
                     deviceDataList.devices.add( p );
                     if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
                         receivedDate = sdp.getCollectedDate();
                 }
-               /* else if ( sd instanceof StokerFan )
-                {
-                    Blower b = ConvertUtils.toBlower( (StokerFan) sd );
-                    deviceDataList.devices.add( b );
-                }*/
+                
+                
+               // else if ( sd instanceof StokerFan )
+               // {
+               //     Blower b = ConvertUtils.toBlower( (StokerFan) sd );
+               //     deviceDataList.devices.add( b );
+               // }
             }
         }
+       */ 
+        HashMap<String,SDataPoint> dataPointHash = new HashMap<String,SDataPoint>();
+        
+        // Load the data points into a hash also figure out the latest collected date.
+        for ( SDataPoint sdp : m_pitMonitor.getCurrentTemps())
+        {
+            dataPointHash.put( sdp.getDeviceID(), sdp);
+            if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
+               receivedDate = sdp.getCollectedDate();
+        }
+        
+        for ( sweb.shared.model.Cooker cooker : m_stokerwebConfiguration.getCookerList().getCookerList() )
+        {
+            String cookerName = cooker.getCookerName();
+            Device d = new Device();
+            d.cooker = cookerName;
+            
+            deviceDataList.devices.add( d );  // This is for the android title bar
+            
+            StokerPitProbe spp = cooker.getPitSensor();
+            PitProbe pp = ConvertUtils.toPitProbe( spp , dataPointHash.get( spp.getID()));
+            pp.cooker = cookerName;
+            deviceDataList.devices.add( pp );
+            
+            for ( StokerProbe stokerProbe : cooker.getProbeList())
+            {
+                Probe p = ConvertUtils.toProbe( stokerProbe, dataPointHash.get( stokerProbe.getID()) );
+                p.cooker = cookerName;
+                deviceDataList.devices.add( p );
+            }
+        }
+        
         if ( receivedDate != null )
             deviceDataList.receivedDate = receivedDate;
         

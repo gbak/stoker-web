@@ -59,6 +59,7 @@ public class StokerWebConfiguration
             File.separator + "CookerConfig.json";
 
     private HashMap<String,SDevice> m_deviceCache = new HashMap<String,SDevice>();
+    private HashMap<String,String> m_CookerCache = new HashMap<String,String>();
     private HardwareDeviceConfiguration m_deviceConfiguration = null;
     private CookerList m_cookerList;
     private EventBus m_eventBus;
@@ -98,19 +99,25 @@ public class StokerWebConfiguration
     private void loadDeviceCacheFromCookerList()
     {
         m_deviceCache.clear();
+        m_CookerCache.clear();
         for ( Cooker c : m_cookerList.getCookerList() )
         {
             StokerPitProbe sps = c.getPitSensor();
             if ( sps != null )
             { 
                 m_deviceCache.put( sps.getID(),sps);
+                m_CookerCache.put( sps.getID(), c.getCookerName());
                 StokerFan sf = sps.getFanDevice();
                 if ( sf != null )
+                {
                     m_deviceCache.put( sf.getID(), sf);
+                    m_CookerCache.put( sf.getID(), c.getCookerName());
+                }
             }
             for ( StokerProbe sp : c.getProbeList() )
             {
                m_deviceCache.put( sp.getID(), sp );
+               m_CookerCache.put( sp.getID(), c.getCookerName());
             }
         }    
     }
@@ -129,6 +136,19 @@ public class StokerWebConfiguration
            return m_deviceConfiguration.getDevice(id);
         
         return m_deviceCache.get(id );
+    }
+    
+    /**
+     * Returns Cooker Name which probe with given ID is associated with.
+     * @param id
+     * @return
+     */
+    public String getCookerNameForDeviceID( String id )
+    {
+        if ( m_cookerList == null || m_cookerList.getCookerList().size() == 0 )
+           return "";
+        
+        return m_CookerCache.get(id );
     }
     
     private void reconcile()
