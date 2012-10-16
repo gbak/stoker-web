@@ -13,4 +13,5 @@ public class DeviceDataList //extends ArrayList<Device>
     {
         devices = new ArrayList<Device>();
     }
+    
 }

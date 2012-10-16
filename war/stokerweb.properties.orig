@@ -49,5 +49,5 @@ weather_zipcode=30024
 # These should not change, it is important that there are no spaces after the trailing '='
 weather_woeid_url=http://where.yahooapis.com/geocode?country=USA&flags=J&postal=
 weather_get_by_woeid_url=http://weather.yahooapis.com/forecastjson?w=
-
+weather_url=http://query.yahooapis.com/v1/public/yql?format=json&q=select%20*%20from%20weather.forecast%20where%20location=
 
