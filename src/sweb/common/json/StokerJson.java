@@ -22,7 +22,7 @@ public class StokerJson
     
     public static class Sensors
     {
-        String id;
+        public String id;
         public String name;
         public String al;
         public String ta;
