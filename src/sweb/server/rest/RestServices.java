@@ -13,6 +13,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -40,7 +41,7 @@ import com.sun.jersey.spi.resource.Singleton;
 
 @Singleton
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/test")
+@Path("/v1")
 public class RestServices {
     
     StokerWebConfiguration m_stokerwebConfiguration;
@@ -51,11 +52,6 @@ public class RestServices {
     {
         m_stokerwebConfiguration = swc;
         this.m_pitMonitor = pitMon;
-    }
-    
-    @POST
-    public String handleFooPost(@QueryParam("bar") String bar, @QueryParam("quux") int quux) {
-       return "{\"yay\":\"hooray\"}";
     }
     
     @GET
@@ -70,7 +66,7 @@ public class RestServices {
     }
     
     @GET
-    @Path("config")
+    @Path("cookers")
     public String handleConfigGet()
     {
        sweb.common.json.CookerList cookerList = new sweb.common.json.CookerList();
@@ -105,55 +101,28 @@ public class RestServices {
    
     }
     
+    @GET
+    @Path("devices")
+    public String handleDeviceGet( )
+    {
+        return handleDataGet(null);
+    }
     
     @GET
-    @Path("data")
-    public String handleDataGet( @DefaultValue("all") @QueryParam("probes") String probe )
+    @Path("devices/{id}")
+    public String handleDataGet( @PathParam("id") String probe )
+  
     {
         DeviceDataList deviceDataList = new DeviceDataList();
         
         Date receivedDate = null;
         
         Set<String> set = null;
-        if ( probe.compareToIgnoreCase("all") != 0 )
+        if ( probe != null )
         {
             set = new HashSet<String>(Arrays.asList(probe.split(","))); 
         }
- /*
-        for ( SDataPoint sdp : m_pitMonitor.getCurrentTemps())
-        {
-            SDevice sd = m_stokerwebConfiguration.getDeviceByID(sdp.getDeviceID());
-            String cookerName = m_stokerwebConfiguration.getCookerNameForDeviceID(sdp.getDeviceID());
-            if ( set == null || (set != null && set.contains(sdp.getDeviceID())) )
-            {
-            
-                Device d = null;
-                if ( sd instanceof StokerPitProbe )
-                {
-                    PitProbe p = ConvertUtils.toPitProbe( (StokerPitProbe) sd, sdp );
-                    p.cooker = cookerName;
-                    deviceDataList.devices.add( p );
-                    if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
-                       receivedDate = sdp.getCollectedDate();
-                }
-                else if ( sd instanceof StokerProbe )
-                {
-                    Probe p = ConvertUtils.toProbe( (StokerProbe) sd, sdp );
-                    p.cooker = cookerName;
-                    deviceDataList.devices.add( p );
-                    if ( receivedDate == null || receivedDate.getTime() < sdp.getCollectedDate().getTime())
-                        receivedDate = sdp.getCollectedDate();
-                }
-                
-                
-               // else if ( sd instanceof StokerFan )
-               // {
-               //     Blower b = ConvertUtils.toBlower( (StokerFan) sd );
-               //     deviceDataList.devices.add( b );
-               // }
-            }
-        }
-       */ 
+ 
         HashMap<String,SDataPoint> dataPointHash = new HashMap<String,SDataPoint>();
         
         // Load the data points into a hash also figure out the latest collected date.
@@ -170,18 +139,27 @@ public class RestServices {
             Device d = new Device();
             d.cooker = cookerName;
             
-            deviceDataList.devices.add( d );  // This is for the android title bar
+            if ( probe == null )
+            {
+               deviceDataList.devices.add( d );  // This is for the android title bar
+            }
             
             StokerPitProbe spp = cooker.getPitSensor();
             PitProbe pp = ConvertUtils.toPitProbe( spp , dataPointHash.get( spp.getID()));
             pp.cooker = cookerName;
-            deviceDataList.devices.add( pp );
+            if ( probe == null || set.contains(pp.id))
+            {
+               deviceDataList.devices.add( pp );
+            }
             
             for ( StokerProbe stokerProbe : cooker.getProbeList())
             {
                 Probe p = ConvertUtils.toProbe( stokerProbe, dataPointHash.get( stokerProbe.getID()) );
                 p.cooker = cookerName;
-                deviceDataList.devices.add( p );
+                if ( probe == null || set.contains(p.id))
+                {
+                   deviceDataList.devices.add( p );
+                }
             }
         }
         
@@ -221,7 +199,7 @@ public class RestServices {
     
     
     @GET
-    public String handleFooGet()
+    public String handleDefaultGet()
     {
         ObjectMapper mapper = new ObjectMapper();
 
