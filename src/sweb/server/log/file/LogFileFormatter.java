@@ -191,6 +191,8 @@ public class LogFileFormatter
     private static String encode( String enc )
     {
         String s = null;
+        if ( enc == null )
+            return "";
         try
         {
             s = URLEncoder.encode(enc, "UTF-8");

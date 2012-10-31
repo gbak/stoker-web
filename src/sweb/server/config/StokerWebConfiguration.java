@@ -245,12 +245,17 @@ public class StokerWebConfiguration
        
     }
     
-    public void updateConfig( ArrayList<SDevice> arsd)
+    
+    public String updateConfig( ArrayList<SDevice> arsd)
     {
-       m_cookerList.update( arsd );
-       save();
-      
-      
+        String strResponse = "";
+     //   strResponse = validate( arsd );
+    //    if ( strResponse.length() == 0 )
+     //   {
+           m_cookerList.update( arsd );
+           save();
+      //  }
+      return strResponse;
        
     }
     
