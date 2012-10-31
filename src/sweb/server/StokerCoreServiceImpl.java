@@ -85,30 +85,28 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
 
     EventBus m_eventBus = null;
     PitMonitor m_pitMonitor = null;
-    LogManager m_logManager = null;
     ClientMessenger m_ClientMessenger = null;
     WeatherController m_WeatherController = null;
     AlertsManagerImpl m_alertsManager = null;
-    StokerWebConfiguration m_StokerWebConfig = null;
+    StokerSharedServices m_stokerSharedServices = null;
     
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
     @Inject
-    public StokerCoreServiceImpl( StokerWebConfiguration config, 
-                                  PitMonitor pm,
+    public StokerCoreServiceImpl( PitMonitor pm,
                                   ClientMessenger cm,
                                   AlertsManagerImpl am,
-                                  LogManager lm,
                                   WeatherController wc,
+                                  StokerSharedServices ssc,
                                   EventBus bus)
     {
-        this.m_StokerWebConfig = config;
+
         this.m_pitMonitor = pm;
         this.m_ClientMessenger = cm;
         this.m_WeatherController = wc;
-        this.m_logManager = lm;
         this.m_alertsManager = am;
         this.m_eventBus = bus;
+        this.m_stokerSharedServices = ssc;
         
         m_eventBus.register(this);
         
@@ -117,11 +115,9 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     public ConfigurationSettings getDeviceConfiguration()
             throws IllegalArgumentException
     {
-        return new ConfigurationSettings( m_StokerWebConfig.getCookerList(), m_pitMonitor.getRawDevices() );
+        return m_stokerSharedServices.getDeviceConfiguration();
     }
 
-    
-    
     public void setupCallBack()
     {
        HttpSession httpSession = getThreadLocalRequest().getSession();
@@ -317,63 +313,32 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     public ArrayList<ArrayList<SDataPoint>> getAllGraphDataPoints(String logName)
             throws IllegalArgumentException
     {
-        return m_logManager.getAllDataPoints(logName);
+        return m_stokerSharedServices.getAllGraphDataPoints(logName);
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
     {
-        return m_logManager.getLogList();
+        return m_stokerSharedServices.getLogList();
     }
 
     /**
      * Begin a new log
      */
-    public Integer startLog(String strCookerName, String strLogName, ArrayList<SDevice> arSD ) throws IllegalArgumentException
+    public Integer startLog(String cookerName, String logName, ArrayList<SDevice> deviceList ) throws IllegalArgumentException
     {
        if ( ! loginGuard() )
           return -1;
        
-        Integer ret = new Integer(0);
-        if ( ! m_logManager.isLogRunning(strLogName))
-        {
-            try
-            {
-                LogItem li = new LogItem(strCookerName, strLogName, arSD);
-                m_logManager.startLog( li );
-                ret = 1;
-                LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );
-                m_ClientMessenger.push( le );
-
-            }
-            catch (LogExistsException e)
-            {
-                try { m_logManager.stopLog("Default"); } catch (LogNotFoundException e1) { ret = 0; }
-
-            }
-        }
-        return ret;
+        return m_stokerSharedServices.startLog( cookerName,  logName,  deviceList);
     }
 
-    public String stopLog(String strCookerName, String strLogName)
+    public String stopLog(String cookerName, String logName)
             throws IllegalArgumentException
     {
        if ( ! loginGuard() )
           return "";
        
-        String ret = new String();
-        try
-        {
-            ret = m_logManager.stopLog(strLogName);
-            // Create LogEvent and pass it back via comet stream
-            LogEvent le = new LogEvent(LogEventType.DELETED, strCookerName, strLogName );
-            m_ClientMessenger.push( le );
-        }
-        catch (LogNotFoundException e)
-        {
-            logger.error("stopLog: provided log not found");
-            e.printStackTrace();
-        }
-        return ret;
+        return m_stokerSharedServices.stopLog( cookerName,  logName );
     }
 
     public Integer validateSession(String sessionID)
@@ -392,15 +357,12 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
        if ( ! loginGuard() )
           return -1;
 
-
-       m_StokerWebConfig.updateConfig(asd);
-
-        return new Integer(1);
+        return m_stokerSharedServices.updateTempAndAlarmSettings(asd);
     }
 
     public LogDir getLogFileNames() throws IllegalArgumentException
     {
-        return ListLogFiles.getAllLogFiles();
+        return m_stokerSharedServices.getLogFileNames();
     }
 
     public Integer attachToExistingLog(String cookerName, String selectedLog, String fileName)
@@ -409,7 +371,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
        if ( ! loginGuard() )
           return -1;
        
-        return m_logManager.attachToExistingLog(cookerName, selectedLog, fileName);
+        return m_stokerSharedServices.attachToExistingLog(cookerName, selectedLog, fileName);
 
     }
 
@@ -453,12 +415,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     {
         HttpSession httpSession = getThreadLocalRequest().getSession();
       //  CustomSession httpSession = (CustomSession)getThreadLocalRequest().getSession();
-        Status s = null;
-        if ( m_pitMonitor.isActive() )
-            s = Status.CONNECTED;
-        else
-            s = Status.DISCONNECTED;
-
+        Status s = m_stokerSharedServices.getStatus();
+        
         m_ClientMessenger.sessionPush( httpSession, new HardwareDeviceState( s, null ) );
     }
 
@@ -490,8 +448,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
         if ( ! loginGuard() )
             return -1;
         
-        m_logManager.addNoteToLog(note, logList);
-        return 0;
+        return m_stokerSharedServices.addNoteToLog(note, logList);
     }
 
     @Override
@@ -572,20 +529,14 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     @Override
     public Integer updateStokerWebConfig(CookerList cookerList )
     {      
-        // Save Cooker to property file as JSON
-        m_StokerWebConfig.saveConfig(cookerList);
-
-        m_ClientMessenger.push(
-                new ControllerEventLight(
-                        EventTypeLight.CONFIG_UPDATE_REFRESH));
-        return new Integer(1);
+        
+        return m_stokerSharedServices.updateStokerWebConfig(cookerList);
     }
 
     @Override
-    public CookerList getStokerWebConfiguration()
-            throws IllegalArgumentException
+    public CookerList getStokerWebConfiguration() throws IllegalArgumentException
     {
-        return m_StokerWebConfig.getCookerList();
+        return m_stokerSharedServices.getStokerWebConfiguration();
     }
     
     

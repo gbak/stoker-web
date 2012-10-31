@@ -1,6 +1,7 @@
 package sweb.server.rest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,11 +25,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
+import sweb.common.json.LogItem;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
 import sweb.common.json.ServerRequest;
 import sweb.common.json.ServerResponse;
 import sweb.server.StokerCoreServiceImpl;
+import sweb.server.StokerSharedServices;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
@@ -47,14 +50,16 @@ public class RestServices {
     
     StokerWebConfiguration m_stokerwebConfiguration;
     PitMonitor m_pitMonitor;
+    StokerSharedServices m_stokerSharedServices;
     
     private static final Logger logger = Logger.getLogger(RestServices.class.getName());
     
     @Inject
-    RestServices( StokerWebConfiguration swc, PitMonitor pitMon)
+    RestServices( StokerWebConfiguration swc, StokerSharedServices ssc, PitMonitor pitMon)
     {
         m_stokerwebConfiguration = swc;
         this.m_pitMonitor = pitMon;
+        this.m_stokerSharedServices = ssc;
     }
     
     @GET
@@ -210,7 +215,8 @@ public class RestServices {
         {
             logger.info("valid credentials detected for user: " + update.login.username);
             
-            m_stokerwebConfiguration.updateConfig(ConvertUtils.toSDeviceList( update.data));
+            //m_stokerwebConfiguration.updateConfig(ConvertUtils.toSDeviceList( update.data));
+            m_stokerSharedServices.updateTempAndAlarmSettings(ConvertUtils.toSDeviceList( update.data));
             
             // update code here;
             response.messages.add("values saved");
@@ -225,9 +231,19 @@ public class RestServices {
             return Response.status(401).entity(response).build();
         }
         
-        return null;
+        return Response.status(200).entity(response).build();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLogList()
+    {
+        
+        ArrayList<LogItem> logItems = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList());
+        
+        return Response.status(200).entity(logItems).build();
+    }
+    
     @GET
     @Produces(MediaType.TEXT_HTML)
     public String handleDefaultGet()

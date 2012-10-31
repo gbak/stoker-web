@@ -83,11 +83,15 @@ public class DispatchServletModule extends ServletModule
       
       bind(ReportData.class);
       
+      
+      
       bind(StokerFile.class);
       bind(ConnectionMonitor.class);
       bind(NotifyByBrowser.class);
       bind(Messenger.class);
       bind(BrowserDelivery.class);
+      
+      bind(StokerSharedServices.class);
       
       //requestStaticInjection(SDataPointHelper.class);
       bind(GuiceContainer.class);

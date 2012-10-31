@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import sweb.common.json.Blower;
 import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
+import sweb.common.json.LogItem;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
 import sweb.shared.model.data.SDataPoint;
@@ -190,5 +191,27 @@ public class ConvertUtils
                  return AlarmType.ALARM_FIRE;
          }
          return AlarmType.NONE;
+     }
+     
+
+     public static LogItem toLogItem( sweb.shared.model.LogItem l )
+     {
+         ArrayList<Device> deviceList = new ArrayList<Device>();
+         for ( SDevice sd : l.getLogItems())
+         {
+             deviceList.add( toDevice( sd ));
+         }
+         LogItem item = new LogItem( l.getLogName(), l.getCookerName(), deviceList );
+         return item;
+     }
+     
+     public static ArrayList<LogItem> toLogItemList( ArrayList<sweb.shared.model.LogItem> list )
+     {
+         ArrayList<LogItem> logList = new ArrayList<LogItem>();
+         for ( sweb.shared.model.LogItem li : list )
+         {
+             logList.add( toLogItem(li) );
+         }
+         return logList;
      }
 }
