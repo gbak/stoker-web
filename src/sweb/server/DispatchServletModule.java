@@ -110,7 +110,7 @@ public class DispatchServletModule extends ServletModule
       serve("/stokerweb/report/*").with(sweb.server.ReportServlet.class);
       
      // serve("/stokerweb/rest").with(GuiceContainer.class);
-      serve("/stokerweb/api/*").with(GuiceContainer.class);
+      serve("/api/*").with(GuiceContainer.class);
       
       
     }

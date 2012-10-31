@@ -1,37 +1,38 @@
 package sweb.server.rest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
+
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import sweb.common.json.Blower;
 import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
+import sweb.common.json.ServerRequest;
+import sweb.common.json.ServerResponse;
+import sweb.server.StokerCoreServiceImpl;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.monitors.PitMonitor;
+import sweb.server.security.LoginProperties;
 import sweb.shared.model.data.SDataPoint;
-import sweb.shared.model.devices.SDevice;
-import sweb.shared.model.devices.stoker.StokerFan;
 import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.utils.ConvertUtils;
@@ -46,6 +47,8 @@ public class RestServices {
     
     StokerWebConfiguration m_stokerwebConfiguration;
     PitMonitor m_pitMonitor;
+    
+    private static final Logger logger = Logger.getLogger(RestServices.class.getName());
     
     @Inject
     RestServices( StokerWebConfiguration swc, PitMonitor pitMon)
@@ -196,35 +199,41 @@ public class RestServices {
     
     }
     
-    
-    
+    @POST
+    @Path("devices")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response handleDevicePost(ServerRequest<DeviceDataList> update)
+    {
+        logger.info("handleDevicePost()");
+        ServerResponse<String> response = new ServerResponse<String>();
+        if ( LoginProperties.getInstance().validateLoginID(update.login.username, update.login.password) )
+        {
+            logger.info("valid credentials detected for user: " + update.login.username);
+            
+            m_stokerwebConfiguration.updateConfig(ConvertUtils.toSDeviceList( update.data));
+            
+            // update code here;
+            response.messages.add("values saved");
+            response.success = true;
+
+        }
+        else
+        {
+            logger.info("Invalid credentials detected for user: " + update.login.username);
+            response.messages.add("Invalid login ID or password");
+            response.success = false;
+            return Response.status(401).entity(response).build();
+        }
+        
+        return null;
+    }
+
     @GET
+    @Produces(MediaType.TEXT_HTML)
     public String handleDefaultGet()
     {
-        ObjectMapper mapper = new ObjectMapper();
 
-        String cookerListJson = null;
-        try
-        {
-            cookerListJson = mapper.writeValueAsString( m_stokerwebConfiguration.getCookerList());
-        }
-        catch (JsonGenerationException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (JsonMappingException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return cookerListJson;
+        return "<html><body>Welcome to Stoker-web</body></html>";
         
     }
 }

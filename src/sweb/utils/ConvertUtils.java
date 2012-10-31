@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import sweb.common.json.Blower;
 import sweb.common.json.Device;
+import sweb.common.json.DeviceDataList;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
 import sweb.shared.model.data.SDataPoint;
@@ -16,14 +17,55 @@ import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 public class ConvertUtils
 {
 
+    public static ArrayList<SDevice> toSDeviceList( DeviceDataList ddl )
+    {
+        ArrayList<SDevice> deviceList = new ArrayList<SDevice>();
+        
+       for ( Device d : ddl.devices )
+       {
+           deviceList.add( toDevice(d));
+       }
+       return deviceList;
+    }
+    
     public static Device toDevice( SDevice sd )
     {
+        if ( sd instanceof StokerPitProbe )
+        {
+           return (Device) toPitProbe( (StokerPitProbe) sd );    
+        }
+        else if ( sd instanceof StokerProbe )
+        {
+            return (Device) toProbe( (StokerProbe) sd );
+        } 
+        else if ( sd instanceof StokerFan )
+        {
+            return (Device) toBlower( (StokerFan) sd );
+        }
+         
+        
         return new Device(sd.getID(), sd.getName());
     }
-  /*  public SDevice toSDevice( Device d )
+
+    public static SDevice toDevice( Device d )
     {
-        return new SDevice( d.id, d.Name);
-    }*/
+        if ( d instanceof PitProbe )
+        {
+            return (SDevice) toStokerPitSensor( (PitProbe) d );
+        }
+        else if ( d instanceof Probe )
+        {
+            return (SDevice) toStokerProbe( (Probe) d );
+            
+        }
+        else if ( d instanceof Blower )
+        {
+            return (SDevice) toStokerFan( (Blower) d );
+        }
+        
+        
+        return null;
+    }
     
     
     public static sweb.common.json.Cooker toCooker( sweb.shared.model.Cooker sharedCooker )
