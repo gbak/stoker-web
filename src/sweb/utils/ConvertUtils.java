@@ -29,6 +29,15 @@ public class ConvertUtils
        return deviceList;
     }
     
+    public static ArrayList<SDevice> toSDeviceList( ArrayList<Device> deviceList)
+    {
+        ArrayList<SDevice> dl = new ArrayList<SDevice>();
+        for ( Device d : deviceList )
+        {
+            dl.add( toDevice(d));
+        }
+        return dl;
+    }
     public static Device toDevice( SDevice sd )
     {
         if ( sd instanceof StokerPitProbe )
@@ -194,6 +203,24 @@ public class ConvertUtils
      }
      
 
+     public static sweb.shared.model.LogItem toLogItem( LogItem log )
+     {
+        ArrayList<SDevice> deviceList = new ArrayList<SDevice>();
+        for ( Device d : log.deviceList)
+        {
+            deviceList.add(toDevice(d));
+        }
+        return new sweb.shared.model.LogItem(log.cookerName, log.logName, deviceList);
+     }
+
+     public static ArrayList<sweb.shared.model.LogItem> toLogItemList2( ArrayList<LogItem> logList)
+     {
+         ArrayList<sweb.shared.model.LogItem> ll = new ArrayList<sweb.shared.model.LogItem>();
+         for ( LogItem l : logList)
+             ll.add( toLogItem(l) );
+         return ll;
+     }
+     
      public static LogItem toLogItem( sweb.shared.model.LogItem l )
      {
          ArrayList<Device> deviceList = new ArrayList<Device>();

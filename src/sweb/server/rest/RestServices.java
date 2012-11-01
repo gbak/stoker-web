@@ -9,8 +9,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -26,6 +28,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
 import sweb.common.json.LogItem;
+import sweb.common.json.LogNote;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
 import sweb.common.json.ServerRequest;
@@ -36,6 +39,7 @@ import sweb.server.config.StokerWebConfiguration;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
 import sweb.shared.model.data.SDataPoint;
+import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerPitProbe;
 import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.utils.ConvertUtils;
@@ -235,6 +239,7 @@ public class RestServices {
     }
 
     @GET
+    @Path("logs")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLogList()
     {
@@ -242,6 +247,41 @@ public class RestServices {
         ArrayList<LogItem> logItems = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList());
         
         return Response.status(200).entity(logItems).build();
+    }
+    
+    @PUT
+    @Path("logs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createLog(LogItem log)
+    {
+        ServerResponse<String> sr = new ServerResponse<String>();
+        
+        ArrayList<SDevice> deviceList = ConvertUtils.toSDeviceList(log.deviceList);
+        
+        m_stokerSharedServices.startLog(log.cookerName, log.logName, deviceList);
+        return Response.status(201).entity(sr).build();
+    }
+    
+    @DELETE
+    @Path("logs")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response stopLog(LogItem log)
+    {
+        ServerResponse<String> sr = new ServerResponse<String>();
+
+        m_stokerSharedServices.stopLog(log.cookerName, log.logName );
+        return Response.status(201).entity(sr).build();
+    }
+    
+    @PUT
+    @Path("logs\note")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addNoteToLog( LogNote ln )
+    {
+        ServerResponse<String> sr = new ServerResponse<String>();
+        m_stokerSharedServices.addNoteToLog(ln.note, ln.logList );
+        
+        return Response.status(201).entity(sr).build();
     }
     
     @GET
