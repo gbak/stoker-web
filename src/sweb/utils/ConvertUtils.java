@@ -18,6 +18,7 @@ import sweb.shared.model.devices.stoker.StokerProbe.AlarmType;
 public class ConvertUtils
 {
 
+ 
     public static ArrayList<SDevice> toSDeviceList( DeviceDataList ddl )
     {
         ArrayList<SDevice> deviceList = new ArrayList<SDevice>();

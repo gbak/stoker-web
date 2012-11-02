@@ -43,11 +43,11 @@ public class Probe extends Device
         this.currentTemp = currentTemp;
     }
 
-    public Probe(String ID, String Name, String Cooker, String targetTemp,
+    public Probe(String ID, String Name, String targetTemp,
             String lowerTempAlarm, String upperTempAlarm, AlarmType alarmType,
-            String currentTemp)
+            String currentTemp, String cooker)
     {
-        super(ID, Name, Cooker);
+        super(ID, Name, cooker);
         this.targetTemp = targetTemp;
         this.lowerTempAlarm = lowerTempAlarm;
         this.upperTempAlarm = upperTempAlarm;

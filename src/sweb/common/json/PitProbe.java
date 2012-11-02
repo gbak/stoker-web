@@ -22,12 +22,12 @@ public class PitProbe extends Probe
         this.blower = blower;
     }
 
-    public PitProbe(String ID, String Name, String Cooker, String targetTemp,
+    public PitProbe(String ID, String Name, String targetTemp,
             String lowerTempAlarm, String upperTempAlarm, AlarmType alarmType,
-            String currentTemp, Blower blower)
+            String currentTemp, Blower blower, String cooker)
     {
-        super(ID, Name, Cooker, targetTemp, lowerTempAlarm, upperTempAlarm, alarmType,
-                currentTemp);
+        super(ID, Name, targetTemp, lowerTempAlarm, upperTempAlarm, alarmType,
+                currentTemp, cooker);
         this.blower = blower;
     }
 
