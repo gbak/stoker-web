@@ -186,6 +186,11 @@ public class WeatherController
     {
         logger.info("Fetching Weather");
         wd = fetchWeather();
+        if ( wd == null )
+        {
+            logger.error("Weather fetch failed");
+            return;
+        }
         logger.info("Weather fetch complete");
         WeatherChangeEvent wce = new WeatherChangeEvent(this,wd);
         eventBus.post(wce);
