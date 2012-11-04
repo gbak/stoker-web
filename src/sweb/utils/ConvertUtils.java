@@ -126,24 +126,30 @@ public class ConvertUtils
     
     public static Probe toProbe( StokerProbe sp )
     {
-       return new Probe( sp.getID(),
-                         sp.getName(),
-                         String.valueOf(sp.getTargetTemp()),
-                         String.valueOf(sp.getLowerTempAlarm()),
-                         String.valueOf(sp.getUpperTempAlarm()),
-                         convertAlarmType(sp.getAlarmEnabled()),
-                         String.valueOf(sp.getCurrentTemp()));    
+        if ( sp != null)
+           return new Probe( sp.getID(),
+                             sp.getName(),
+                             String.valueOf(sp.getTargetTemp()),
+                             String.valueOf(sp.getLowerTempAlarm()),
+                             String.valueOf(sp.getUpperTempAlarm()),
+                             convertAlarmType(sp.getAlarmEnabled()),
+                             String.valueOf(sp.getCurrentTemp()));
+        else
+            return new Probe();
     }
     
     public static Probe toProbe( StokerProbe sp, SDataPoint sdp )
     {
-       return new Probe( sp.getID(),
-                         sp.getName(),
-                         String.valueOf(sp.getTargetTemp()),
-                         String.valueOf(sp.getLowerTempAlarm()),
-                         String.valueOf(sp.getUpperTempAlarm()),
-                         convertAlarmType(sp.getAlarmEnabled()),
-                         String.valueOf(sdp.getData()));    
+        if ( sp != null)
+           return new Probe( sp.getID(),
+                             sp.getName(),
+                             String.valueOf(sp.getTargetTemp()),
+                             String.valueOf(sp.getLowerTempAlarm()),
+                             String.valueOf(sp.getUpperTempAlarm()),
+                             convertAlarmType(sp.getAlarmEnabled()),
+                             String.valueOf(sdp.getData()));
+        else
+            return new Probe();
     }
     
     public static StokerFan toStokerFan( Blower b)

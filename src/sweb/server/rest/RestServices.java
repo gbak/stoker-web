@@ -151,11 +151,11 @@ public class RestServices {
             Device d = new Device();
             d.cooker = cookerName;
             
-            if ( probe == null )
-            {
-               deviceDataList.devices.add( d );  // This is for the android title bar
-            }
-            
+//            if ( probe == null )
+//            {
+//               deviceDataList.devices.add( d );  // This is for the android title bar
+//            }
+//            
             StokerPitProbe spp = cooker.getPitSensor();
             PitProbe pp = ConvertUtils.toPitProbe( spp , dataPointHash.get( spp.getID()));
             pp.cooker = cookerName;
