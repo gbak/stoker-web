@@ -254,7 +254,7 @@ public class ConvertUtils
          return logList;
      }
      
-     public static LogItemCountList toLogItemCountList( ArrayList<sweb.shared.model.LogItem> list)
+     public static LogItemCount toLogItemCountList( ArrayList<sweb.shared.model.LogItem> list)
      {
          HashMap<String,Integer> logCount= new HashMap<String,Integer>();
          
@@ -273,13 +273,16 @@ public class ConvertUtils
          }
          LogItemCountList licList = new LogItemCountList();
          
-         for ( Entry<String,Integer> s : logCount.entrySet())
+         /*for ( Entry<String,Integer> s : logCount.entrySet())
          {
              LogItemCount lic = new LogItemCount();
              lic.cookerName = s.getKey();
              lic.count = s.getValue();
              licList.countList.add(lic);
-         }
-         return licList;
+         }*/
+         
+         LogItemCount lic = new LogItemCount();
+         lic.logItemCount = logCount;
+         return lic;
      }
 }

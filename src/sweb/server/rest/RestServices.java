@@ -29,6 +29,7 @@ import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
 import sweb.common.json.ItemCount;
 import sweb.common.json.LogItem;
+import sweb.common.json.LogItemCount;
 import sweb.common.json.LogItemCountList;
 import sweb.common.json.LogItemList;
 import sweb.common.json.LogNote;
@@ -118,14 +119,14 @@ public class RestServices {
     
     @GET
     @Path("devices")
-    public String handleDeviceGet( )
+    public Response handleDeviceGet( )
     {
         return handleDataGet(null);
     }
     
     @GET
     @Path("devices/{id}")
-    public String handleDataGet( @PathParam("id") String probe )
+    public Response handleDataGet( @PathParam("id") String probe )
   
     {
         DeviceDataList deviceDataList = new DeviceDataList();
@@ -181,12 +182,13 @@ public class RestServices {
         if ( receivedDate != null )
             deviceDataList.receivedDate = receivedDate;
         
+        deviceDataList.logCount = ConvertUtils.toLogItemCountList(m_stokerSharedServices.getLogList());
             
        /* return("[{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"200\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}," +
                 "{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"2\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}," +
                 "{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"225\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}]");
    */ 
-        ObjectMapper mapper = new ObjectMapper();
+       /* ObjectMapper mapper = new ObjectMapper();
         String jsonString = "";
         try
         {
@@ -207,8 +209,8 @@ public class RestServices {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return jsonString;
-    
+        return jsonString;*/
+        return Response.status(200).entity(deviceDataList).build();
     }
     
     @POST
@@ -257,7 +259,7 @@ public class RestServices {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLogListCount()
     {
-        LogItemCountList ic = new LogItemCountList();
+        LogItemCount ic = new LogItemCount();
         ic = ConvertUtils.toLogItemCountList(m_stokerSharedServices.getLogList());
         
         return Response.status(200).entity(ic).build();

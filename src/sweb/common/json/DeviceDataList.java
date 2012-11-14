@@ -8,6 +8,7 @@ public class DeviceDataList //extends ArrayList<Device>
 {   
     public ArrayList<Device> devices;
     public Date receivedDate;
+    public LogItemCount logCount;
     
     public DeviceDataList()
     {
