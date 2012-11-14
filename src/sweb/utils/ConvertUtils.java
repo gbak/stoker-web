@@ -1,11 +1,16 @@
 package sweb.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import sweb.common.json.Blower;
 import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
 import sweb.common.json.LogItem;
+import sweb.common.json.LogItemCount;
+import sweb.common.json.LogItemCountList;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
 import sweb.shared.model.data.SDataPoint;
@@ -247,5 +252,34 @@ public class ConvertUtils
              logList.add( toLogItem(li) );
          }
          return logList;
+     }
+     
+     public static LogItemCountList toLogItemCountList( ArrayList<sweb.shared.model.LogItem> list)
+     {
+         HashMap<String,Integer> logCount= new HashMap<String,Integer>();
+         
+         for ( sweb.shared.model.LogItem li : list )
+         {
+             Integer i = logCount.get(li.getCookerName());
+             if ( i == null )
+             {
+                 i = new Integer(1);
+             }
+             else
+             {
+                 i = new Integer(i + 1);
+             }
+             logCount.put(li.getCookerName(), i );
+         }
+         LogItemCountList licList = new LogItemCountList();
+         
+         for ( Entry<String,Integer> s : logCount.entrySet())
+         {
+             LogItemCount lic = new LogItemCount();
+             lic.cookerName = s.getKey();
+             lic.count = s.getValue();
+             licList.countList.add(lic);
+         }
+         return licList;
      }
 }

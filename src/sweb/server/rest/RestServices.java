@@ -27,7 +27,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import sweb.common.json.Device;
 import sweb.common.json.DeviceDataList;
+import sweb.common.json.ItemCount;
 import sweb.common.json.LogItem;
+import sweb.common.json.LogItemCountList;
+import sweb.common.json.LogItemList;
 import sweb.common.json.LogNote;
 import sweb.common.json.PitProbe;
 import sweb.common.json.Probe;
@@ -237,17 +240,29 @@ public class RestServices {
         
         return Response.status(200).entity(response).build();
     }
-
+    
     @GET
     @Path("logs")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLogList()
     {
+        LogItemList lil = new LogItemList();
+        lil.logList = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList());
         
-        ArrayList<LogItem> logItems = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList());
-        
-        return Response.status(200).entity(logItems).build();
+        return Response.status(200).entity(lil).build();
     }
+    
+    @GET
+    @Path("logs/count")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLogListCount()
+    {
+        LogItemCountList ic = new LogItemCountList();
+        ic = ConvertUtils.toLogItemCountList(m_stokerSharedServices.getLogList());
+        
+        return Response.status(200).entity(ic).build();
+    }
+    
     
     @PUT
     @Path("logs")
