@@ -177,7 +177,7 @@ public class ConvertUtils
     
     public static Blower toBlower( StokerFan sf )
     {
-        return new Blower(sf.getID(), sf.getName(), sf.isFanOn(), sf.getTotalRuntime());
+        return sf == null ? null : new Blower(sf.getID(), sf.getName(), sf.isFanOn(), sf.getTotalRuntime());
     }
     
      public static sweb.common.base.constant.AlarmType convertAlarmType( AlarmType at )
