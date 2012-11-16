@@ -222,7 +222,7 @@ public class ConvertUtils
         {
             deviceList.add(toDevice(d));
         }
-        return new sweb.shared.model.LogItem(log.cookerName, log.logName, deviceList);
+        return new sweb.shared.model.LogItem(log.cookerName, log.logName, log.startDate, deviceList);
      }
 
      public static ArrayList<sweb.shared.model.LogItem> toLogItemList2( ArrayList<LogItem> logList)
@@ -240,7 +240,7 @@ public class ConvertUtils
          {
              deviceList.add( toDevice( sd ));
          }
-         LogItem item = new LogItem( l.getLogName(), l.getCookerName(), deviceList );
+         LogItem item = new LogItem( l.getLogName(), l.getCookerName(), l.getStartDate(), deviceList );
          return item;
      }
      

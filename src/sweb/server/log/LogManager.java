@@ -19,6 +19,7 @@
 package sweb.server.log;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import sweb.server.log.exceptions.LogExistsException;
 import sweb.server.log.exceptions.LogNotFoundException;
@@ -64,5 +65,6 @@ public interface LogManager
     public ArrayList<LogNote> getNotes(String logName);
     
     public void addNoteToLog( String note, ArrayList<String> logList );
+    
     
 }

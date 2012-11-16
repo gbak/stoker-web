@@ -24,6 +24,7 @@ import sweb.shared.model.logfile.LogDir;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import com.ibm.icu.util.Calendar;
 
 public class StokerSharedServices
 {
@@ -78,7 +79,7 @@ public class StokerSharedServices
         {
             try
             {
-                LogItem li = new LogItem(strCookerName, strLogName, arSD);
+                LogItem li = new LogItem(strCookerName, strLogName, Calendar.getInstance().getTime(), arSD);
                 m_logManager.startLog( li );
                 ret = 1;
                 LogEvent le = new LogEvent(LogEventType.NEW, strCookerName, strLogName );

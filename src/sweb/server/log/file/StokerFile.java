@@ -81,16 +81,16 @@ public class StokerFile
         String file = ListLogFiles.getFullPathForFile(strLogFileName);
         init( strCookerName, 
               strLogFileName, 
-              getConfigFromExistingFile( file ),
-              getStartDateFromExistingFile( file ));
+              getStartDateFromExistingFile( file ),
+              getConfigFromExistingFile( file ));
     }
    
     public void init( LogItem li )
     {
-        init( li.getCookerName(), li.getLogName(), li.getLogItems(), null);
+        init( li.getCookerName(), li.getLogName(), li.getStartDate(), li.getLogItems());
     }
 
-    public void init( String strCookerName, String strLogName, ArrayList<SDevice> asd, Date startDate)
+    public void init( String strCookerName, String strLogName, Date startDate, ArrayList<SDevice> asd)
     {
         this.m_strCookerName = strCookerName;
         this.m_strLogName = strLogName;
@@ -647,6 +647,18 @@ public class StokerFile
         return true;
     }
 
+    public Date getLogStartTime()
+    {
+       return m_startDate;    
+    }
+    
+    public long getElapsedLogTimeMinutes()
+    {
+        Date now = Calendar.getInstance().getTime();
+        long elapsedSeconds = now.getTime() - m_startDate.getTime();
+        return elapsedSeconds;
+    }
+    
     public ArrayList<SDevice> getConfigFromFile()
     {
         return getConfigFromExistingFile(m_strLogFileName);

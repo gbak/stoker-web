@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 
 import java.util.Timer;
@@ -169,7 +170,7 @@ public class LogManagerImpl implements LogManager
 
         for ( StokerFile sf : m_fileLogList.values() )
         {
-            LogItem l = new LogItem(sf.getCookerName(),sf.getName(), sf.getDeviceList());
+            LogItem l = new LogItem(sf.getCookerName(),sf.getName(), sf.getLogStartTime(), sf.getDeviceList());
             li.add(l);
         }
         Collections.sort(li, new Comparator<LogItem>(){
@@ -206,7 +207,7 @@ public class LogManagerImpl implements LogManager
     @Override
     public void startLog(String strCookerName, String strLogName) throws LogExistsException
     {
-        LogItem li = new LogItem(strCookerName, strLogName);
+        LogItem li = new LogItem(strCookerName, strLogName, Calendar.getInstance().getTime());
         Log.info("Starting log: [" + strLogName + "]");
         startLog( li );
     }
@@ -389,7 +390,10 @@ public class LogManagerImpl implements LogManager
         {
             try
             {
-                LogItem li = new LogItem(cooker.getCookerName(), strDefaultName, CookerHelper.getDeviceList(cooker));
+                LogItem li = new LogItem(cooker.getCookerName(), 
+                                         strDefaultName,
+                                         Calendar.getInstance().getTime(),
+                                         CookerHelper.getDeviceList(cooker));
                 startLog(li);
             }
             catch (LogExistsException e)
@@ -399,180 +403,8 @@ public class LogManagerImpl implements LogManager
             }
         }
     }
-    
-    
-   /* protected void fireStateChange( BlowerEvent be )
-    {
-       Object[] copy;
-       // Make a copy of the array list so the subscribers do not hold up the synchronized block
-       synchronized ( this )
-       {
-           copy = m_arListener.toArray();
-       }
-       
-           //for ( BlowerEventListener listener : m_arListener )
-           for ( int i = 0; i < copy.length; ++i )
-           {
-               ((BlowerEventListener)copy[i]).stateChange(be);
-           }
-       
-    }*/
 
-
-    /*public void addListener( BlowerEventListener bel )
-    {
-       synchronized ( this )
-       {
-           m_arListener.add( bel );
-       }
-    }
-*/
-    /*
-    protected void fireStateChange( DataPointEvent dpe )
-    {
-       Object[] copy;
-       synchronized ( this )
-       {
-          copy = m_dpListener.toArray();  
-       }
-           //for ( DataPointEventListener listener : m_dpListener )
-           for ( int i = 0; i < copy.length; ++i )
-           {
-               // Store the desired listener type ALL, UPDATED, TIMED
-               // in the listener object,
-   
-               //listener.stateChange(dpe);
-              ((DataPointEventListener)copy[i]).stateChange(dpe);
-           }
-       
-    }
-
-
-    public void addListener( DataPointEventListener dpe )
-    {
-       synchronized ( this )
-       {
-           m_dpListener.add( dpe );
-       }
-    }
-
-    public void removeListener(DataPointEventListener dpe)
-    {
-       synchronized ( this )
-       {
-          for ( DataPointEventListener d : m_dpListener )
-          {
-              if ( d == dpe )
-              {
-                  m_dpListener.remove(d);
-              }
-          }
-       }
-    }
-*/
 
     
-    /**
-     * Adds data point to the DataOrchestrator.  This is either a probe or blower data point.  After 
-     * configuring the blower runtime the subscribers are notified.
-     * 
-     * @param dp Datapoint to add
-     */
-/*    public void addDataPoint( SDataPoint dp)
-    {
-
-        if ( dp.getDeviceID() == null )
-        {
-            logger.warn("DeviceID is null");
-            return;
-        }
-        SDataPoint dpFromMap =  hmLatestData.get(dp.getDeviceID());
-        
-        
-        if ( dpFromMap != null)
-        {
-            boolean forceUpdate = false;
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MINUTE, 1);
-            if ( dpFromMap.getCollectedDate().after(cal.getTime()))
-            {
-               forceUpdate = true;
-               logger.info("Forcing update");
-            }
-
-            
-            boolean bChanged = false;
-            if ( dpFromMap.compare(dp) == false || forceUpdate == true )
-            {
-                bChanged = true;
-                // This adds the blower runtime to the BlowerDataPoint class.
-                // It tracks the total runtime for the deviceID.  Time for specific
-                // logs will either have to be calculated on the client or in the log file class.
-                if ( dp instanceof SBlowerDataPoint )
-                {
-                    SBlowerDataPoint bdp = (SBlowerDataPoint) dp;
-                    SBlowerDataPoint bdpFromMap = (SBlowerDataPoint) dpFromMap;
-                    if ( bdp.isFanOn() == false )
-                    {
-                        Date last_d = bdpFromMap.getBlowerOnTime();
-                        Date d = dp.getCollectedDate();
-                        long lastSec = 0;
-                        if ( last_d != null ) 
-                        {
-                           long elapsedSec = d.getTime() - last_d.getTime();
-                           long totalRuntime = bdpFromMap.getTotalRuntime();
-                           logger.debug("Total Runtime: " + totalRuntime );
-                           bdpFromMap.setTotalRuntime(elapsedSec + totalRuntime );
-                           logger.debug("Fan Off event, total runtime: " + bdpFromMap.getTotalRuntime() );
-                        }
-                    }
-                    else
-                    {
-                         bdpFromMap.setBlowerOnTime(dp.getCollectedDate());
-                    }
-                
-                }
-            }
-            
-            dpFromMap.update( dp );
-            if ( bChanged )
-            {
-                DataPointEvent be = new DataPointEvent(this, false, dpFromMap );
-                fireStateChange(be);
-            }
-            logger.trace("Debug: " + dpFromMap.getDebugString());
-            
-        }
-        else
-        {
-           if ( dp instanceof SBlowerDataPoint )
-           {
-               // If blower is running, set the start time to now.  This needs to be done
-               // in case Stoker-web is started while the fan is running, if it runs for a long
-               // time without cycling, it will record no time.
-               
-               SBlowerDataPoint sdp = (SBlowerDataPoint) dp;
-               if ( sdp.isFanOn() == true )
-                  sdp.setBlowerOnTime(sdp.getCollectedDate());
-           }
-        
-           hmLatestData.put(dp.getDeviceID(),dp);
-        }
-        
-    }*/
-
-   /* public ArrayList<SDataPoint> getLastDPs()
-    {
-        ArrayList<SDataPoint> ar = null;
-
-        // The Client should not be checking for data if the controller is down, but just in case.
-        if ( Controller.getInstance().isDataControllerReady())
-        {
-           ar = new ArrayList<SDataPoint>(hmLatestData.values());
-        }
-        else
-           ar = new ArrayList<SDataPoint>();
-
-        return ar;
-    }*/
+  
 }

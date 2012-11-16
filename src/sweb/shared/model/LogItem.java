@@ -20,6 +20,7 @@ package sweb.shared.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 import sweb.shared.model.devices.SDevice;
 
@@ -27,10 +28,21 @@ import sweb.shared.model.devices.SDevice;
 public class LogItem implements Serializable
 {
 
+    public Date getStartDate()
+    {
+        return m_startDate;
+    }
+
+    public void setStartTime(Date startDate)
+    {
+        this.m_startDate = startDate;
+    }
+
     private static final long serialVersionUID = -5911027953140218913L;
 
     String m_strLogName;
     String m_strCookerName;
+    Date   m_startDate;
     ArrayList<SDevice> m_asd = null;
     
     public String toString()
@@ -40,15 +52,16 @@ public class LogItem implements Serializable
 
     public LogItem() { }
 
-    public LogItem( String CookerName, String logName)
+    public LogItem( String CookerName, String logName, Date startTime)
     {
        m_strCookerName = CookerName;
         m_strLogName = logName;
+        m_startDate = startTime;
     }
 
-    public LogItem( String CookerName,  String LogName, ArrayList<SDevice> deviceList )
+    public LogItem( String CookerName,  String LogName, Date startTime, ArrayList<SDevice> deviceList )
     {
-        this( CookerName, LogName );
+        this( CookerName, LogName, startTime );
         m_asd = deviceList;
         
     }
