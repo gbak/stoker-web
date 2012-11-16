@@ -463,6 +463,30 @@ public class LogFileFormatter
 
     }
 
+    public static Date parseDateFromDataLine( String s )
+    {
+        Date d = new Date();
+        if ( s.startsWith(strDataPrefix) || s.startsWith(strBlowerPrefix))
+        {
+            StringTokenizer st = new StringTokenizer(s, "|");
+            String strDate = st.nextToken().substring(2);
+            logger.debug("Date: " + strDate );
+            SimpleDateFormat sdf = new SimpleDateFormat(strSimpleDateFormat);
+
+            try
+            {
+                d = sdf.parse(strDate);
+               logger.debug("Parsed Date: " + d.toString());
+
+            }
+            catch (ParseException e)
+            {
+                logger.error("Error parsing date: " + e.getStackTrace());
+            }        
+        }
+        return d;
+    }
+    
     public static ArrayList<SDataPoint> parseLogDataLine(String s, HashMap<String,String> hmSDIndex )
     {
         ArrayList<SDataPoint> ar = new ArrayList<SDataPoint>();

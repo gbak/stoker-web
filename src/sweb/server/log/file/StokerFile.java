@@ -30,6 +30,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Locale;
@@ -68,7 +69,7 @@ public class StokerFile
     private File m_outfile = null;
     private HashMap<String,SDevice> m_hmSD = new HashMap<String,SDevice>();
     private HashMap<String,String> m_hmSDIndex = new HashMap<String,String>();
-
+    private Date m_startDate = null;
     private PitMonitor m_pitMonitor;
     private EventBus eventBus;
 
@@ -77,18 +78,28 @@ public class StokerFile
     
     public void init( String strCookerName,  String strLogFileName )
     {
-        init( strCookerName, strLogFileName, getConfigFromExistingFile( ListLogFiles.getFullPathForFile(strLogFileName)) );
+        String file = ListLogFiles.getFullPathForFile(strLogFileName);
+        init( strCookerName, 
+              strLogFileName, 
+              getConfigFromExistingFile( file ),
+              getStartDateFromExistingFile( file ));
     }
    
     public void init( LogItem li )
     {
-        init( li.getCookerName(), li.getLogName(), li.getLogItems());
+        init( li.getCookerName(), li.getLogName(), li.getLogItems(), null);
     }
 
-    public void init( String strCookerName, String strLogName, ArrayList<SDevice> asd)
+    public void init( String strCookerName, String strLogName, ArrayList<SDevice> asd, Date startDate)
     {
         this.m_strCookerName = strCookerName;
         this.m_strLogName = strLogName;
+        
+        if ( startDate == null )
+            this.m_startDate = Calendar.getInstance().getTime();
+        else
+            this.m_startDate = startDate;
+        
         try
         {
             m_strLogFileName = strBuildFileName(strLogName);
@@ -639,6 +650,37 @@ public class StokerFile
     public ArrayList<SDevice> getConfigFromFile()
     {
         return getConfigFromExistingFile(m_strLogFileName);
+    }
+    
+    public static Date getStartDateFromExistingFile( String s )
+    {
+        Date d = null;
+        try
+        {
+            BufferedReader in = new BufferedReader(new FileReader(s));
+            String str;
+            while ((str = in.readLine()) != null)
+            {
+                LineType type = LogFileFormatter.getLineType(str.substring(0, 2));
+                if ( type == LineType.DATA )
+                {
+                    d = LogFileFormatter.parseDateFromDataLine( str );
+                    break;
+                }
+                
+            }
+            in.close();
+
+        }
+        catch (FileNotFoundException e)
+        {
+            logger.error("File Not found [" + s + "] in getStartDateFromExistingFile: " + e.getStackTrace());
+        }
+        catch (IOException e)
+        {
+            logger.error("IO Exception on file [" + s + "] in getStartDateFromExistingFile: " + e.getStackTrace());
+        }
+        return d;
     }
     public static ArrayList<SDevice> getConfigFromExistingFile( String s )
     {
