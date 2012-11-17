@@ -244,12 +244,13 @@ public class ConvertUtils
          return item;
      }
      
-     public static ArrayList<LogItem> toLogItemList( ArrayList<sweb.shared.model.LogItem> list )
+     public static ArrayList<LogItem> toLogItemList( ArrayList<sweb.shared.model.LogItem> list, String cookerName )
      {
          ArrayList<LogItem> logList = new ArrayList<LogItem>();
          for ( sweb.shared.model.LogItem li : list )
          {
-             logList.add( toLogItem(li) );
+             if ( cookerName == null || cookerName.length() == 0 ||  li.getCookerName().equals(cookerName))
+                logList.add( toLogItem(li) );
          }
          return logList;
      }

@@ -248,8 +248,20 @@ public class RestServices {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLogList()
     {
+       // LogItemList lil = new LogItemList();
+       // lil.logList = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList());
+        
+       // return Response.status(200).entity(lil).build();
+        return getLogListCooker( "" );
+    }
+    
+    @GET
+    @Path("logs/{cooker}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getLogListCooker(@PathParam("cooker") String cookerName)
+    {
         LogItemList lil = new LogItemList();
-        lil.logList = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList());
+        lil.logList = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList(), cookerName );
         
         return Response.status(200).entity(lil).build();
     }

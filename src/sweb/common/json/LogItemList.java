@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 public class LogItemList
 {
-    @JsonProperty(value = "lotList")
+    @JsonProperty(value = "logList")
     public ArrayList<LogItem> logList;
     
     public LogItemList()
