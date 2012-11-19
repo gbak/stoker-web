@@ -876,7 +876,7 @@ public class MainPage
 
     private void buildCookers()
     {
-        if ( m_cookerComponentList == null && m_cookerList != null )
+        if ( m_cookerComponentList == null ) // && m_cookerList != null )  // Bug which causes configuration to not appear.
         {
             m_cookerComponentList = new ArrayList<CookerComponent>();
             createCookers( m_cookerList, m_cookerComponentList );
@@ -926,8 +926,9 @@ public class MainPage
                 cookerComponent.init( cooker );
                 componentList.add(cookerComponent);
             }
+            manageCookerPanel();  // this must be done after since the size is required to build the panel
        }    
-       manageCookerPanel();  // this must be done after since the size is required to build the panel
+       
     }
 
     private void updateButtonStatus( )
