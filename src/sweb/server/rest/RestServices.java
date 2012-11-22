@@ -51,7 +51,7 @@ import sweb.utils.ConvertUtils;
 import com.google.inject.Inject;
 import com.sun.jersey.spi.resource.Singleton;
 
-@Singleton
+//@Singleton
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/v1")
 public class RestServices {

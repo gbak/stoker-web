@@ -95,7 +95,7 @@ public class DispatchServletModule extends ServletModule
       
       //requestStaticInjection(SDataPointHelper.class);
       bind(GuiceContainer.class);
-      bind(RestServices.class);
+      bind(RestServices.class).asEagerSingleton();
       //bind(MessageBodyReader.class).to(JacksonJsonProvider.class);
       bind(JacksonJsonProvider.class).in(Singleton.class);
       
