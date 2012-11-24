@@ -161,11 +161,15 @@ public class RestServices {
 //            }
 //            
             StokerPitProbe spp = cooker.getPitSensor();
-            PitProbe pp = ConvertUtils.toPitProbe( spp , dataPointHash.get( spp.getID()));
-            pp.cooker = cookerName;
-            if ( probe == null || set.contains(pp.id))
+            if ( spp != null )
             {
-               deviceDataList.devices.add( pp );
+                
+                PitProbe pp = ConvertUtils.toPitProbe( spp , dataPointHash.get( spp.getID()));
+                pp.cooker = cookerName;
+                if ( probe == null || set.contains(pp.id))
+                {
+                   deviceDataList.devices.add( pp );
+                }
             }
             
             for ( StokerProbe stokerProbe : cooker.getProbeList())
