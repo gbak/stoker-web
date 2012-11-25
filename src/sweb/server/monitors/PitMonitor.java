@@ -66,6 +66,8 @@ public interface PitMonitor
     
     public void updateSettings( ArrayList<SDevice> deviceList );
     
+    public SDataPoint getCurrentTemp( String deviceID );
+    
     public ArrayList<SDataPoint> getCurrentTemps();
     
     public SDevice getDeviceByID( String ID );

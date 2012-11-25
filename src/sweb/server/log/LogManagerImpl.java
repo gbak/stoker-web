@@ -51,6 +51,7 @@ import sweb.shared.model.LogItem;
 
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
+import sweb.shared.model.devices.stoker.StokerProbe;
 import sweb.shared.model.logfile.LogNote;
 
 /*
@@ -170,6 +171,14 @@ public class LogManagerImpl implements LogManager
 
         for ( StokerFile sf : m_fileLogList.values() )
         {
+            for ( SDevice sd  : sf.getDeviceList())
+            {
+                if ( sd instanceof StokerProbe )
+                {
+                    ((StokerProbe) sd).setCurrentTemp(m_pitMonitor.getCurrentTemp(sd.getID()).getData());
+                }
+                    
+            }
             LogItem l = new LogItem(sf.getCookerName(),sf.getName(), sf.getLogStartTime(), sf.getDeviceList());
             li.add(l);
         }

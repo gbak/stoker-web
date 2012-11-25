@@ -238,7 +238,11 @@ public class ConvertUtils
          ArrayList<Device> deviceList = new ArrayList<Device>();
          for ( SDevice sd : l.getLogItems())
          {
-             deviceList.add( toDevice( sd ));
+             if ( sd instanceof StokerFan )
+                 continue;
+             Device d = toDevice(sd);
+             d.cooker = l.getCookerName();
+             deviceList.add( d );
          }
          LogItem item = new LogItem( l.getLogName(), l.getCookerName(), l.getStartDate(), deviceList );
          return item;

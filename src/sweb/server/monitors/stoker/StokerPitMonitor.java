@@ -128,6 +128,12 @@ public class StokerPitMonitor implements PitMonitor, DataController
     }
 
     @Override
+    public SDataPoint getCurrentTemp( String deviceID )
+    {
+       return m_hmLatestData.get( deviceID );    
+    }
+    
+    @Override
     public ArrayList<SDataPoint> getCurrentTemps()
     {
         ArrayList<SDataPoint> ar = null;

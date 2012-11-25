@@ -266,7 +266,6 @@ public class RestServices {
     {
         LogItemList lil = new LogItemList();
         lil.logList = ConvertUtils.toLogItemList(m_stokerSharedServices.getLogList(), cookerName );
-        
         return Response.status(200).entity(lil).build();
     }
     
