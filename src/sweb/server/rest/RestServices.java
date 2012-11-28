@@ -42,6 +42,7 @@ import sweb.server.StokerSharedServices;
 import sweb.server.config.StokerWebConfiguration;
 import sweb.server.monitors.PitMonitor;
 import sweb.server.security.LoginProperties;
+import sweb.shared.model.CookerList;
 import sweb.shared.model.data.SDataPoint;
 import sweb.shared.model.devices.SDevice;
 import sweb.shared.model.devices.stoker.StokerPitProbe;
@@ -149,7 +150,9 @@ public class RestServices {
                receivedDate = sdp.getCollectedDate();
         }
         
-        for ( sweb.shared.model.Cooker cooker : m_stokerwebConfiguration.getCookerList().getCookerList() )
+        CookerList cookerList =  m_stokerwebConfiguration.getCookerList();
+        if ( cookerList != null)
+        for ( sweb.shared.model.Cooker cooker : cookerList.getCookerList() )
         {
             String cookerName = cooker.getCookerName();
             Device d = new Device();
