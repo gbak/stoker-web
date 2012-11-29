@@ -152,7 +152,7 @@ public class ConvertUtils
                              String.valueOf(sp.getLowerTempAlarm()),
                              String.valueOf(sp.getUpperTempAlarm()),
                              convertAlarmType(sp.getAlarmEnabled()),
-                             String.valueOf(sdp.getData()));
+                             String.valueOf(sdp != null ? sdp.getData() : "0"));
         else
             return new Probe();
     }
