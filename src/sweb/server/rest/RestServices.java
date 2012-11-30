@@ -82,6 +82,7 @@ public class RestServices {
 "  \"blowers\":[{\"id\":\"230000002A55C305\",\"name\":\"Blower 1\",\"on\":0}]}}");
     }
     
+
     @GET
     @Path("cookers")
     public String handleConfigGet()
@@ -117,7 +118,7 @@ public class RestServices {
        return jsonString;
    
     }
-    
+
     @GET
     @Path("devices")
     public Response handleDeviceGet( )
@@ -125,6 +126,7 @@ public class RestServices {
         return handleDataGet(null);
     }
     
+ 
     @GET
     @Path("devices/{id}")
     public Response handleDataGet( @PathParam("id") String probe )
@@ -287,36 +289,93 @@ public class RestServices {
     @PUT
     @Path("logs")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createLog(LogItem log)
+    public Response createLog(ServerRequest<LogItem> update)
     {
-        ServerResponse<String> sr = new ServerResponse<String>();
         
-        ArrayList<SDevice> deviceList = ConvertUtils.toSDeviceList(log.deviceList);
+        LogItem log = update.data;
+        ServerResponse<String> response = new ServerResponse<String>();
+        if ( LoginProperties.getInstance().validateLoginID(update.login.username, update.login.password) )
+        {
+            logger.info("valid credentials detected for user: " + update.login.username);
+            
+            ArrayList<SDevice> deviceList = ConvertUtils.toSDeviceList(log.deviceList);
+            
+            m_stokerSharedServices.startLog(log.cookerName, log.logName, deviceList);
+            
+            // update code here;
+            response.messages.add("values saved");
+            response.success = true;
+
+        }
+        else
+        {
+            logger.info("Invalid credentials detected for user: " + update.login.username);
+            response.messages.add("Invalid login ID or password");
+            response.success = false;
+            return Response.status(401).entity(response).build();
+        }
         
-        m_stokerSharedServices.startLog(log.cookerName, log.logName, deviceList);
-        return Response.status(201).entity(sr).build();
+        
+        return Response.status(201).entity(response).build();
     }
     
-    @DELETE
+    @POST
     @Path("logs")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response stopLog(LogItem log)
+    public Response stopLog(ServerRequest<LogItem> update)
     {
-        ServerResponse<String> sr = new ServerResponse<String>();
+        LogItem log = update.data;
+        ServerResponse<String> response = new ServerResponse<String>();
+        if ( LoginProperties.getInstance().validateLoginID(update.login.username, update.login.password) )
+        {
+            logger.info("valid credentials detected for user: " + update.login.username);
+            
+            m_stokerSharedServices.stopLog(log.cookerName, log.logName );
+            
+            // update code here;
+            response.messages.add("log stopped");
+            response.success = true;
 
-        m_stokerSharedServices.stopLog(log.cookerName, log.logName );
-        return Response.status(201).entity(sr).build();
+        }
+        else
+        {
+            logger.info("Invalid credentials detected for user: " + update.login.username);
+            response.messages.add("Invalid login ID or password");
+            response.success = false;
+            return Response.status(401).entity(response).build();
+        }
+        
+        
+        return Response.status(200).entity(response).build();
     }
     
     @PUT
     @Path("logs\note")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addNoteToLog( LogNote ln )
+    public Response addNoteToLog( ServerRequest<LogNote> update )
     {
-        ServerResponse<String> sr = new ServerResponse<String>();
-        m_stokerSharedServices.addNoteToLog(ln.note, ln.logList );
+        LogNote ln = update.data;
+        ServerResponse<String> response = new ServerResponse<String>();
+        if ( LoginProperties.getInstance().validateLoginID(update.login.username, update.login.password) )
+        {
+            logger.info("valid credentials detected for user: " + update.login.username);
+            
+            m_stokerSharedServices.addNoteToLog(ln.note, ln.logList );
+            
+            // update code here;
+            response.messages.add("log created");
+            response.success = true;
+
+        }
+        else
+        {
+            logger.info("Invalid credentials detected for user: " + update.login.username);
+            response.messages.add("Invalid login ID or password");
+            response.success = false;
+            return Response.status(401).entity(response).build();
+        }
         
-        return Response.status(201).entity(sr).build();
+        return Response.status(201).entity(response).build();
     }
     
     @GET
