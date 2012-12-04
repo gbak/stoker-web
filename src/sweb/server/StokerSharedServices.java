@@ -1,6 +1,7 @@
 package sweb.server;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import sweb.server.alerts.AlertsManagerImpl;
 import sweb.server.config.StokerWebConfiguration;
@@ -24,7 +25,7 @@ import sweb.shared.model.logfile.LogDir;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import com.ibm.icu.util.Calendar;
+
 
 public class StokerSharedServices
 {
