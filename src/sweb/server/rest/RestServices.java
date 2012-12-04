@@ -348,8 +348,8 @@ public class RestServices {
         return Response.status(200).entity(response).build();
     }
     
-    @PUT
-    @Path("logs\note")
+    @POST
+    @Path("log\note")
     @Produces(MediaType.APPLICATION_JSON)
     public Response addNoteToLog( ServerRequest<LogNote> update )
     {
