@@ -161,6 +161,7 @@ public class LogFileFormatter
             }
 
         }
+        formatter.close();
 
      //   sb.append("#start\n");
         return sb.toString();
@@ -184,6 +185,7 @@ public class LogFileFormatter
             formatter.format( strDataPointFormat, hmSDIndex.get( sdp.getDeviceID()), ((SProbeDataPoint)sdp).getTempF());
         }
 
+        formatter.close();
 
         return sb.toString();
     }
@@ -224,15 +226,14 @@ public class LogFileFormatter
     public static String logNoteDate( Date d)
     {
         Formatter format = new Formatter( Locale.US );
-        return format.format( strNoteFormat, d).toString();  
+        String s =format.format( strNoteFormat, d).toString();
+        format.close();
+        return s;  
     }
     
     public static String logNote( String note )
     {
-        String newline = System.getProperty("line.separator");
-        if ( !note.endsWith(newline))
-            note = note + "\n";
-        return encode( note );
+        return encode( note ) + System.getProperty("line.separator");
     }
     
     public static String logPointSeperator()
@@ -247,19 +248,25 @@ public class LogFileFormatter
     public static String logDataDate( Date d )
     {
         Formatter format = new Formatter( Locale.US);
-       return format.format(strDataFormat,d ).toString();
+        String s = format.format(strDataFormat,d ).toString();
+        format.close();
+       return s;
     }
 
     public static String logBlowerDate( Date d )
     {
         Formatter format = new Formatter( Locale.US);
-       return format.format(strBlowerFormat,d ).toString();
+        String s = format.format(strBlowerFormat,d ).toString();
+        format.close();
+        return s;
     }
 
     public static String logWeatherDate( Date d )
     {
         Formatter format = new Formatter( Locale.US);
-        return format.format(strWeatherFormat,d ).toString();
+        String s = format.format(strWeatherFormat,d ).toString();
+        format.close();
+        return s;
     }
     
     public static String logWeather(WeatherData wd )
@@ -268,6 +275,7 @@ public class LogFileFormatter
         Formatter formatter = new Formatter( sb, Locale.US);
 
         formatter.format( strWeatherDataFormat, wd.getCurrentTemperature(), wd.getHumidity(), wd.getWindSpeed(), encode( wd.getText() ) );
+        formatter.close();
         
         return sb.toString();
         
