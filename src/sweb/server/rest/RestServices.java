@@ -252,7 +252,7 @@ public class RestServices {
     }
     
     @GET
-    @Path("logs")
+    @Path("logs/cooker")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLogList()
     {
@@ -263,8 +263,38 @@ public class RestServices {
         return getLogListCooker( "" );
     }
     
+    @PUT
+    @Path("logs/note")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addNoteToLog( ServerRequest<LogNote> update )
+    {
+        LogNote ln = update.data;
+        ServerResponse<String> response = new ServerResponse<String>();
+        if ( LoginProperties.getInstance().validateLoginID(update.login.username, update.login.password) )
+        {
+            logger.info("valid credentials detected for user: " + update.login.username);
+            
+            m_stokerSharedServices.addNoteToLog(ln.note, ln.logList );
+            
+            // update code here;
+            response.messages.add("log created");
+            response.success = true;
+
+        }
+        else
+        {
+            logger.info("Invalid credentials detected for user: " + update.login.username);
+            response.messages.add("Invalid login ID or password");
+            response.success = false;
+            return Response.status(401).entity(response).build();
+        }
+        
+        return Response.status(201).entity(response).build();
+    }
+    
     @GET
-    @Path("logs/{cooker}")
+    @Path("logs/cooker/{cooker}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLogListCooker(@PathParam("cooker") String cookerName)
     {
@@ -287,6 +317,7 @@ public class RestServices {
     
     @PUT
     @Path("logs")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createLog(ServerRequest<LogItem> update)
     {
@@ -348,34 +379,7 @@ public class RestServices {
         return Response.status(200).entity(response).build();
     }
     
-    @POST
-    @Path("log\note")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addNoteToLog( ServerRequest<LogNote> update )
-    {
-        LogNote ln = update.data;
-        ServerResponse<String> response = new ServerResponse<String>();
-        if ( LoginProperties.getInstance().validateLoginID(update.login.username, update.login.password) )
-        {
-            logger.info("valid credentials detected for user: " + update.login.username);
-            
-            m_stokerSharedServices.addNoteToLog(ln.note, ln.logList );
-            
-            // update code here;
-            response.messages.add("log created");
-            response.success = true;
-
-        }
-        else
-        {
-            logger.info("Invalid credentials detected for user: " + update.login.username);
-            response.messages.add("Invalid login ID or password");
-            response.success = false;
-            return Response.status(401).entity(response).build();
-        }
-        
-        return Response.status(201).entity(response).build();
-    }
+    
     
     @GET
     @Produces(MediaType.TEXT_HTML)

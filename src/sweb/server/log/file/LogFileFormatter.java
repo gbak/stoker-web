@@ -229,6 +229,9 @@ public class LogFileFormatter
     
     public static String logNote( String note )
     {
+        String newline = System.getProperty("line.separator");
+        if ( !note.endsWith(newline))
+            note = note + "\n";
         return encode( note );
     }
     
