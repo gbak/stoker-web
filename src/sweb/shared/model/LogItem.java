@@ -54,7 +54,7 @@ public class LogItem implements Serializable
 
     public LogItem( String CookerName, String logName, Date startTime)
     {
-       m_strCookerName = CookerName;
+        setCookerName(CookerName);
         m_strLogName = logName;
         m_startDate = startTime;
     }
@@ -66,6 +66,11 @@ public class LogItem implements Serializable
         
     }
 
+    public void setCookerName( String name )
+    {
+        m_strCookerName = name;
+    }
+    
     public String getLogName()
     {
         return m_strLogName;

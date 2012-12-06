@@ -290,136 +290,12 @@ public class StokerFile
     
     public void start()
     {
-
         writeHeader();
-/*
-        m_dl = new DataPointEventListener() {
-
-            public void stateChange(DataPointEvent de)
-            {
-                synchronized (this)
-                {
-                    Writer output = null;
-                    try
-                    {
-                        output = new BufferedWriter(new FileWriter(m_outfile,
-                                true));
-
-                        ArrayList<SProbeDataPoint> arPDP = de
-                                .getSProbeDataPoints();
-
-                        if (arPDP != null && arPDP.size() > 0
-                                && de.isTimedEvent())
-                        {
-                            output.write(LogFileFormatter.logDataDate(arPDP
-                                    .get(0).getCollectedDate()));
-
-                            for (SProbeDataPoint sd : arPDP)
-                            {
-                                if (m_hmSD.get(sd.getDeviceID()) != null)
-                                {
-                                    output.write(LogFileFormatter
-                                            .logPointSeperator());
-                                    output.write(LogFileFormatter.logData(sd,
-                                            m_hmSDIndex));
-                                }
-                            }
-                            output.write(LogFileFormatter.logEnd());
-                        }
-
-                        // Blower device
-                        SBlowerDataPoint bdp = de.getSBlowerDataPoint();
-                        if (bdp != null && !de.isTimedEvent()) // don't log the
-                                                               // blower timed
-                                                               // events
-                        {
-                            output.write(LogFileFormatter.logBlowerDate(bdp
-                                    .getCollectedDate()));
-
-                            if (m_hmSD.get(bdp.getDeviceID()) != null)
-                            {
-                                output.write(LogFileFormatter
-                                        .logPointSeperator());
-                                output.write(LogFileFormatter.logData(bdp,
-                                        m_hmSDIndex));
-                            }
-                            output.write(LogFileFormatter.logEnd());
-                        }
-
-                    }
-                    catch (IOException e)
-                    {
-                        logger.error("IOException writing to output file: " + e.getStackTrace());
-                    }
-                    finally
-                    {
-                        try
-                        {
-                            output.close();
-                        }
-                        catch (IOException e)
-                        {
-                            logger.error("Exception closing output file: " + e.getStackTrace());
-                        }
-                    }
-                }
-            }
-        };
-*/
-        /*
-        WeatherChangeEventListener wce = new WeatherChangeEventListener() {
-
-            public void weatherUpdated(WeatherChangeEvent wce)
-            {
-                synchronized (this)
-                {
-                    Writer output = null;
-                    try
-                    {
-                        output = new BufferedWriter(new FileWriter(m_outfile,
-                                true));
-
-                        WeatherData wd = wce.getWeatherData();
-                        output.write(LogFileFormatter.logWeatherDate(Calendar.getInstance().getTime()));
-                        output.write(LogFileFormatter.logPointSeperator());
-                        output.write(LogFileFormatter.logWeather(wd));
-                        output.write(LogFileFormatter.logEnd());
-
-                    }
-                    catch (IOException e)
-                    {
-                        logger.error("IOException writing to output file: " + e.getStackTrace());
-                    }
-                    finally
-                    {
-                        try
-                        {
-                            output.close();
-                        }
-                        catch (IOException e)
-                        {
-                            logger.error("Exception closing output file: " + e.getStackTrace());
-                        }
-                    }
-                }
-                
-            }
-            
-        };
-        
-        m_controller.addTempListener(m_dl);
-        m_controller.addConfigChangeListener(getConfigEventListener());
-   
-        weatherController.addEventListener(wce);
-*/
-        
     }
 
     public void stop()
     {
-
         eventBus.unregister(this);
-
     }
 
     public String getCookerName()
@@ -442,7 +318,7 @@ public class StokerFile
 
 
         dateFormatter = new SimpleDateFormat(strFileNamePattern );
-        String strFileName = dateFormatter.format(cal.getTime()) + strLogName + m_strLogExtension;
+        String strFileName = dateFormatter.format(cal.getTime()) + strLogName.replace(" ", "_") + m_strLogExtension;
 
         // This should come out to cookLogs/2011/08
         String strDirPattern = "yyyy" +File.separator+ "MM";
