@@ -86,11 +86,14 @@ public class StokerWebConfiguration
     public void init()
     {
         
-        if ( loadConfig() == false )
-            return;
-
         if ( m_cookerList == null )
             m_cookerList = new CookerList();
+        
+        if ( loadConfig() == false )
+        {
+           m_cookerList.setConfigRequired(true);
+           return;
+        }
         
         reconcile( );
         m_eventBus.post( new ConfigChangeEvent( this, EventType.CONFIG_LOADED));

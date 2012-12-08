@@ -29,6 +29,7 @@ public class CookerList  implements Serializable
     private static final long serialVersionUID = -5245139149478373870L;
     
     protected ArrayList<Cooker> cookerList;
+    protected boolean configRequired = false;
     
     public CookerList() { cookerList = new ArrayList<Cooker>(); }
     
@@ -37,6 +38,15 @@ public class CookerList  implements Serializable
         return cookerList;
     }
     
+    public void setConfigRequired( boolean required )
+    {
+        configRequired = required;
+    }
+    
+    public boolean getConfigRequired()
+    {
+        return configRequired;
+    }
     public void setCookerList( ArrayList<Cooker> cookerList )
     {
         this.cookerList = cookerList;

@@ -112,17 +112,17 @@ h1 {
 }
 
 .sweb-graphPanel {
-   height: 385px;
+  /*  height: 385px; */
 }
 
 .sweb-gaugeFlowPanel {
    float: left;
    width: 100%;
-
+;
 }
 .sweb-panelGaugeTall{
     width: 200px; 
-    height: 375px; 
+   /*  height: 375px; */
     text-align: center; 
 	float: left;
 }

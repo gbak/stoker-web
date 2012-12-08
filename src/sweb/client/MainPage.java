@@ -624,6 +624,7 @@ public class MainPage
                                                 break;
                                             case CONNECTION_ESTABLISHED:
                                                 Log.info("Connection to Stoker established");
+                                                
                                                 m_eventState = EventTypeLight.CONNECTION_ESTABLISHED;
                                                 
                                                 if (m_cookerList == null)
@@ -876,7 +877,7 @@ public class MainPage
 
     private void buildCookers()
     {
-        if ( m_cookerComponentList == null ) //&& m_cookerList != null )  // this is a bug which does not allow the config screen to be presented
+        if ( m_cookerComponentList == null ) // && m_bConnected == true) //&& m_cookerList != null )  // this is a bug which does not allow the config screen to be presented
         {
             m_cookerComponentList = new ArrayList<CookerComponent>();
             createCookers( m_cookerList, m_cookerComponentList );
@@ -902,7 +903,8 @@ public class MainPage
     
        if ( cookerList == null || cookerList.getCookerList().size() == 0)
        {
-           presentConfigScreen();
+           if ( cookerList.getConfigRequired() == true )
+              presentConfigScreen();
        }
        else
        {

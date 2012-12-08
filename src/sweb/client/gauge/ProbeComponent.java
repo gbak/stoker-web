@@ -153,8 +153,6 @@ public class ProbeComponent extends Composite
        ((VerticalPanel)cellp).setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
        ((VerticalPanel)cellp).setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
 
-
-       
        m_fanStatusPanel = new SimplePanel();
        m_decPan = new DecoratorPanel();
        m_dp = new DisclosurePanel("Settings");

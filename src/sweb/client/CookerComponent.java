@@ -673,21 +673,28 @@ public class CookerComponent extends Composite
                      //   m_stokerElementsPanel.setWidth(event.getWidth() - 20 + "px");
                      //   m_outerMostDecPanel.setWidth(Window.getClientWidth() - 10 + "px");
                         
+                        if ( Window.getClientWidth() < m_outerMostDecPanel.getOffsetWidth())
+                        {
+                            System.out.println("offset is wider than the window");
+                            System.out.println("Window Width: " + Window.getClientWidth());
+                               System.out.println("Event Width: " + event.getWidth());
+                              System.out.println("Width: " + m_outerMostDecPanel.getOffsetWidth());
+                        }
                         if ( m_alignment == Alignment.SINGLE)
                         {
                            //m_Width = m_stokerElementsPanel.getOffsetWidth() - m_gaugePanelWidth - 10;
                            // m_Width = event.getWidth() - m_gaugePanelWidth - 20;
                             m_Width = m_outerMostDecPanel.getOffsetWidth() - m_gaugePanelWidth - 20;
-                            m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                //            m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");    // this is not right, causes endless expansion on resize
                            
                             
                         }
                         else
                         {
-                            m_Height = 325;
+                          //  m_Height = 325;
                            // m_Width = m_stokerElementsPanel.getOffsetWidth()- 20;
                             m_Width = m_outerMostDecPanel.getOffsetWidth() - 50;
-                            m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");
+                       //     m_graphPanel.setWidth(new Integer(m_Width).toString() + "px");    // see comment above
                            m_graphDisclosurePanel.setWidth(new Integer(m_Width - 5).toString() + "px");
                        //    
                         }
