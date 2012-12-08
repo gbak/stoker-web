@@ -109,9 +109,11 @@ public class CookerComponent extends Composite
     private Label m_cookerLabel = new Label("Cooker: ");
     private Label m_logsLabel = new Label("Logs ");
     private Label m_profileLabel = new Label("Profiles: ");
+    private Label m_logTimeLabelText = new Label();
 
     private HTML m_statusLabel = new HTML("Status: ");
     private TextBox m_cookerNameLabel = new TextBox();
+    
 
     private ListBox m_listBoxProfiles  = new ListBox();
     private ListBox m_logListBox = new ListBox();
@@ -189,6 +191,8 @@ public class CookerComponent extends Composite
         m_stopLogsButton.setStyleName("sweb-LogButton");
         m_noteLogsButton.setStyleName("sweb-LogButton");
 
+        m_logTimeLabelText.setStyleName("sweb-LogTimeText");
+        m_logTimeLabelText.setText("5h 2m");
         // Logs
         FlexTable ftLogs = new FlexTable();
         FlexCellFormatter cellFormatter = ftLogs.getFlexCellFormatter();
@@ -204,7 +208,9 @@ public class CookerComponent extends Composite
         ftLogs.setWidget(0, 1, m_manageLogsButton );
         ftLogs.setWidget(0, 2, m_newLogButton );
         ftLogs.setWidget(0, 3, m_stopLogsButton );
-        ftLogs.setWidget(0, 4, m_logListBox );
+      //  ftLogs.setWidget(0, 4, m_logTimeLabelText);
+        ftLogs.setWidget(0, 5, m_logListBox );
+         
         m_logListBox.setSize("200px", "25px");
       //  cellFormatter.setColSpan(1, 0, 4);
         DecoratorPanel dpLogs = new DecoratorPanel();
