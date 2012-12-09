@@ -245,7 +245,7 @@ public class MainPage
             m_outerDocPanel.setWidth("100%");
             m_outerDocPanel.setHeight("100%");
             
-            m_outerDocPanel.setStyleName("com.gbak.sweb-OuterPanel");
+            m_outerDocPanel.setStyleName("sweb-OuterPanel");
 
             m_HeaderHP.add( new Image( "stokerweb5.png"));
             m_HeaderHP.setWidth("100%");
@@ -264,30 +264,30 @@ public class MainPage
              
           //  hp.setBorderWidth(1);
             m_statusFauxButton.setEnabled(false);
-            m_statusFauxButton.setStyleName("com.gbak.sweb-ConnectionButton");
+            m_statusFauxButton.setStyleName("sweb-ConnectionButton");
             m_statusFauxButton.setText("No Connection");
             
             m_HeaderHP.add( m_statusFauxButton );
             
             m_configButton.setEnabled(false);
-            m_configButton.setStyleName("com.gbak.sweb-MenuButton");
+            m_configButton.setStyleName("sweb-MenuButton");
             m_HeaderHP.add( m_configButton );
             m_HeaderHP.setCellHorizontalAlignment(m_configButton, HasHorizontalAlignment.ALIGN_RIGHT);
             m_HeaderHP.setCellVerticalAlignment(m_configButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
             m_reportsButton.setEnabled(false);
-            m_reportsButton.setStyleName("com.gbak.sweb-MenuButton");
+            m_reportsButton.setStyleName("sweb-MenuButton");
             m_HeaderHP.add( m_reportsButton );
             m_HeaderHP.setCellHorizontalAlignment(m_reportsButton, HasHorizontalAlignment.ALIGN_RIGHT);
             m_HeaderHP.setCellVerticalAlignment(m_reportsButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
             m_updateButton.setEnabled(false);
-            m_updateButton.setStyleName("com.gbak.sweb-MenuButton");
+            m_updateButton.setStyleName("sweb-MenuButton");
             m_HeaderHP.add( m_updateButton );
             m_HeaderHP.setCellHorizontalAlignment(m_updateButton, HasHorizontalAlignment.ALIGN_RIGHT);
             m_HeaderHP.setCellVerticalAlignment(m_updateButton, HasVerticalAlignment.ALIGN_BOTTOM);
             
-            m_loginButton.setStyleName("com.gbak.sweb-MenuButton");
+            m_loginButton.setStyleName("sweb-MenuButton");
             m_HeaderHP.add( m_loginButton );
 
             m_HeaderHP.setCellHorizontalAlignment(m_loginButton, HasHorizontalAlignment.ALIGN_RIGHT);
@@ -818,13 +818,13 @@ public class MainPage
         
         if ( !connected )
         {
-           m_statusFauxButton.setStyleName("com.gbak.sweb-ConnectionButton");
+           m_statusFauxButton.setStyleName("sweb-ConnectionButton");
            m_statusFauxButton.setText("No Connection");
            m_bConnected = false;
         }
         else
         {
-            m_statusFauxButton.setStyleName("com.gbak.sweb-ConnectionButtonOn");
+            m_statusFauxButton.setStyleName("sweb-ConnectionButtonOn");
             m_statusFauxButton.setText("  Connected  ");
             m_bConnected = true;
         }

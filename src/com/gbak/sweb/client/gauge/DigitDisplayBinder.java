@@ -62,12 +62,12 @@ public class DigitDisplayBinder extends InstantTempDisplay implements HasText
        
         initWidget(uiBinder.createAndBindUi(this));
         displayTemp.setText("0");
-        displayTemp.addStyleName("com.gbak.sweb-displayTemp");
-     //   displayTemp.setStyleName("com.gbak.sweb-DisplayTemp");
-        tempDecorator.addStyleName("com.gbak.sweb-tempDecorator");
+        displayTemp.addStyleName("sweb-displayTemp");
+     //   displayTemp.setStyleName("sweb-DisplayTemp");
+        tempDecorator.addStyleName("sweb-tempDecorator");
         
-        lowTemp.addStyleName("com.gbak.sweb-digitTempLowLabel");
-        highTemp.addStyleName("com.gbak.sweb-digitTempHighLabel");
+        lowTemp.addStyleName("sweb-digitTempLowLabel");
+        highTemp.addStyleName("sweb-digitTempHighLabel");
         digitHPanelHighLow.setWidth("100%");
     }
 

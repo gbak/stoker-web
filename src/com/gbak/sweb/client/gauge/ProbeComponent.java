@@ -180,7 +180,7 @@ public class ProbeComponent extends Composite
  
        FlexTable ft = getSettingsPanel(sd1.getFanDevice() != null ? true : false);
 
-       ft.addStyleName("com.gbak.sweb-flexGauge");
+       ft.addStyleName("sweb-flexGauge");
 
        m_dp.setContent( ft );
        m_dp.setAnimationEnabled(true);
@@ -196,13 +196,13 @@ public class ProbeComponent extends Composite
        if ( m_alignment == Alignment.SINGLE)
        {
           vp1.add( ft );
-          cellp.addStyleName("com.gbak.sweb-panelGaugeTall");
+          cellp.addStyleName("sweb-panelGaugeTall");
        }
        else
        {
            vp1.add( m_dp );
            vp1.setCellHorizontalAlignment(m_dp, VerticalPanel.ALIGN_LEFT); 
-           cellp.addStyleName("com.gbak.sweb-panelGaugeShort");
+           cellp.addStyleName("sweb-panelGaugeShort");
        }
        
        cellp.add( vp1 );
@@ -285,7 +285,7 @@ public class ProbeComponent extends Composite
        FlexTable ft = new FlexTable();
 
        ft.setCellSpacing(6);
-      ft.setStyleName("com.gbak.sweb-flexAlarmSettings");
+      ft.setStyleName("sweb-flexAlarmSettings");
        FlexCellFormatter cellFormatter = ft.getFlexCellFormatter();
        ft.getFlexCellFormatter().setColSpan(0, 0, 2);
        ft.getFlexCellFormatter().setColSpan(3, 1, 1);

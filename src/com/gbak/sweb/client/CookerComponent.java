@@ -186,12 +186,12 @@ public class CookerComponent extends Composite
         m_StokerHeaderPanel.setCellVerticalAlignment( hpProfiles , HasVerticalAlignment.ALIGN_BOTTOM );
 
         /* old style - 'buttons-log' */
-        m_newLogButton.setStyleName("com.gbak.sweb-LogButton");
-        m_manageLogsButton.setStyleName("com.gbak.sweb-LogButton");
-        m_stopLogsButton.setStyleName("com.gbak.sweb-LogButton");
-        m_noteLogsButton.setStyleName("com.gbak.sweb-LogButton");
+        m_newLogButton.setStyleName("sweb-LogButton");
+        m_manageLogsButton.setStyleName("sweb-LogButton");
+        m_stopLogsButton.setStyleName("sweb-LogButton");
+        m_noteLogsButton.setStyleName("sweb-LogButton");
 
-        m_logTimeLabelText.setStyleName("com.gbak.sweb-LogTimeText");
+        m_logTimeLabelText.setStyleName("sweb-LogTimeText");
         m_logTimeLabelText.setText("5h 2m");
         // Logs
         FlexTable ftLogs = new FlexTable();
@@ -214,7 +214,7 @@ public class CookerComponent extends Composite
         m_logListBox.setSize("200px", "25px");
       //  cellFormatter.setColSpan(1, 0, 4);
         DecoratorPanel dpLogs = new DecoratorPanel();
-        dpLogs.addStyleName("com.gbak.sweb-LogsDecorator");
+        dpLogs.addStyleName("sweb-LogsDecorator");
         dpLogs.add( ftLogs );
 
      // Hide based on login Status
@@ -239,7 +239,7 @@ public class CookerComponent extends Composite
         hpLogs.setCellHorizontalAlignment( dpLogs , HasHorizontalAlignment.ALIGN_RIGHT);
         hpLogs.setCellVerticalAlignment( dpLogs , HasVerticalAlignment.ALIGN_BOTTOM );
 
-        m_alertsButton.setStyleName("com.gbak.sweb-LogButton");
+        m_alertsButton.setStyleName("sweb-LogButton");
         m_alertsButton.addClickHandler( alertsButtonClickHandler());
         m_StokerHeaderPanel.add( m_alertsButton );
         m_StokerHeaderPanel.add( hpLogs );
@@ -263,7 +263,7 @@ public class CookerComponent extends Composite
         
         m_outerMostDecPanel.add(m_outerVPanel);
 
-        m_outerMostDecPanel.addStyleName("com.gbak.sweb-LogsDecorator");
+        m_outerMostDecPanel.addStyleName("sweb-LogsDecorator");
        // decPanel.add( cookerLabel);
 
         // Handlers
@@ -519,17 +519,17 @@ public class CookerComponent extends Composite
         StokerProbe pit = (StokerProbe) c.getPitSensor();
         String styleName;
         
-        m_stokerElementsPanel.setStyleName("com.gbak.sweb-gaugeFlowPanel");
+        m_stokerElementsPanel.setStyleName("sweb-gaugeFlowPanel");
         if ( m_alignment == Alignment.SINGLE )
-           styleName = "com.gbak.sweb-panelGaugeTall";
+           styleName = "sweb-panelGaugeTall";
         else
-            styleName = "com.gbak.sweb-panelGaugeShort";
+            styleName = "sweb-panelGaugeShort";
         
         if ( pit != null )
         {
             ProbeComponent gc = new ProbeComponent( pit, m_alignment, m_properties );
             m_guageMap.put( pit.getID(), gc );
-         //   gc.addStyleName("com.gbak.sweb-gaugeFlowPanel");
+         //   gc.addStyleName("sweb-gaugeFlowPanel");
             gc.addStyleName(styleName);
             m_stokerElementsPanel.add( gc );
             m_gaugePanelWidth = m_gaugePanelWidth +  gc.getOffsetWidth();
@@ -538,7 +538,7 @@ public class CookerComponent extends Composite
         {
             ProbeComponent gcp = new ProbeComponent( probe, m_alignment, m_properties );
             m_guageMap.put( probe.getID(), gcp );
-            //gcp.addStyleName("com.gbak.sweb-gaugeFlowPanel");
+            //gcp.addStyleName("sweb-gaugeFlowPanel");
             gcp.addStyleName(styleName);
             m_stokerElementsPanel.add( gcp );
             m_gaugePanelWidth = m_gaugePanelWidth +  gcp.getOffsetWidth();
@@ -583,10 +583,10 @@ public class CookerComponent extends Composite
     //    sGraphPanel.setHeight(new Integer(m_Height).toString() + "px");
         final DecoratorPanel dpGraph = new DecoratorPanel();
         
-       // dpGraph.addStyleName("com.gbak.sweb-graphPanel");
+       // dpGraph.addStyleName("sweb-graphPanel");
 
 
-       // m_graphPanel.setStyleName("com.gbak.sweb-gaugeFlowPanel" );
+       // m_graphPanel.setStyleName("sweb-gaugeFlowPanel" );
      //   m_Height = 385;
         if ( m_alignment == Alignment.SINGLE)
         {
