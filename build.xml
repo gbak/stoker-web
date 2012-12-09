@@ -78,7 +78,7 @@
 	  <arg value="${gwt.localworkers}" />
 	  <!--arg value="-style" />
 	  <arg value="PRETTY" /-->
-      <arg value="com.gbak.sweb.StokerWeb"/>
+      <arg value="com/gbak/sweb/StokerWeb"/>
     </java>
   </target>
 
@@ -87,7 +87,7 @@
   <target name="common" depends="javac" description="Build common jar for client"  >
       <jar destfile="stokerweb-common.jar">
             <fileset dir="war/WEB-INF/classes/" 
-                     includes="com.gbak.sweb/common/**/*.class" />
+                     includes="com/gbak/sweb/common/**/*.class" />
       </jar>
   </target>
   
@@ -103,17 +103,17 @@
                     <attribute name="Main-Class" value="com.gbak.sweb.server.security.admin.AddUser"/>
                 </manifest>
                 <fileset dir="war/WEB-INF/classes/" 
-		          includes="com.gbak.sweb/server/security/**/*.class,
-		                    com.gbak.sweb/server/StokerWebProperties.class,
-							com.gbak.sweb/server/log/LoggingConfigurator.class,
-		                    com.gbak.sweb/server/InvalidStokerWebPropertyException.class"
+		          includes="com/gbak/sweb/server/security/**/*.class,
+		                    com/gbak/sweb/server/StokerWebProperties.class,
+							com/gbak/sweb/server/log/LoggingConfigurator.class,
+		                    com/gbak/sweb/server/InvalidStokerWebPropertyException.class"
 		          excludes=""/>
 				<fileset dir="${addUserTemp.dir}"
 				  includes="**/*"
 				  excludes="" />
 				
 		<!--fileset dir="war/WEB-INF/classes/"
-		    includesfile="war/WEB-INF/classes/com.gbak.sweb/server/StokerWebProperties.class" /-->
+		    includesfile="war/WEB-INF/classes/com/gbak/sweb/server/StokerWebProperties.class" /-->
 		    
 	       
         </jar>

@@ -42,6 +42,7 @@ import com.gbak.sweb.server.StokerSharedServices;
 import com.gbak.sweb.server.config.StokerWebConfiguration;
 import com.gbak.sweb.server.monitors.PitMonitor;
 import com.gbak.sweb.server.security.LoginProperties;
+import com.gbak.sweb.shared.model.ConfigurationSettings;
 import com.gbak.sweb.shared.model.CookerList;
 import com.gbak.sweb.shared.model.data.SDataPoint;
 import com.gbak.sweb.shared.model.devices.SDevice;
@@ -82,6 +83,16 @@ public class RestServices {
     }
     
 
+    @GET
+    @Path("configuration")
+    public Response handleConfigurationRequest()
+    {
+ 
+        ConfigurationSettings cf = m_stokerSharedServices.getDeviceConfiguration();
+        
+        return Response.status(200).entity("").build();
+    }
+    
     @GET
     @Path("cookers")
     public String handleConfigGet()
@@ -192,32 +203,6 @@ public class RestServices {
         
         deviceDataList.logCount = ConvertUtils.toLogItemCountList(m_stokerSharedServices.getLogList());
             
-       /* return("[{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"200\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}," +
-                "{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"2\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}," +
-                "{\"id\":\"123\",\"type\":\"probe\",\"alarmType\":\"NONE\",\"currentTemp\":\"225\",\"targetTemp\":\"200\",\"name\":\"Temp Probe 1\",\"alarmLow\":\"\",\"alarmHigh\":\"\"}]");
-   */ 
-       /* ObjectMapper mapper = new ObjectMapper();
-        String jsonString = "";
-        try
-        {
-            jsonString = mapper.writeValueAsString(deviceDataList);
-        }
-        catch (JsonGenerationException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (JsonMappingException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return jsonString;*/
         return Response.status(200).entity(deviceDataList).build();
     }
     
