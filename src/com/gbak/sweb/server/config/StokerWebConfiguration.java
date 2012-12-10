@@ -191,30 +191,9 @@ public class StokerWebConfiguration
                      {
                          cooker.setPitSensor(null );
                      }
+                    
                  }
-                  /*
-                  switch (sdStoker.getProbeType())
-                  {
-                      case PIT:
-                          StokerPitSensor sps = (StokerPitSensor)sdStoker;
-                          StokerFan sf =  sps.getFanDevice();
-                          if ( sf != null )
-                          {
-                              if ( sf.getID().compareTo(cookerPitSensor.getFanDevice().getID()) != 0)
-                              {
-                                  logger.warn("Fan device does not match StokerWeb and stoker configuration for pit sensor: " + cookerPitSensor.getName());
-                                  
-                              }
-                          }
-                          break;
-                      case BLOWER:
-                          
-                      case FOOD:
-                          
-                      default:
-                  }
-                  */
-                  
+                 // Blower-less pit probes are allowed.
               }
               else
               {

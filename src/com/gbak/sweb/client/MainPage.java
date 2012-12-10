@@ -901,7 +901,11 @@ public class MainPage
     {
         Log.debug("createCookers()");
     
-       if ( cookerList == null || cookerList.getCookerList().size() == 0)
+        if ( cookerList == null )
+        {
+            
+        }
+        else if ( cookerList.getCookerList().size() == 0)
        {
            if ( cookerList.getConfigRequired() == true )
               presentConfigScreen();

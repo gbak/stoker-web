@@ -241,12 +241,14 @@ public class StokerHardwareDevice extends HardwareDeviceConfiguration
                 
                 Stoker stoke = stokerOuter.getStoker();
                 ArrayList<Blower> stokerBlowers = stoke.getBlowers();
-                for ( Blower b : stokerBlowers )
+                if ( stokerBlowers != null )
                 {
-                    logger.debug("Adding fan device: " + b.getId().toUpperCase() + " with name: " + b.getName());
-                    super.addDevice( new StokerFan(b.getId().toUpperCase(), b.getName()));
+                    for ( Blower b : stokerBlowers )
+                    {
+                        logger.debug("Adding fan device: " + b.getId().toUpperCase() + " with name: " + b.getName());
+                        super.addDevice( new StokerFan(b.getId().toUpperCase(), b.getName()));
+                    }
                 }
-                
                 for ( Sensor sensor : stoke.getSensors())
                 {
                     if ( sensor.getBlower() == null )
