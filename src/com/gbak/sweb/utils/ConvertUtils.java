@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.gbak.sweb.common.json.Blower;
+import com.gbak.sweb.common.json.ConfigurationSettings;
 import com.gbak.sweb.common.json.Device;
 import com.gbak.sweb.common.json.DeviceDataList;
 import com.gbak.sweb.common.json.LogItem;
@@ -25,6 +26,23 @@ public class ConvertUtils
 {
 
  
+    public static ConfigurationSettings toConfigurationSettings( com.gbak.sweb.shared.model.ConfigurationSettings gwtConfig )
+    {
+        ConfigurationSettings cs = new ConfigurationSettings();
+        if ( gwtConfig != null && gwtConfig.getCookerList() != null )
+        {
+            for ( com.gbak.sweb.shared.model.Cooker c : gwtConfig.getCookerList().getCookerList())
+            {
+               cs.cookerList.add(ConvertUtils.toCooker(c));
+            }
+        }
+        for ( SDevice sd : gwtConfig.getAvailableDevices())
+        {
+            cs.deviceList.add( toDevice(sd));
+        }
+        return cs;
+    }
+    
     public static ArrayList<SDevice> toSDeviceList( DeviceDataList ddl )
     {
         ArrayList<SDevice> deviceList = new ArrayList<SDevice>();

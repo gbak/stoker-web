@@ -25,6 +25,7 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
+import com.gbak.sweb.common.json.ConfigurationSettings;
 import com.gbak.sweb.common.json.Device;
 import com.gbak.sweb.common.json.DeviceDataList;
 import com.gbak.sweb.common.json.ItemCount;
@@ -42,7 +43,7 @@ import com.gbak.sweb.server.StokerSharedServices;
 import com.gbak.sweb.server.config.StokerWebConfiguration;
 import com.gbak.sweb.server.monitors.PitMonitor;
 import com.gbak.sweb.server.security.LoginProperties;
-import com.gbak.sweb.shared.model.ConfigurationSettings;
+
 import com.gbak.sweb.shared.model.CookerList;
 import com.gbak.sweb.shared.model.data.SDataPoint;
 import com.gbak.sweb.shared.model.devices.SDevice;
@@ -87,10 +88,10 @@ public class RestServices {
     @Path("configuration")
     public Response handleConfigurationRequest()
     {
- 
-        ConfigurationSettings cf = m_stokerSharedServices.getDeviceConfiguration();
+        ConfigurationSettings cs;
+        cs = ConvertUtils.toConfigurationSettings(m_stokerSharedServices.getDeviceConfiguration() );
         
-        return Response.status(200).entity("").build();
+        return Response.status(200).entity(cs).build();
     }
     
     @GET
