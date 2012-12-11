@@ -72,18 +72,25 @@
         <path refid="project.class.path"/>
       </classpath>
       <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
-      <jvmarg value="-Xmx256M"/>
+      <jvmarg value="-Xmx512M"/>
       <!-- Additional arguments like -style PRETTY or -logLevel DEBUG -->
 	  <arg value="-localWorkers" />
 	  <arg value="${gwt.localworkers}" />
 	  <!--arg value="-style" />
 	  <arg value="PRETTY" /-->
-      <arg value="sweb.StokerWeb"/>
+      <arg value="com.gbak.sweb.StokerWeb"/>
     </java>
   </target>
 
   <target name="build" depends="gwtc" description="Build this project" />
 
+  <target name="common" depends="javac" description="Build common jar for client"  >
+      <jar destfile="stokerweb-common.jar">
+            <fileset dir="war/WEB-INF/classes/" 
+                     includes="com/gbak/sweb/common/**/*.class" />
+      </jar>
+  </target>
+  
   <target name="war" depends="build" description="Create a war file">
     <zip destfile="stokerweb.war" basedir="war"/>
   </target>
@@ -93,20 +100,20 @@
     <unjar src="${log4j}" dest="${addUserTemp.dir}" />
     <jar destfile="addUser.jar">
                 <manifest>
-                    <attribute name="Main-Class" value="sweb.server.security.admin.AddUser"/>
+                    <attribute name="Main-Class" value="com.gbak.sweb.server.security.admin.AddUser"/>
                 </manifest>
                 <fileset dir="war/WEB-INF/classes/" 
-		          includes="sweb/server/security/**/*.class,
-		                    sweb/server/StokerWebProperties.class,
-							sweb/server/log/LoggingConfigurator.class,
-		                    sweb/server/InvalidStokerWebPropertyException.class"
+		          includes="com/gbak/sweb/server/security/**/*.class,
+		                    com/gbak/sweb/server/StokerWebProperties.class,
+							com/gbak/sweb/server/log/LoggingConfigurator.class,
+		                    com/gbak/sweb/server/InvalidStokerWebPropertyException.class"
 		          excludes=""/>
 				<fileset dir="${addUserTemp.dir}"
 				  includes="**/*"
 				  excludes="" />
 				
 		<!--fileset dir="war/WEB-INF/classes/"
-		    includesfile="war/WEB-INF/classes/sweb/server/StokerWebProperties.class" /-->
+		    includesfile="war/WEB-INF/classes/com/gbak/sweb/server/StokerWebProperties.class" /-->
 		    
 	       
         </jar>

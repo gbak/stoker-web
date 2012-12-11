@@ -8,7 +8,7 @@ public class StokerWebTest extends GWTTestCase
     @Override
     public String getModuleName()
     {
-        return "sweb.StokerWeb"; 
+        return "com.gbak.sweb.StokerWeb"; 
     }
 
     public void testSimple()
