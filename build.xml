@@ -78,7 +78,7 @@
 	  <arg value="${gwt.localworkers}" />
 	  <!--arg value="-style" />
 	  <arg value="PRETTY" /-->
-      <arg value="com/gbak/sweb/StokerWeb"/>
+      <arg value="com.gbak.sweb.StokerWeb"/>
     </java>
   </target>
 

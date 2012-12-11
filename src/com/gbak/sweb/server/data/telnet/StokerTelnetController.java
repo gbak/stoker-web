@@ -303,6 +303,7 @@ public class StokerTelnetController implements DataController
 
     private void closeConnection() throws IOException
     {
+        logger.debug("closeConnection()");
         m_eventBus.post(new StateChangeEvent( this, EventType.LOST_CONNECTION ));
 
         m_TelnetState = TelnetState.DISCONNECTED;
@@ -423,13 +424,15 @@ public class StokerTelnetController implements DataController
                             try
                             {
                                 // Not sure if I want this here.
-                               logger.trace("t");
-                                addDataPoint( sb.toString() );
+                                m_LastMessageTime = Calendar.getInstance().getTime();
+                               logger.trace("last message time: " + m_LastMessageTime );
+                               
+                               addDataPoint( sb.toString() );
 
                               // System.out.print("p");
 
                                m_StokerResponseState = StokerResponseState.TEMPS;
-                               m_LastMessageTime = Calendar.getInstance().getTime();
+                               
                             }
                            catch ( InvalidDataPointException idp)
                             {
@@ -553,6 +556,8 @@ public class StokerTelnetController implements DataController
           calLastMessage.setTime(m_LastMessageTime);
           calLastMessage.add( Calendar.MINUTE, 1);
 
+          logger.trace("calLastMessage: " + calLastMessage);
+          logger.trace("calCurrent:     " + calCurrent);
           if ( calLastMessage.before( calCurrent ) )
           {
               // no messages from Stoker in 2 minutes
