@@ -14,6 +14,7 @@ import com.gbak.sweb.server.monitors.PitMonitor;
 import com.gbak.sweb.server.weather.WeatherController;
 import com.gbak.sweb.shared.model.ConfigurationSettings;
 import com.gbak.sweb.shared.model.CookerList;
+import com.gbak.sweb.shared.model.HardwareDeviceState;
 import com.gbak.sweb.shared.model.LogItem;
 import com.gbak.sweb.shared.model.HardwareDeviceState.Status;
 import com.gbak.sweb.shared.model.data.SDataPoint;

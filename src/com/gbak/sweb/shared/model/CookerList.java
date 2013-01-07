@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.gbak.sweb.shared.model.devices.SDevice;
+import com.gbak.sweb.shared.model.events.ControllerEventLight.EventTypeLight;
 
 
 public class CookerList  implements Serializable
@@ -31,6 +32,7 @@ public class CookerList  implements Serializable
     
     protected ArrayList<Cooker> cookerList;
     protected boolean configRequired = false;
+    protected EventTypeLight status = EventTypeLight.NONE;
     
     public CookerList() { cookerList = new ArrayList<Cooker>(); }
     
@@ -61,4 +63,14 @@ public class CookerList  implements Serializable
         }
     }
 
+    public void setStatus( EventTypeLight el )
+    {
+        status = el;
+    }
+    
+    public EventTypeLight getStatus()
+    {
+        return status;
+    }
+    
 }
