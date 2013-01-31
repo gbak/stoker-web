@@ -352,7 +352,7 @@ public class MainPage
     {
        if ( m_cookerVP != null )
        {
-            if ( m_eventState == EventTypeLight.EXTENDED_CONNECTION_LOSS)
+            if ( m_eventState == EventTypeLight.EXTENDED_CONNECTION_LOSS  )
                m_cookerOuterPanel.remove(m_cookerVP);
             else //if (m_eventState == EventTypeLight.CONNECTION_ESTABLISHED )
             {
@@ -868,6 +868,7 @@ public class MainPage
                 System.out.println("getConfiguration complete.");
 
                 Log.info("Successfully retreived stoker configuration from server");
+                m_eventState = result.getStatus();
                 m_cookerList = result;
                 buildCookers();
             }

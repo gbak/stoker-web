@@ -90,6 +90,8 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     AlertsManagerImpl m_alertsManager = null;
     StokerSharedServices m_stokerSharedServices = null;
     
+    EventTypeLight m_lastEvent = EventTypeLight.NONE;
+    
     private static final Logger logger = Logger.getLogger(StokerCoreServiceImpl.class.getName());
     
     @Inject
@@ -159,18 +161,22 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
                 m_ClientMessenger
                         .push(new ControllerEventLight(
                                 EventTypeLight.CONNECTION_ESTABLISHED));
+                m_lastEvent = EventTypeLight.CONNECTION_ESTABLISHED;
                 break;
             case NONE:
+                m_lastEvent = EventTypeLight.NONE;
                 break;
             case LOST_CONNECTION:
                 m_ClientMessenger.push(
                         new ControllerEventLight(
                                 EventTypeLight.LOST_CONNECTION));
+                m_lastEvent = EventTypeLight.LOST_CONNECTION;
                 break;
             case EXTENDED_CONNECTION_LOSS:
                 m_ClientMessenger.push(
                         new ControllerEventLight(
                                 EventTypeLight.EXTENDED_CONNECTION_LOSS));
+                m_lastEvent = EventTypeLight.EXTENDED_CONNECTION_LOSS;
             default:
 
         }
@@ -536,7 +542,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     @Override
     public CookerList getStokerWebConfiguration() throws IllegalArgumentException
     {
-        return m_stokerSharedServices.getStokerWebConfiguration();
+        CookerList cl = m_stokerSharedServices.getStokerWebConfiguration(); 
+        
+        cl.setStatus(m_lastEvent);
+        return cl;
     }
     
     

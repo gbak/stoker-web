@@ -77,6 +77,10 @@ public class ConnectionMonitor
             startMonitor();
             if ( m_pitMonitor.start() )
             {
+                // ON the fence about adding this event post here since the connection_established is also
+                // posted in the telnet controller when it starts.  This was added here to ensure that the 
+                // lastEvent type is a connected status when passed back to the client.
+                m_eventBus.post(new StateChangeEvent( this, EventType.CONNECTION_ESTABLISHED ));
                 m_currentState = MonitorState.ONLINE;
             }
             m_weatherController.start();
@@ -166,6 +170,10 @@ public class ConnectionMonitor
     }
     
 
+    public EventType getLastEvent()
+    {
+        return m_lastEvent;
+    }
     private void getTimeoutValues()
     {
         if ( m_timeoutToExtendedLoss == 0 || m_timeoutToExtendedLoss == 0 )
@@ -175,8 +183,8 @@ public class ConnectionMonitor
                m_timeoutToExtendedLoss = new Integer((String)StokerWebConstants.TIMEOUT_TO_EXTENDED_LOSS).intValue();
                m_timeoutToReconnect = new Integer((String)StokerWebConstants.TIMEOUT_TO_RECONNECT).intValue();
             
-               m_timeoutToExtendedLoss = new Integer((String)StokerWebProperties.getInstance().get(StokerWebConstants.TIMEOUT_TO_EXTENDED_LOSS)).intValue();
-               m_timeoutToReconnect = new Integer((String)StokerWebProperties.getInstance().get(StokerWebConstants.TIMEOUT_TO_RECONNECT)).intValue();
+               m_timeoutToExtendedLoss = new Integer((String)StokerWebProperties.getInstance().get(StokerWebConstants.PROPS_TIMEOUT_TO_EXTENDED_LOSS)).intValue();
+               m_timeoutToReconnect = new Integer((String)StokerWebProperties.getInstance().get(StokerWebConstants.PROPS_TIMEOUT_TO_RECONNECT)).intValue();
 
             }
             catch( NumberFormatException nfe )
