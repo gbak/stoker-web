@@ -1,6 +1,21 @@
 package com.gbak.sweb.common.base.constant;
 
 
-public enum AlarmType { NONE, ALARM_FOOD, ALARM_FIRE }
+public enum AlarmType { NONE 
+                        /*{
+                        public String toString() {
+                            return "None";
+                        }
+                    }*/, ALARM_FOOD
+                    /*{
+                        public String toString() {
+                            return "Food";
+                        }
+                    }*/, ALARM_FIRE
+                    /*{
+                        public String toString() {
+                            return "Fire";
+                        }
+                    }*/}
 
 

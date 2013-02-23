@@ -828,6 +828,7 @@ public class MainPage
             m_statusFauxButton.setText("  Connected  ");
             m_bConnected = true;
         }
+        updateButtonStatus();
     }
     
     private String getUpdateButtonText()
