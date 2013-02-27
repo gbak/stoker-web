@@ -191,6 +191,10 @@ public class ReportData
             
             while ((str = in.readLine()) != null)
             {
+                if ( logger.isDebugEnabled() )
+                {
+                    logger.debug("line read from file: [" + str + "]");   
+                }
                 
                 // This section before the case statement is for collecting the config information that
                 // was previously collected in the case.  We run through the file and when a CONFIG
@@ -234,6 +238,7 @@ public class ReportData
                 switch ( type )
                 {
                     case BLOWER:  
+                        logger.debug("processFile: type=BLOWER"); 
                         // Yes this is kind of redundant, but it keeps it out of the data section.
                         for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hmByLogDevNumAndDeviceID ))
                         {
@@ -257,11 +262,22 @@ public class ReportData
                            }
                         
                         }
+                        break;
                         
                     case DATA:
+                        logger.debug("processFile: type=DATA");
                         for ( SDataPoint sdp : LogFileFormatter.parseLogDataLine( str, hmByLogDevNumAndDeviceID ))
                         {
-                            String deviceName = hmByDeviceIDAndSDevice.get(sdp.getDeviceID()).getName();
+
+                            String deviceID = sdp.getDeviceID();
+                            logger.debug("deviceID: " + deviceID );
+                            
+                            SDevice device1 = hmByDeviceIDAndSDevice.get( deviceID);
+                            logger.debug("device1 is null?: " + device1 == null ? "true" : "false" );
+                            
+                            String deviceName = device1.getName();
+                            logger.debug("device1 name: " + device1.getName() );
+                            
                              TimeSeries ts = mapProbeChartPoints.get(sdp.getDeviceID() + deviceName);
                              if ( ts == null )
                              {
@@ -297,6 +313,7 @@ public class ReportData
                         break;
                     
                     case CONFIG:
+                        logger.debug("processFile: type=CONFIG");
                         SDevice sd = LogFileFormatter.parseLogConfigLine( str );
                         String deviceNumInLog = LogFileFormatter.getDeviceNumber(str);
                         hmByLogDevNumAndDeviceID.put(deviceNumInLog, sd.getID() );
@@ -304,10 +321,11 @@ public class ReportData
                         break;
                 
                     case WEATHER:
-                        
+                        logger.debug("processFile: type=WEATHER");
                         break;
                 
                     case NOTE:
+                        logger.debug("processFile: type=NOTE");
                         LogNote note = LogFileFormatter.parseNoteLine( str);
                         if ( note != null )
                         {

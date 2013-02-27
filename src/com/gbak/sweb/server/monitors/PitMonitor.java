@@ -39,6 +39,9 @@ public interface PitMonitor
      * Check the state of the hardware device
      * @return Current state of the device
      */
+    
+    public void shutdown();
+    
     public HardwareDeviceState getState();
     
     /**

@@ -255,9 +255,10 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     public String login(String name, String password) throws IllegalArgumentException
     {
        User user = new User();
-
+       logger.debug("Login attempt for user: " + name );
        if ( LoginProperties.getInstance().validateLoginID(name, password) )
        {
+           logger.debug("Login success for user: " + name );
            user.setLoggedIn(true);
            return storeUserInSession(user);
 
@@ -319,11 +320,13 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
     public ArrayList<ArrayList<SDataPoint>> getAllGraphDataPoints(String logName)
             throws IllegalArgumentException
     {
+        logger.debug("getAllGraphDataPoints logName: " + logName );
         return m_stokerSharedServices.getAllGraphDataPoints(logName);
     }
 
     public ArrayList<LogItem> getLogList() throws IllegalArgumentException
     {
+        logger.debug("StokerCoreServiceImpl.getLogList called" );
         return m_stokerSharedServices.getLogList();
     }
 
@@ -332,9 +335,11 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
      */
     public Integer startLog(String cookerName, String logName, ArrayList<SDevice> deviceList ) throws IllegalArgumentException
     {
+        
        if ( ! loginGuard() )
           return -1;
        
+        logger.debug("StokerCoreServiceImpl.startLog cookerName:" + cookerName + " LogName: " + logName );
         return m_stokerSharedServices.startLog( cookerName,  logName,  deviceList);
     }
 
@@ -344,6 +349,7 @@ public class StokerCoreServiceImpl extends RemoteServiceServlet implements Stoke
        if ( ! loginGuard() )
           return "";
        
+        logger.debug("StokerCoreServiceImpl.stopLog cookerName:" + cookerName + " LogName: " + logName );
         return m_stokerSharedServices.stopLog( cookerName,  logName );
     }
 

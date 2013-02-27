@@ -99,6 +99,19 @@ public class ConnectionMonitor
         logger.info("Connection monitor ended");
     }
     
+    public void shutdown()
+    {
+        logger.info("Connection monitor ending");
+       // m_weatherController.stop(); // Keep the weather running for the default screen?
+        m_pitMonitor.stop();
+        m_logManager.stopAllLogs();
+        m_currentState = MonitorState.OFFLINE;
+        m_monitorTimer.cancel();
+        m_weatherController.stop();
+        logger.info("Connection monitor ended");
+        
+    }
+    
     private boolean isRunning()
     {
         return m_dataController.isConnected();

@@ -26,6 +26,7 @@ public interface DataController
 {
     public boolean start();
     public void stop();
+    public void shutdown();
     public boolean isReady();
     public boolean isProcessing();
     public boolean isConnected();

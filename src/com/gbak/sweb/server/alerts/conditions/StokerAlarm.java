@@ -57,7 +57,7 @@ public class StokerAlarm extends AlertCondition
   // private PitMonitor m_pitMonitor;
    private StokerWebConfiguration m_stokerWebConfiguration;
    private AlertManager m_alertManager;
-   
+   private EventBus m_eventBus = null;
    Integer m_alarmRepeatMinutes = StokerWebConstants.ALARM_REPEAT_TIMER_MINUTES;
    
    
@@ -68,6 +68,7 @@ public class StokerAlarm extends AlertCondition
        this.m_stokerWebConfiguration = stokerWebConfiguration;
        this.m_alertManager = alert;
        eventBus.register(this);
+       m_eventBus = eventBus;
        init();
    }
   // public  StokerAlarm( boolean b ) { super(b); init(); }
@@ -76,6 +77,11 @@ public class StokerAlarm extends AlertCondition
    
    private static final Logger logger = Logger.getLogger(StokerAlarm.class.getName());
    
+   public void shutdown()
+   {
+       executor.shutdownNow();
+       m_eventBus.unregister(this);
+   }
    
    private void init()
    {

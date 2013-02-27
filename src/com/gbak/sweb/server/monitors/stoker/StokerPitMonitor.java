@@ -399,4 +399,12 @@ public class StokerPitMonitor implements PitMonitor, DataController
         return m_StokerHardware.loadNow();
     }
 
+    @Override
+    public void shutdown()
+    {
+        if (m_HardwareDeviceState.getHardwareStatus() == Status.CONNECTED )
+        {
+            m_DataController.stop();
+        }
+    }
 }

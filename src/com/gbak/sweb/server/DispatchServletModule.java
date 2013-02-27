@@ -71,7 +71,6 @@ public class DispatchServletModule extends ServletModule
 
       bind(PitMonitor.class).to(StokerPitMonitor.class).in(Singleton.class); 
       
- 
       bind(LogManager.class).to(LogManagerImpl.class).in(Singleton.class);
 
       bind(com.gbak.sweb.server.StokerInit.class).asEagerSingleton();

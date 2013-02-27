@@ -21,6 +21,12 @@ package com.gbak.sweb.server;
 
 
 
+import java.sql.DriverManager;
+import java.util.Set;
+
+import javax.servlet.ServletContextEvent;
+
+import com.gbak.sweb.server.alerts.conditions.StokerAlarm;
 import com.gbak.sweb.server.monitors.ConnectionMonitor;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -41,6 +47,38 @@ public class StokerWebServletConfig extends GuiceServletContextListener {
       
     return injector;
   }
+  
+  @Override
+  public void contextDestroyed(ServletContextEvent sce) 
+  {
+      Injector injector = (Injector) sce.getServletContext()
+                                        .getAttribute(Injector.class.getName());
+      
+
+      System.out.println("StokerWebServletConfig.contextDestroyed()");
+      injector.getInstance(ConnectionMonitor.class).stop();
+      injector.getInstance(StokerAlarm.class).shutdown();
+      
+      Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+      Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
+      for(Thread t:threadArray) {
+          if(t.getName().contains("Abandoned connection cleanup thread")  
+                  ||  t.getName().matches("com\\.google.*Finalizer")
+                  ||  t.getName().contains("Timer")
+                  ||  t.getName().contains("eventbus")
+                  ||  t.getName().contains("pool")) {
+              synchronized(t) {
+                  t.stop(); 
+              }
+          }
+      }
+      try {
+          Thread.sleep(1000);
+      } catch (InterruptedException e) {
+         
+      }
+  }
+  
   
   
 }

@@ -3,6 +3,8 @@ package com.gbak.sweb.server;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.apache.log4j.Logger;
+
 
 import com.gbak.sweb.server.alerts.AlertsManagerImpl;
 import com.gbak.sweb.server.config.StokerWebConfiguration;
@@ -27,6 +29,9 @@ import com.gbak.sweb.shared.model.logfile.LogDir;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
+import com.gbak.sweb.shared.model.devices.stoker.StokerFan;
+import com.gbak.sweb.shared.model.devices.stoker.StokerPitProbe;
+import com.gbak.sweb.shared.model.devices.stoker.StokerProbe;
 
 public class StokerSharedServices
 {
@@ -38,6 +43,8 @@ public class StokerSharedServices
     WeatherController m_WeatherController = null;
     AlertsManagerImpl m_alertsManager = null;
     StokerWebConfiguration m_StokerWebConfig = null;
+    
+    private static final Logger logger = Logger.getLogger(StokerSharedServices.class.getName());
     
     @Inject
     public StokerSharedServices( StokerWebConfiguration config, 
@@ -63,6 +70,26 @@ public class StokerSharedServices
     public Integer updateTempAndAlarmSettings(ArrayList<SDevice> asd)
             throws IllegalArgumentException
     {
+       if ( logger.isDebugEnabled())
+       {
+           logger.debug("StokerShareServices.updatetempAndAlarmSettings writing debug");
+           for ( SDevice sd : asd )
+           {
+               if ( sd instanceof StokerPitProbe )
+               {
+                   StokerPitProbe spp = (StokerPitProbe) sd;
+                   logger.debug(spp.printString());
+               }
+               else if ( sd instanceof StokerProbe )
+               {
+                   StokerProbe sp = (StokerProbe) sd;
+                   logger.debug(sp.printString());
+               }
+               
+           }
+           logger.debug("StokerShareServices.updatetempAndAlarmSettings debug complete");
+       }
+       
        m_StokerWebConfig.updateConfig(asd);
 
         return new Integer(1);

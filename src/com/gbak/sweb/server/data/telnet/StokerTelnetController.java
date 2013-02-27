@@ -666,6 +666,13 @@ public class StokerTelnetController implements DataController
         return true;
     }
 
+    @Override
+    public void shutdown()
+    {
+        stop();
+        
+    }
+
 
    /* public static void main(String[] args)
     {
