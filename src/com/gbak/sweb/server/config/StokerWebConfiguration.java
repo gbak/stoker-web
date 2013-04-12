@@ -191,6 +191,11 @@ public class StokerWebConfiguration
                      {
                          cooker.setPitSensor(null );
                      }
+                     else
+                     {
+                         // Force settings from stoker to cooker
+                         cooker.getPitSensor().update( (StokerPitProbe) sdStoker );
+                     }
                     
                  }
                  // Blower-less pit probes are allowed.
@@ -205,7 +210,7 @@ public class StokerWebConfiguration
            // Remove probes from Cooker that do not exist on the hardware device.
            ArrayList<String> removeProbes = new ArrayList<String>();
            
-           for ( SDevice cookerProbe : cooker.getProbeList() )
+           for ( StokerProbe cookerProbe : cooker.getProbeList() )
            {
                SDevice sdStoker = hmStoker.get( cookerProbe.getID().toUpperCase() );
                
@@ -213,6 +218,10 @@ public class StokerWebConfiguration
                {
                    logger.warn("device: [" + cookerProbe.getName() + "] with id [" + cookerProbe.getID().toUpperCase() + "] does not exist in stoker");
                    removeProbes.add( cookerProbe.getID());
+               }
+               else
+               {
+                   cookerProbe.update((StokerProbe)sdStoker);
                }
               // cooker.removeStokerProbe(cookerProbe.getID());  //. cant remove probes from list we are looping over
                

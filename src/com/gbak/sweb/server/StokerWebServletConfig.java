@@ -28,9 +28,11 @@ import javax.servlet.ServletContextEvent;
 
 import com.gbak.sweb.server.alerts.conditions.StokerAlarm;
 import com.gbak.sweb.server.monitors.ConnectionMonitor;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+
 
 public class StokerWebServletConfig extends GuiceServletContextListener {
 
@@ -56,8 +58,9 @@ public class StokerWebServletConfig extends GuiceServletContextListener {
       
 
       System.out.println("StokerWebServletConfig.contextDestroyed()");
-      injector.getInstance(ConnectionMonitor.class).stop();
+      injector.getInstance(ConnectionMonitor.class).shutdown();
       injector.getInstance(StokerAlarm.class).shutdown();
+ 
       
       Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
       Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()]);
