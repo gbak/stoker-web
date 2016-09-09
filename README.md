@@ -2,11 +2,11 @@
 
 Stoker-web is a web application that allows the [Stoker power draft system](https://www.rocksbarbque.com/) to be viewed and controlled from an external browser, this can be on the local network, wireless device or if properly setup from anywhere on the Internet.  Stoker-web offers additional functionality over the Stokers own internal browser, these features include: temperature graphs, logging, PDF cook reports, email alerts, local weather information, added Security and more.  Stoker-web is written Java so the server will run on most platforms that Java runs on.  It has been tested on Windows and Linux.  See Browser section below for client compatibility.
 
-![http://wiki.stoker-web.googlecode.com/git/sweb6.png](http://wiki.stoker-web.googlecode.com/git/sweb6.png)
+![http://wiki.stoker-web.googlecode.com/git/sweb6.png](https://github.com/gbak/stoker-web/blob/wiki/sweb6.png)
 
-[Sample with digit display](http://wiki.stoker-web.googlecode.com/git/StokerWebDigitSample.png)
+[Sample with digit display](https://github.com/gbak/stoker-web/blob/wiki/StokerWebDigitSample.png)
 
-[PDF Report Sample](http://wiki.stoker-web.googlecode.com/git/report.pdf)
+[PDF Report Sample](https://github.com/gbak/stoker-web/blob/wiki/report.pdf)
 
 ## Status ##
 
