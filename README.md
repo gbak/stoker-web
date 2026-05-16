@@ -148,3 +148,17 @@ java -jar addUser.jar
 It is recommended that you use the available releases from the download section, but if you'd like to try to compile it yourself, these are the basic steps.
 
 [Compiling Stoker-web](http://code.google.com/p/stoker-web/wiki/CompilingStokerWeb)
+
+---
+
+## Stoker-Web v2
+
+A full rewrite of Stoker-Web is available in the `stoker-web-v2/` directory. It replaces the original Java 1.6 / GWT / Ant stack with:
+
+- **Backend:** Spring Boot 3.x + Kotlin (JDK 21), Gradle Kotlin DSL
+- **Frontend:** React + TypeScript + Vite, Apache ECharts for gauges and charts
+- **Real-time:** WebSocket (STOMP) replacing the old Comet long-poll
+
+The v2 version builds to a single self-contained executable JAR with the frontend bundled as static resources.
+
+See [`stoker-web-v2/README.md`](stoker-web-v2/README.md) for build and run instructions.

@@ -1,0 +1,39 @@
+stoker:
+  device:
+    ip: 192.168.10.139
+    port: 23
+    login: root
+    password: tini
+  timeout:
+    extended-disconnect-minutes: 30
+    reconnect-interval-minutes: 15
+  alarm:
+    source: local  # "local" or "stoker"
+    repeat-interval-minutes: 10
+  display:
+    temp-type: gauge  # "gauge" or "text"
+    gauge-min: 0
+    gauge-max: 400
+    gauge-stepping: 50
+  data-dir: ./data
+  email:
+    enabled: false
+    smtp-host: smtp.gmail.com
+    smtp-port: 465
+    username: ""
+    password: ""
+    send-to: ""
+    use-ssl: true
+  weather:
+    enabled: false
+    api-key: ""     # OpenWeatherMap API key
+    zip-code: ""
+    units: imperial # "imperial" for °F, "metric" for °C
+
+server:
+  port: 8080
+
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
